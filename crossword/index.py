@@ -36,6 +36,11 @@ class LengthIndex:
         self.words = [entry.text for entry in entries]
         self.all = (1 << len(entries)) - 1
 
+        # Word -> id, so a caller holding a word (a themed entry the setter
+        # chose, say) can ask whether it is in the dictionary without a linear
+        # scan and without catching ValueError from list.index.
+        self.by_word = {word: i for i, word in enumerate(self.words)}
+
         self.masks: list[dict[str, int]] = [
             {char: 0 for char in ALPHABET} for _ in range(length)
         ]
@@ -84,7 +89,11 @@ class LengthIndex:
             mask ^= low
 
     def word_bit(self, word: str) -> int:
-        return 1 << self.words.index(word)
+        return 1 << self.by_word[word]
+
+    def word_id(self, word: str):
+        """The id of a word, or None if the dictionary does not have it."""
+        return self.by_word.get(word)
 
 
 class Index:

@@ -15,7 +15,7 @@ import random
 import time
 from dataclasses import dataclass, field
 
-from .grid import Grid, Slot
+from .grid import EMPTY, Grid, Slot
 from .index import Index
 from .rules import RuleSet
 
@@ -60,6 +60,37 @@ class Filler:
         self.slots = grid.slots(self.rules.min_entry_length)
         self.used: dict[int, int] = {}
         self.stats = Stats()
+
+        # Letters already in the grid when we were handed it.  A restart
+        # rewinds to this, not to empty: a themed entry placed by the caller
+        # is a premise of the search, not one of its decisions.
+        self.preset = dict(grid.letters)
+
+        # Slots the preset already completes are removed from the search
+        # rather than re-derived by it.  This is not an optimisation.  A
+        # themed entry is very often a proper noun or a phrase, and the fill
+        # dictionary deliberately excludes both -- so searching such a slot
+        # would find no candidate word, and the caller's own seed word would
+        # be reported as an impossible grid.  If the dictionary does happen
+        # to hold it, its id is marked used so it cannot appear twice.
+        self.fixed = []
+        searchable = []
+        for slot in self.slots:
+            pattern = "".join(self.preset.get(cell, EMPTY) for cell in slot.cells)
+            if EMPTY in pattern:
+                searchable.append(slot)
+                continue
+            self.fixed.append((slot, pattern))
+            if slot.length in index:
+                word_id = index[slot.length].word_id(pattern)
+                if word_id is not None:
+                    self.used[slot.length] = self.used.get(slot.length, 0) | (
+                        1 << word_id
+                    )
+        self.slots = searchable
+        # Restarts rewind to this, not to empty, for the same reason the
+        # letters do.
+        self.preset_used = dict(self.used)
 
         missing = {s.length for s in self.slots if s.length not in index}
         if missing:
@@ -140,7 +171,8 @@ class Filler:
         start = time.time()
         for attempt in range(restarts):
             self.grid.letters.clear()
-            self.used.clear()
+            self.grid.letters.update(self.preset)
+            self.used = dict(self.preset_used)
             self.stats.nodes = 0
             self.stats.restarts = attempt
             try:
