@@ -117,3 +117,52 @@ def test_benchmark_file_is_well_formed():
             assert item["known_optimum"] == item["size"]
         else:
             assert item["known_optimum"] is None
+
+
+def test_seating_accepts_targets_the_dictionary_lacks(index):
+    """The words you most want to seat are the ones UKACD does not have.
+
+    The forward check after a placement must not ask whether the word just
+    placed has candidates -- it never will, if it is a proper noun.  Including
+    the placed slot in that check refused every such target silently, scoring
+    3 of 16 on the controls instead of 12, with no error anywhere.
+    """
+    pattern = library.load()[0]
+    targets = ["neptune", "jupiter", "macbeth", "othello"]
+    assert all(index[7].word_id(w) is None for w in targets), "fixture assumes absent"
+
+    got = coverage.cover(pattern, index, targets, attempts=3, seed=0)
+    assert got.ok
+    assert sorted(got.placed) == sorted(targets), got.placed
+    entries = {got.grid.pattern(s) for s in got.grid.slots(3)}
+    assert set(targets) <= entries
+    assert validate(got.grid) == []
+
+
+def test_seating_leaves_the_grid_consistent_after_an_early_exit(index):
+    """A budget or bound exception unwinds past every pending erase.
+
+    Without an explicit rewind the grid keeps letters from abandoned branches,
+    and because _write only fills empty cells the winning words are then
+    written around that debris -- reported as seated, but not actually spelt
+    in the grid.  A tiny budget forces the unwind.
+    """
+    import random
+
+    pattern = library.load()[0]
+    grid = pattern.grid()
+    slots = grid.slots(3)
+    targets = ["neptune", "jupiter", "macbeth", "othello", "bermuda", "ipswich"]
+
+    seated, _open = coverage._seat_targets(
+        grid, index, slots, targets, random.Random(0), budget=3
+    )
+    assert seated, "expected at least one seating under a tiny budget"
+
+    # Every letter in the grid belongs to a seated word, and every seated word
+    # is actually spelt out where it was said to be.
+    owned = set()
+    for word, slot, _written in seated:
+        assert grid.pattern(slot) == word, f"{word} is not in its slot"
+        owned.update(slot.cells)
+    assert set(grid.letters) == owned, "stale letters left by the unwind"

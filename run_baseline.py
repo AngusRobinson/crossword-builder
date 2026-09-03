@@ -40,7 +40,7 @@ def main():
     for item in bench:
         began = time.time()
         got = coverage.best_over_library(
-            patterns, index, item["words"], top=12, attempts=6, seed=0
+            patterns, index, item["words"], top=14, attempts=3, budget=6000, time_limit=45.0, seed=0
         )
         rows.append((item, got, time.time() - began))
         flag = "" if got.ok else "  <- did not fill"
