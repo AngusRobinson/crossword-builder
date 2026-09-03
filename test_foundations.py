@@ -60,14 +60,43 @@ def test_consecutive_unchecked_rejected():
 
 
 def test_checked_fraction_rejected():
-    """A second block in a column leaves a middle run starting on an odd row,
-    which is always one checked cell short of the ceiling. Here that run is
-    UCU: 1 checked of 3, needing 2."""
+    """Rule 4 with the floor bound: a length-5 entry needs 2 checked cells.
+
+    Rule 3 has to be relaxed for this to be an independent test at all -- see
+    test_checked_fraction_is_implied_by_rule_three.  The entry at row 0 is
+    UUCUU: five cells, one of them checked, because every down run through it
+    but the middle one is a single cell.
+    """
+    grid = Grid.parse(
+        ".....##\n"
+        "##.####\n"
+        ".......\n"
+        ".......\n"
+        ".......\n"
+        ".......\n"
+        "......."
+    )
+    assert grid.annotate().splitlines()[0] == "UUCUU##"
+    fired = rules_fired(grid, RuleSet(max_consecutive_unchecked=2))
+    assert "checked_fraction" in fired
+
+
+def test_checked_fraction_is_implied_by_rule_three():
+    """Under the default rule set, rule 4 can never fire on its own.
+
+    With at most one unchecked cell in a row, a length-L entry holds at most
+    ceil(L/2) unchecked and therefore at least floor(L/2) checked -- which is
+    exactly what rule 4 asks for.  This is worth pinning down: it is the
+    reason the old ceiling looked load-bearing.  The ceiling gave rule 4
+    independent force, but the cases it caught were legal grids.
+    """
     grid = times_like()
     grid.add_block((8, 4))
     fired = rules_fired(grid)
-    assert "checked_fraction" in fired
-    assert "consecutive_unchecked" not in fired, "rule 3 alone must not catch this"
+    # The old ceiling flagged this run as under-checked.  It is a legal UCU
+    # entry; what actually disqualifies it is being crossed only once.
+    assert "checked_fraction" not in fired
+    assert "under_checked" in fired
 
 
 def test_disconnected_rejected():

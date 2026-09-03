@@ -288,8 +288,13 @@ class Generator:
                     return False
             # Unknown cells are optimistically counted as checked, so this
             # only fires once the entry is already beyond saving.
+            #
+            # floor, matching check_checked_fraction.  While this was a
+            # ceiling the search pruned away the entry shapes British grids
+            # are actually built from -- an odd-length UCUC...U entry was
+            # judged one checked cell short and its whole subtree discarded.
             possible = sum(1 for m in marks if m is not False)
-            if possible < math.ceil(length * self.rules.min_checked_fraction):
+            if possible < math.floor(length * self.rules.min_checked_fraction):
                 self.stats.note("checked_fraction")
                 return False
             # Upper bound. A cell known checked stays checked, so the count of

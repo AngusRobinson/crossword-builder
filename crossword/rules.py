@@ -100,13 +100,30 @@ def check_unchecked_runs(grid: Grid, rules: RuleSet):
 def check_checked_fraction(grid: Grid, rules: RuleSet):
     """Rule 4: at least half the letters of every entry are checked.
 
-    The floor is a ceiling division, and it binds exactly.  A length-8 entry
-    needs 4; a length-9 entry needs 5, which is what rejects UCUCUCUCU.
+    The bound rounds *down*, and getting that wrong was this project's most
+    expensive mistake.  It was written as a ceiling on the reading that "half
+    the letters checked" must round up, and the docstring cited UCUCUCUCU as
+    the pattern the ceiling existed to reject.  But UCUCUCUCU is the commonest
+    nine-letter entry in British cryptics.  Measured against 400 published
+    Guardian 15x15 puzzles, the ceiling rejected 136 of them — 34%.
+
+    The corpus settles it.  Every odd length occurs with the floor count and
+    no length occurs below it:
+
+        length 5: 2 checked, 104 entries      length 9: 4 checked, 164 entries
+        length 7: 3 checked, 292 entries     length 11: 5 checked,  24 entries
+
+    With floor, all 400 puzzles pass and none of the other predicates fire.
+    Three-letter entries are not left unguarded by the looser bound: floor
+    admits one checked cell, and `check_min_checked` requires two.
+
+    See test_corpus.py, which re-derives this against the corpus rather than
+    trusting the number written here.
     """
     checked = grid.checked_cells(rules.min_entry_length)
     for slot in grid.slots(rules.min_entry_length):
         count = sum(1 for cell in slot.cells if cell in checked)
-        needed = math.ceil(slot.length * rules.min_checked_fraction)
+        needed = math.floor(slot.length * rules.min_checked_fraction)
         if count < needed:
             yield Violation(
                 "checked_fraction",
