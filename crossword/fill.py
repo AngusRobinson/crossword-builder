@@ -11,6 +11,7 @@ is why they are not written as separate steps.
 
 from __future__ import annotations
 
+import math
 import random
 import time
 from dataclasses import dataclass, field
@@ -46,6 +47,7 @@ class Filler:
         *,
         branch_cap: int = 200,
         node_budget: int = 20000,
+        commonness: float = 3.0,
         seed: int | None = None,
     ):
         self.grid = grid
@@ -55,6 +57,19 @@ class Filler:
         # from real runs, so it is a parameter rather than a constant.
         self.branch_cap = branch_cap
         self.node_budget = node_budget
+        # How hard to lean towards words that have actually been published.
+        # 0 is the old uniform behaviour.  3 was measured: it takes the share
+        # of never-published fill from 56% to 19% at no cost in coverage at
+        # all, and past about 4 the curve is flat, because what remains is
+        # slots whose crossings leave no published candidate -- exactly where
+        # an unusual word ought to be allowed through.
+        #
+        # A weighting, not a filter.  Filtering by frequency instead costs
+        # real coverage: cutting the dictionary to the 54,660 published words
+        # took the benchmark's controls from 14/16 to 11/16.  Quality that is
+        # free and quality that is paid for are different things, and this is
+        # the free kind.
+        self.commonness = commonness
         self.rng = random.Random(seed)
 
         self.slots = grid.slots(self.rules.min_entry_length)
@@ -118,6 +133,41 @@ class Filler:
             del self.grid.letters[cell]
         self.used[slot.length] &= ~(1 << word_id)
 
+    # Candidates whose weights are computed in full.  Scoring every one of
+    # 33,000 nine-letter words at a node costs more than the node saves, so a
+    # larger set is first thinned uniformly.  MRV means this rarely bites:
+    # the slot being expanded is the most constrained one there is.
+    WEIGHT_POOL = 2000
+
+    def _order(self, length_index, ids: list) -> list:
+        """Which candidate words to try, and in what order.
+
+        With no frequency table, or commonness at zero, this is the original
+        uniform shuffle.  Otherwise it is Gumbel-top-k on log(1 + uses),
+        which is exactly weighted sampling without replacement -- the same
+        device the pattern search uses.  Weighting rather than filtering
+        matters here: an obscure word is still reachable when the crossings
+        leave nothing else, which is the difference between a fill that reads
+        well and a fill that fails.
+        """
+        if self.commonness <= 0 or length_index.uses is None:
+            if len(ids) > self.branch_cap:
+                return self.rng.sample(ids, self.branch_cap)
+            shuffled = list(ids)
+            self.rng.shuffle(shuffled)
+            return shuffled
+
+        if len(ids) > self.WEIGHT_POOL:
+            ids = self.rng.sample(ids, self.WEIGHT_POOL)
+        uses = length_index.uses
+        scored = []
+        for word_id in ids:
+            gumbel = -math.log(-math.log(self.rng.random()))
+            scored.append((self.commonness * math.log1p(uses[word_id]) + gumbel,
+                           word_id))
+        scored.sort(key=lambda pair: -pair[0])
+        return [word_id for _weight, word_id in scored[: self.branch_cap]]
+
     def _search(self, remaining: list) -> bool:
         if not remaining:
             return True
@@ -142,11 +192,7 @@ class Filler:
                 best, best_mask, best_count = slot, mask, count
 
         length_index = self.index[best.length]
-        ids = length_index.ids(best_mask)
-        if len(ids) > self.branch_cap:
-            ids = self.rng.sample(ids, self.branch_cap)
-        else:
-            self.rng.shuffle(ids)
+        ids = self._order(length_index, length_index.ids(best_mask))
 
         rest = [s for s in remaining if s is not best]
         for word_id in ids:

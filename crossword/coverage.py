@@ -256,6 +256,7 @@ def cover(
     relax: int = 3,
     budget: int = 1500,
     deadline: float | None = None,
+    commonness: float = 1.0,
     seed: int | None = None,
 ) -> Cover:
     """Build a filled grid holding as many targets as possible.
@@ -289,7 +290,8 @@ def cover(
 
             filler = Filler(
                 grid, index, rules,
-                node_budget=8000, seed=rng.randrange(1 << 30),
+                node_budget=8000, commonness=commonness,
+                seed=rng.randrange(1 << 30),
             )
             ok = filler.fill(restarts=fill_restarts)
             placed = tuple(word for word, _s, _w in seated)

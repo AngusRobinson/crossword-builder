@@ -30,11 +30,18 @@ else:  # pragma: no cover - fallback for older interpreters
 class LengthIndex:
     """Index over all words of a single length."""
 
-    def __init__(self, entries: list[Entry], length: int):
+    def __init__(self, entries: list[Entry], length: int, counts: dict = None):
         self.length = length
         self.entries = entries
         self.words = [entry.text for entry in entries]
         self.all = (1 << len(entries)) - 1
+
+        # How often each word has been published as an answer, parallel to
+        # `words`.  None when no table was supplied, which the filler reads as
+        # "no preference" rather than "everything is equally obscure".
+        self.uses = (
+            [counts.get(word, 0) for word in self.words] if counts is not None else None
+        )
 
         # Word -> id, so a caller holding a word (a themed entry the setter
         # chose, say) can ask whether it is in the dictionary without a linear
@@ -99,12 +106,13 @@ class LengthIndex:
 class Index:
     """The whole dictionary, partitioned by length."""
 
-    def __init__(self, entries: list[Entry]):
+    def __init__(self, entries: list[Entry], counts: dict = None):
         buckets: dict[int, list[Entry]] = {}
         for entry in entries:
             buckets.setdefault(len(entry.text), []).append(entry)
         self.lengths = {
-            length: LengthIndex(bucket, length) for length, bucket in buckets.items()
+            length: LengthIndex(bucket, length, counts)
+            for length, bucket in buckets.items()
         }
 
     def __getitem__(self, length: int) -> LengthIndex:

@@ -22,7 +22,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from crossword import coverage, library
+from crossword import coverage, frequency, library
 from crossword.index import Index
 from crossword.rules import validate
 from crossword.words import _fold, load
@@ -65,6 +65,16 @@ def main() -> int:
                         help="seconds to spend searching (default 45)")
     parser.add_argument("--patterns", type=int, default=14,
                         help="how many grids from the library to try")
+    parser.add_argument("--min-uses", type=int, default=0, metavar="N",
+                        help="refuse fill words published fewer than N times. "
+                             "Default 0. A hard cut costs coverage -- 1 takes "
+                             "the benchmark controls from 14/16 to 11/16 -- so "
+                             "prefer --commonness unless you want purity at "
+                             "any price")
+    parser.add_argument("--commonness", type=float, default=3.0, metavar="F",
+                        help="how hard to prefer words that have been "
+                             "published as answers, 0 for no preference "
+                             "(default 3.0; above 4 makes little difference)")
     parser.add_argument("--solution", action="store_true",
                         help="also print the grid as plain text")
     args = parser.parse_args()
@@ -76,13 +86,19 @@ def main() -> int:
         parser.error("no usable target words given")
 
     patterns = library.load()
-    index = Index(load(WORDLIST, strict=False))
+    entries = load(WORDLIST, strict=False)
+    counts = frequency.load()
+    kept = frequency.filter_entries(entries, counts, args.min_uses)
+    if len(kept) < 5000:
+        parser.error(f"--min-uses {args.min_uses} leaves only {len(kept)} words")
+    print(f"fill dictionary: {frequency.describe(kept, counts)}", file=sys.stderr)
+    index = Index(kept, counts)
 
     began = time.time()
     got = coverage.best_over_library(
         patterns, index, targets,
         top=args.patterns, attempts=3, budget=6000,
-        time_limit=args.time_limit, seed=args.seed,
+        time_limit=args.time_limit, commonness=args.commonness, seed=args.seed,
     )
     elapsed = time.time() - began
 
@@ -115,6 +131,16 @@ def main() -> int:
     if got.pattern is not None:
         print(f"grid: library pattern {got.pattern.source} "
               f"(used by {got.pattern.uses} published puzzles)")
+
+    # How ordinary the words we chose ourselves are.  Targets are excluded:
+    # they were the setter's choice and are not the fill's to answer for.
+    fill = [got.grid.pattern(s) for s in got.grid.slots(3)
+            if got.grid.pattern(s) not in placed]
+    unpublished = [w for w in fill if not counts.get(w)]
+    median = sorted(counts.get(w, 0) for w in fill)[len(fill) // 2] if fill else 0
+    print(f"fill: {len(fill)} words, median {median} published uses, "
+          f"{len(unpublished)} never published"
+          + (f" ({', '.join(sorted(unpublished)[:6])})" if unpublished else ""))
 
     problems = validate(got.grid)
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")

@@ -22,27 +22,45 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from crossword import coverage, library
+from crossword import coverage, frequency, library
 from crossword.index import Index
 from crossword.words import load
 
 BENCH = "benchmark/lists.json"
 
+# The production configuration, so the benchmark measures what the tool does.
+MIN_USES = 0
+COMMONNESS = 3.0
+
 
 def main():
     patterns = library.load()
-    index = Index(load("crossword/UKACD.txt", strict=False))
+    counts = frequency.load()
+    entries = frequency.filter_entries(
+        load("crossword/UKACD.txt", strict=False), counts, MIN_USES
+    )
+    index = Index(entries, counts)
     bench = json.load(open(BENCH, encoding="utf-8"))["lists"]
-    print(f"{len(patterns)} patterns, {len(bench)} lists\n")
+    print(f"{len(patterns)} patterns, {len(bench)} lists, "
+          f"{len(entries)} fill words (min_uses={MIN_USES}, "
+          f"commonness={COMMONNESS})\n")
 
     rows = []
     start = time.time()
     for item in bench:
         began = time.time()
         got = coverage.best_over_library(
-            patterns, index, item["words"], top=14, attempts=3, budget=6000, time_limit=45.0, seed=0
+            patterns, index, item["words"], top=14, attempts=3, budget=6000,
+            time_limit=45.0, commonness=COMMONNESS, seed=0
         )
-        rows.append((item, got, time.time() - began))
+        # Fill quality: the words we chose, not the targets we were given.
+        quality = None
+        if got.ok:
+            placed = set(got.placed)
+            fill = [got.grid.pattern(sl) for sl in got.grid.slots(3)
+                    if got.grid.pattern(sl) not in placed]
+            quality = sum(1 for w in fill if not counts.get(w)) / len(fill)
+        rows.append((item, got, time.time() - began, quality))
         flag = "" if got.ok else "  <- did not fill"
         print(
             f"  {item['id']:16} {got.n:3}/{got.ceiling:<3} of {item['size']:2} "
@@ -53,7 +71,7 @@ def main():
 
     print(f"{'stratum':11} {'lists':>6} {'mean cov':>9} {'filled':>8} {'mean ceiling':>13}")
     by = collections.defaultdict(list)
-    for item, got, _t in rows:
+    for item, got, _t, _q in rows:
         by[item["stratum"]].append((item, got))
     for stratum in ("feasible", "realistic", "arbitrary", "theme"):
         group = by.get(stratum, [])
@@ -68,7 +86,7 @@ def main():
 
     print(f"\n{'size':>6} {'mean cov':>9} {'filled':>8}")
     by_size = collections.defaultdict(list)
-    for item, got, _t in rows:
+    for item, got, _t, _q in rows:
         if item["stratum"] != "theme":
             by_size[item["size"]].append(got)
     for size in sorted(by_size):
@@ -77,6 +95,11 @@ def main():
             f"{size:>6} {statistics.mean(g.score for g in group):>8.0%} "
             f"{sum(1 for g in group if g.ok):>4}/{len(group):<3}"
         )
+
+    unpublished = [q for _i, _g, _t, q in rows if q is not None]
+    print(f"\nfill quality: {statistics.mean(unpublished):.1%} of chosen fill "
+          f"words have never been published as an answer "
+          f"(worst grid {max(unpublished):.0%})")
 
     controls = by.get("feasible", [])
     perfect = sum(1 for _i, g in controls if g.ok and g.n == g.ceiling)
