@@ -65,12 +65,17 @@ def main() -> int:
                         help="seconds to spend searching (default 45)")
     parser.add_argument("--patterns", type=int, default=14,
                         help="how many grids from the library to try")
-    parser.add_argument("--min-uses", type=int, default=0, metavar="N",
-                        help="refuse fill words published fewer than N times. "
-                             "Default 0. A hard cut costs coverage -- 1 takes "
-                             "the benchmark controls from 14/16 to 11/16 -- so "
-                             "prefer --commonness unless you want purity at "
-                             "any price")
+    parser.add_argument("--min-score", type=float, default=0.0, metavar="S",
+                        help="floor: refuse fill words with a familiarity "
+                             "below S. 0 allows everything, 1.0 leaves 84,268 "
+                             "words, 2.0 leaves 33,687 and is too thin to "
+                             "fill 15-letter slots reliably. A hard cut costs "
+                             "coverage; prefer --commonness first")
+    parser.add_argument("--max-uses", type=int, default=None, metavar="N",
+                        help="ceiling: refuse fill words used as a Guardian "
+                             "answer more than N times, to keep tired "
+                             "crosswordese out. 20 removes 684 words (isle, "
+                             "extra, star, blue, bridge, echo, stud)")
     parser.add_argument("--commonness", type=float, default=3.0, metavar="F",
                         help="how hard to prefer words that have been "
                              "published as answers, 0 for no preference "
@@ -89,10 +94,14 @@ def main() -> int:
     entries = load(WORDLIST, strict=False)
     counts = frequency.load()
     scores = frequency.load_scores()
-    kept = frequency.filter_entries(entries, counts, args.min_uses)
+    kept = frequency.select(entries, scores, counts,
+                            min_score=args.min_score, max_uses=args.max_uses)
     if len(kept) < 5000:
-        parser.error(f"--min-uses {args.min_uses} leaves only {len(kept)} words")
-    print(f"fill dictionary: {frequency.describe(kept, counts)}", file=sys.stderr)
+        parser.error(f"those limits leave only {len(kept)} fill words")
+    print(f"fill dictionary: {len(kept)} words "
+          f"(floor {args.min_score}"
+          + (f", ceiling {args.max_uses}" if args.max_uses is not None else "")
+          + ")", file=sys.stderr)
     index = Index(kept, scores)
 
     began = time.time()
@@ -138,10 +147,10 @@ def main() -> int:
     fill = [got.grid.pattern(s) for s in got.grid.slots(3)
             if got.grid.pattern(s) not in placed]
     unpublished = [w for w in fill if not counts.get(w)]
-    median = sorted(counts.get(w, 0) for w in fill)[len(fill) // 2] if fill else 0
-    print(f"fill: {len(fill)} words, median {median} published uses, "
-          f"{len(unpublished)} never published"
-          + (f" ({', '.join(sorted(unpublished)[:6])})" if unpublished else ""))
+    unknown = [w for w in fill if not counts.get(w) and not scores.get(w)]
+    print(f"fill: {len(fill)} words, mean familiarity {got.quality:.2f}, "
+          f"{len(unknown)} unknown to both sources"
+          + (f" ({', '.join(sorted(unknown)[:6])})" if unknown else ""))
 
     problems = validate(got.grid)
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")

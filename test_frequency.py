@@ -154,3 +154,38 @@ def test_phrases_are_scored_by_the_guardian_side(counts):
     assert wordfreq.zipf_frequency(phrase, "en") == 0.0, "fixture assumes unknown"
     assert counts.get(phrase, 0) > 0
     assert scores[phrase] == pytest.approx(math.log1p(counts[phrase]), abs=1e-3)
+
+
+def test_floor_and_ceiling_read_different_signals(entries, counts):
+    """The two bounds are not two ends of one scale.
+
+    The floor asks whether a solver will know the word, so it reads the
+    combined score.  The ceiling asks whether the word is tired, which only
+    the Guardian count can answer -- general frequency thinks `isle` and
+    `hesitate` are equally ordinary.
+    """
+    scores = frequency.load_scores()
+
+    # `windscreen` is rare in the corpus but ordinary English: a Guardian-based
+    # floor would drop it, the real floor keeps it.
+    assert counts["windscreen"] == 1
+    kept = {e.text for e in frequency.select(entries, scores, counts, min_score=1.5)}
+    assert "windscreen" in kept
+    assert "koniscope" not in kept
+
+    # `isle` is ordinary English but exhausted as an answer: only the ceiling
+    # catches it, and the floor must not.
+    assert scores["isle"] > 2.0
+    capped = {e.text for e in frequency.select(entries, scores, counts, max_uses=20)}
+    assert "isle" not in capped
+    assert "hesitate" in capped
+
+
+def test_limits_compose(entries, counts):
+    scores = frequency.load_scores()
+    both = frequency.select(entries, scores, counts, min_score=1.0, max_uses=20)
+    texts = {e.text for e in both}
+    assert "isle" not in texts          # ceiling
+    assert "koniscope" not in texts     # floor
+    assert "windscreen" in texts        # neither
+    assert 50000 < len(both) < 84268

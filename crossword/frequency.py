@@ -93,16 +93,50 @@ def extract(corpus: str, vocabulary=None) -> dict:
 
 
 def filter_entries(entries, counts: dict, min_uses: int = 0):
-    """Drop entries used fewer than `min_uses` times.
+    """Drop entries used fewer than `min_uses` times.  Superseded by `select`.
 
-    A hard floor, and blunt: it removes words the search can then never
-    reach.  Set it low.  At `min_uses=3` there are 131 eleven-letter words
-    left and at 5 there are 8 of length fourteen, which is not a dictionary
-    any more.
+    Kept because it names the Guardian count directly, which `select`'s floor
+    deliberately does not.
     """
     if min_uses <= 0:
         return list(entries)
     return [entry for entry in entries if counts.get(entry.text, 0) >= min_uses]
+
+
+def select(entries, scores: dict, counts: dict, *,
+           min_score: float = 0.0, max_uses: int = None):
+    """The fill vocabulary for one puzzle: a floor, a ceiling, or both.
+
+    The two bounds read different signals, and that is the point.
+
+    The **floor** asks "will a solver know this word", so it reads the
+    combined score, where a word is rescued by either source.  Reading the
+    Guardian count instead would throw away `windscreen` and `pavement` for
+    never having come up.
+
+    The **ceiling** asks "is this word tired", which is a question only the
+    Guardian count can answer.  General frequency says `isle` and `hesitate`
+    are equally ordinary; the corpus says one has been an answer 78 times and
+    the other 3.  Above about 20 uses the list is pure crosswordese -- isle,
+    extra, star, blue, bridge, echo, stud, oleo -- and a setter may reasonably
+    want none of it, which no general corpus could tell them.
+
+    Both are hard cuts, so both cost coverage.  Sizes at each floor, for
+    judging how far is too far:
+
+        min_score   words    15-letter words
+            0.0    221,835         4,426
+            1.0     84,268           895
+            2.0     33,687           125     <- too thin to fill with
+    """
+    kept = []
+    for entry in entries:
+        if scores.get(entry.text, 0.0) < min_score:
+            continue
+        if max_uses is not None and counts.get(entry.text, 0) > max_uses:
+            continue
+        kept.append(entry)
+    return kept
 
 
 def describe(entries, counts: dict) -> str:

@@ -33,6 +33,7 @@ MIN_USES = 0
 COMMONNESS = 3.0
 # None means "the combined table"; a dict overrides it, for A/B runs.
 SCORES = None
+QUALITY_SCAN = 4
 
 
 def main():
@@ -49,12 +50,14 @@ def main():
           f"commonness={COMMONNESS})\n")
 
     rows = []
+    familiar = []
     start = time.time()
     for item in bench:
         began = time.time()
         got = coverage.best_over_library(
             patterns, index, item["words"], top=14, attempts=3, budget=6000,
-            time_limit=45.0, commonness=COMMONNESS, seed=0
+            time_limit=45.0, commonness=COMMONNESS,
+            quality_scan=QUALITY_SCAN, seed=0
         )
         # Fill quality: the words we chose, not the targets we were given.
         quality = None
@@ -67,6 +70,7 @@ def main():
             # kind that embarrasses a setter.
             quality = sum(1 for w in fill
                           if not counts.get(w) and not scores.get(w)) / len(fill)
+            familiar.append(got.quality)
         rows.append((item, got, time.time() - began, quality))
         flag = "" if got.ok else "  <- did not fill"
         print(
@@ -106,7 +110,9 @@ def main():
     unpublished = [q for _i, _g, _t, q in rows if q is not None]
     print(f"\nfill quality: {statistics.mean(unpublished):.1%} of chosen fill "
           f"words are unknown to both sources "
-          f"(worst grid {max(unpublished):.0%})")
+          f"(worst grid {max(unpublished):.0%}); "
+          f"mean familiarity {statistics.mean(familiar):.3f} "
+          f"(worst grid {min(familiar):.2f})")
 
     controls = by.get("feasible", [])
     perfect = sum(1 for _i, g in controls if g.ok and g.n == g.ceiling)

@@ -66,6 +66,7 @@ class Cover:
     grid: object = None
     ok: bool = False           # did the rest of the grid fill?
     ceiling: int = 0      # the bound for the whole library, not one pattern
+    quality: float = 0.0  # mean familiarity of the words we chose ourselves
     pattern: object = None
     attempts: int = 0
     stats: dict = field(default_factory=dict)
@@ -81,7 +82,8 @@ class Cover:
 
     def __str__(self) -> str:
         state = "filled" if self.ok else "UNFILLED"
-        return f"{self.n}/{self.ceiling} targets ({self.score:.0%}), {state}"
+        return (f"{self.n}/{self.ceiling} targets ({self.score:.0%}), {state}"
+                f", fill {self.quality:.2f}")
 
 
 class _Budget(Exception):
@@ -123,6 +125,26 @@ def _alive(grid: Grid, index: Index, slots) -> bool:
         if not index[slot.length].match(grid.pattern(slot)):
             return False
     return True
+
+
+def fill_quality(grid, index, placed, min_length: int = 3) -> float:
+    """Mean familiarity of the words the search chose, targets excluded.
+
+    Targets were the setter's choice and are not the fill's to answer for, so
+    they are left out -- otherwise a themed grid full of proper nouns would
+    score as badly written when the obscurity was deliberate.
+    """
+    values = []
+    for slot in grid.slots(min_length):
+        word = grid.pattern(slot)
+        if word in placed:
+            continue
+        bucket = index.lengths.get(slot.length)
+        if bucket is None or bucket.score is None:
+            continue
+        word_id = bucket.by_word.get(word)
+        values.append(bucket.score[word_id] if word_id is not None else 0.0)
+    return sum(values) / len(values) if values else 0.0
 
 
 def _write(grid: Grid, slot, word) -> list:
@@ -295,15 +317,21 @@ def cover(
             )
             ok = filler.fill(restarts=fill_restarts)
             placed = tuple(word for word, _s, _w in seated)
+            worth = fill_quality(grid, index, set(placed),
+                                 rules.min_entry_length) if ok else 0.0
 
-            # A completed grid always beats an incomplete one, however many
-            # targets the incomplete one holds.
-            if (ok, len(placed)) > (best.ok, best.n):
+            # Lexicographic, and the order is the policy: a completed grid
+            # always beats an incomplete one, more targets always beat fewer,
+            # and only then does the fill's quality break the tie.  Quality
+            # must never buy its way past coverage -- an elegant grid missing
+            # a themed entry is the wrong trade.
+            if (ok, len(placed), worth) > (best.ok, best.n, best.quality):
                 best = Cover(
                     placed=placed,
                     grid=Grid.parse(grid.render()) if ok else None,
                     ok=ok,
                     ceiling=bound,
+                    quality=worth,
                     attempts=attempt + 1,
                     stats={"nodes": filler.stats.nodes},
                 )
@@ -335,12 +363,21 @@ def spare(profile: dict, targets) -> int:
 
 
 def best_over_library(patterns, index, targets, rules=None, *, top=14,
-                      time_limit: float = 45.0, **kwargs):
+                      time_limit: float = 45.0, quality_scan: int = 4,
+                      **kwargs):
     """Try the most promising patterns in a library, return the best cover.
 
-    Patterns are tried by bound first, then by spare capacity: a pattern that
-    cannot seat as many targets as one already achieved cannot improve on it,
-    so the scan stops there rather than grinding through all 120.
+    Patterns are tried by bound first, then by spare capacity.  Once no
+    remaining pattern can beat the coverage already achieved, the scan does
+    not stop immediately: it keeps going for `quality_scan` more patterns,
+    because two grids holding the same targets are not equally good.  Which
+    grid you choose decides what the rest of the fill has to be, and that is
+    a decision the filler cannot make for itself -- by the time it runs, the
+    pattern is fixed and the awkward corner is already there.
+
+    Set quality_scan to 0 to stop at the first pattern achieving best
+    coverage, which is faster and was the behaviour before fill quality was
+    measured at all.
     """
     rules = rules or RuleSet()
     scored = sorted(
@@ -359,13 +396,18 @@ def best_over_library(patterns, index, targets, rules=None, *, top=14,
     deadline = time.time() + time_limit
 
     best = Cover(ceiling=scored[0][0] if scored else 0)
+    spent = 0
     for bound, _spare, _i, pattern in scored:
-        if best.ok and best.n >= bound:
-            break
         if time.time() > deadline:
             break
+        if best.ok and best.n >= bound:
+            # No coverage left to win here or below -- the list is sorted by
+            # bound.  Keep looking only for a better fill, and not for long.
+            spent += 1
+            if spent > quality_scan:
+                break
         got = cover(pattern, index, targets, rules, deadline=deadline, **kwargs)
-        if (got.ok, got.n) > (best.ok, best.n):
+        if (got.ok, got.n, got.quality) > (best.ok, best.n, best.quality):
             best = got
             best.pattern = pattern
     # cover() knows only its own pattern's bound.  Score against the best
