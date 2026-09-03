@@ -88,11 +88,12 @@ def main() -> int:
     patterns = library.load()
     entries = load(WORDLIST, strict=False)
     counts = frequency.load()
+    scores = frequency.load_scores()
     kept = frequency.filter_entries(entries, counts, args.min_uses)
     if len(kept) < 5000:
         parser.error(f"--min-uses {args.min_uses} leaves only {len(kept)} words")
     print(f"fill dictionary: {frequency.describe(kept, counts)}", file=sys.stderr)
-    index = Index(kept, counts)
+    index = Index(kept, scores)
 
     began = time.time()
     got = coverage.best_over_library(

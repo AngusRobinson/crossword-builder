@@ -31,15 +31,18 @@ BENCH = "benchmark/lists.json"
 # The production configuration, so the benchmark measures what the tool does.
 MIN_USES = 0
 COMMONNESS = 3.0
+# None means "the combined table"; a dict overrides it, for A/B runs.
+SCORES = None
 
 
 def main():
     patterns = library.load()
     counts = frequency.load()
+    scores = frequency.load_scores()
     entries = frequency.filter_entries(
         load("crossword/UKACD.txt", strict=False), counts, MIN_USES
     )
-    index = Index(entries, counts)
+    index = Index(entries, SCORES if SCORES is not None else scores)
     bench = json.load(open(BENCH, encoding="utf-8"))["lists"]
     print(f"{len(patterns)} patterns, {len(bench)} lists, "
           f"{len(entries)} fill words (min_uses={MIN_USES}, "
@@ -59,7 +62,11 @@ def main():
             placed = set(got.placed)
             fill = [got.grid.pattern(sl) for sl in got.grid.slots(3)
                     if got.grid.pattern(sl) not in placed]
-            quality = sum(1 for w in fill if not counts.get(w)) / len(fill)
+            # Unknown to BOTH sources: never published as an answer and absent
+            # from general English.  A word failing only one test is not the
+            # kind that embarrasses a setter.
+            quality = sum(1 for w in fill
+                          if not counts.get(w) and not scores.get(w)) / len(fill)
         rows.append((item, got, time.time() - began, quality))
         flag = "" if got.ok else "  <- did not fill"
         print(
@@ -98,7 +105,7 @@ def main():
 
     unpublished = [q for _i, _g, _t, q in rows if q is not None]
     print(f"\nfill quality: {statistics.mean(unpublished):.1%} of chosen fill "
-          f"words have never been published as an answer "
+          f"words are unknown to both sources "
           f"(worst grid {max(unpublished):.0%})")
 
     controls = by.get("feasible", [])

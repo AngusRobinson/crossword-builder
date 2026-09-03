@@ -20,7 +20,14 @@ vocabulary = {entry.text for entry in entries}
 
 counts = frequency.extract(corpus, vocabulary)
 frequency.save(counts, frequency.DEFAULT_PATH)
-
 print(f"{len(counts)} of {len(vocabulary)} UKACD entries have been used as answers")
-print(f"{sum(counts.values())} answer instances counted")
-print(f"written to {frequency.DEFAULT_PATH}")
+print(f"{sum(counts.values())} answer instances counted -> {frequency.DEFAULT_PATH}")
+
+scores = frequency.build_scores(vocabulary, counts)
+frequency.save_scores(scores, frequency.SCORES_PATH)
+phrases = {e.text for e in entries if e.phrase}
+print(f"\n{len(scores)} of {len(vocabulary)} entries have a familiarity score")
+print(f"  {sum(1 for w in scores if w in phrases)} of {len(phrases)} phrases")
+print(f"  {sum(1 for w in scores if w not in phrases)} of "
+      f"{len(vocabulary) - len(phrases)} single words")
+print(f"written to {frequency.SCORES_PATH}")

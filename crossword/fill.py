@@ -143,14 +143,14 @@ class Filler:
         """Which candidate words to try, and in what order.
 
         With no frequency table, or commonness at zero, this is the original
-        uniform shuffle.  Otherwise it is Gumbel-top-k on log(1 + uses),
-        which is exactly weighted sampling without replacement -- the same
-        device the pattern search uses.  Weighting rather than filtering
+        uniform shuffle.  Otherwise it is Gumbel-top-k on the familiarity
+        score, which is exactly weighted sampling without replacement -- the
+        same device the pattern search uses.  Weighting rather than filtering
         matters here: an obscure word is still reachable when the crossings
         leave nothing else, which is the difference between a fill that reads
         well and a fill that fails.
         """
-        if self.commonness <= 0 or length_index.uses is None:
+        if self.commonness <= 0 or length_index.score is None:
             if len(ids) > self.branch_cap:
                 return self.rng.sample(ids, self.branch_cap)
             shuffled = list(ids)
@@ -159,12 +159,11 @@ class Filler:
 
         if len(ids) > self.WEIGHT_POOL:
             ids = self.rng.sample(ids, self.WEIGHT_POOL)
-        uses = length_index.uses
+        score = length_index.score
         scored = []
         for word_id in ids:
             gumbel = -math.log(-math.log(self.rng.random()))
-            scored.append((self.commonness * math.log1p(uses[word_id]) + gumbel,
-                           word_id))
+            scored.append((self.commonness * score[word_id] + gumbel, word_id))
         scored.sort(key=lambda pair: -pair[0])
         return [word_id for _weight, word_id in scored[: self.branch_cap]]
 
