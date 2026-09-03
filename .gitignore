@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*~
+.*.un~
+.DS_Store
+
+# Third-party corpus: 130 MB of Guardian JSON, re-downloadable from
+# https://github.com/xteddy/guardian-cc  Kept locally as ground truth for the
+# rule set and the grid library; not ours to version.
+guardian-cc-master/
+
+# UKACD word list: 2.6 MB, licensed separately, not ours to redistribute.
+UKACD.txt
+guardian-cc-master.zip
