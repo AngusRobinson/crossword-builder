@@ -45,6 +45,70 @@ STEPS = {
 }
 
 
+def _perimeter(size):
+    return ([(0, c) for c in range(size)]
+            + [(r, size - 1) for r in range(1, size)]
+            + [(size - 1, c) for c in range(size - 2, -1, -1)]
+            + [(r, 0) for r in range(size - 2, 0, -1)])
+
+
+# Paths a message can be laid along, skipping whatever cells are blocked.
+PATHS = {
+    "perimeter": _perimeter,
+    "toprow": lambda n: [(0, c) for c in range(n)],
+    "bottomrow": lambda n: [(n - 1, c) for c in range(n)],
+    "leftcol": lambda n: [(r, 0) for r in range(n)],
+    "rightcol": lambda n: [(r, n - 1) for r in range(n)],
+    "diagonal": lambda n: [(i, i) for i in range(n)],
+    "antidiagonal": lambda n: [(i, n - 1 - i) for i in range(n)],
+}
+
+
+def read_nina_path(spec, size: int = 15):
+    """A message laid along a path, skipping the blocked cells.
+
+    This is what a perimeter nina actually is.  Fixing absolute cells cannot
+    express one: a 15x15 perimeter is 56 cells and only 3 of the 120 published
+    grids leave all of them open, while 34 leave 52 open.  Setters read the
+    message off the white squares and let the blocks interrupt it, so the
+    letters have to be placed relative to the grid rather than to the frame.
+
+    Returns (path cells, folded message).
+    """
+    name, _, letters = spec.partition(",")
+    name = name.strip().lower()
+    if name not in PATHS:
+        raise ValueError(f"path must be one of {', '.join(sorted(PATHS))}, "
+                         f"not {name!r}")
+    text = _fold(letters)
+    if not text:
+        raise ValueError(f"no letters in {spec!r}")
+    cells = PATHS[name](size)
+    if len(text) > len(cells):
+        raise ValueError(f"{name} has {len(cells)} cells, message has "
+                         f"{len(text)} letters")
+    return cells, text
+
+
+def nina_placer(cells, text):
+    """Build the per-pattern rule cover() needs.
+
+    The message takes the white cells from the start of the path onward, so a
+    short one sits in the first corner and a full-length one reads the whole
+    way round.  A grid with too few white cells on the path simply cannot
+    carry it.
+    """
+    path = list(cells)
+
+    def place(pattern):
+        white = [c for c in path if c not in pattern.blocks]
+        if len(white) < len(text):
+            return None
+        return dict(zip(white, text))
+
+    return place
+
+
 def read_nina(specs, size: int = 15) -> dict:
     """Parse --nina arguments into a cell -> letter map.
 
@@ -170,6 +234,14 @@ def main() -> int:
                              "grid that blocks one of its cells: a six-letter "
                              "column leaves 42 grids of 120, a nine-letter "
                              "diagonal 11")
+    parser.add_argument("--nina-path", metavar="PATH,LETTERS",
+                        help="lay a message along a path, skipping whatever "
+                             "cells are blocked -- which is what a perimeter "
+                             "nina actually is. PATH is one of "
+                             + ", ".join(sorted(PATHS)) +
+                             ". A 15x15 perimeter is 56 cells but only 3 of "
+                             "the 120 grids leave all of them white, so fixed "
+                             "cells cannot express one; 34 grids leave 52")
     parser.add_argument("--long", type=int, default=0, metavar="N",
                         help="require at least N entries of 11+ letters. "
                              "Default 0. Long entries are the hardest to fill, "
@@ -218,7 +290,25 @@ def main() -> int:
     except ValueError as problem:
         parser.error(str(problem))
 
+    placer = None
+    if args.nina_path:
+        if nina:
+            parser.error("--nina and --nina-path cannot be combined; a path "
+                         "message is positioned by the grid's blocks, so the "
+                         "two would fight over the same cells")
+        try:
+            path_cells, message = read_nina_path(args.nina_path)
+        except ValueError as problem:
+            parser.error(str(problem))
+        placer = nina_placer(path_cells, message)
+
     patterns = library.load()
+    if placer:
+        patterns = [p for p in patterns if placer(p) is not None]
+        if not patterns:
+            parser.error("no grid has enough white cells on that path")
+        print(f"grids that can carry a {len(message)}-letter message there: "
+              f"{len(patterns)} of 120", file=sys.stderr)
     if nina:
         patterns = [p for p in patterns if not (set(nina) & set(p.blocks))]
         if not patterns:
@@ -256,14 +346,14 @@ def main() -> int:
     if args.no_tailor or not targets:
         got = coverage.best_over_library(
             patterns, index, targets, time_limit=args.time_limit,
-            preset=nina, **common)
+            preset=placer or nina, **common)
     else:
         # The rules the breeding must keep: the British family the library
         # grids belong to, so a bred grid is still one a setter would print.
         british = RuleSet(alternating=True, max_checked_fraction=0.5)
         got = mutate.best_with_tailoring(
             patterns, index, targets, british, min_long=args.long,
-            preset=nina, time_limit=args.time_limit, **common)
+            preset=placer or nina, time_limit=args.time_limit, **common)
     elapsed = time.time() - began
 
     if not got.ok:
@@ -328,11 +418,46 @@ def main() -> int:
         print(f"{word}: " + ("achieved" if not short
                              else "NOT achieved, short of " + "".join(short)))
 
+    if placer:
+        landed = placer(got.pattern) if got.pattern is not None else None
+        if landed is None:
+            # The winning grid came from the library list, which was filtered,
+            # so this should not happen; say so rather than printing nothing.
+            print("nina path: could not be placed -- this is a bug")
+        else:
+            held = all(got.grid.letters.get(c) == ch for c, ch in landed.items())
+            reading = "".join(got.grid.letters.get(c, "?") for c in path_cells
+                              if c in landed)
+            print(f"nina path: {reading.upper()} "
+                  + ("(held)" if held else "NOT HELD -- this is a bug"))
+
     if nina:
         shown = "".join(sorted(f"{got.grid.letters.get(c, '?')}" for c in nina))
         held = all(got.grid.letters.get(c) == ch for c, ch in nina.items())
         print(f"nina: {len(nina)} cells fixed, "
               + ("all held" if held else "NOT HELD -- this is a bug"))
+
+    # Entries the nina fixed outright are never checked against the
+    # dictionary -- deliberately, since a themed entry is usually a proper
+    # noun the fill list excludes.  For a path nina that exemption is a trap:
+    # the perimeter cells are parts of real entries, so a message that does
+    # not break into words at the entry boundaries leaves nonsense round the
+    # edge.  Say which, rather than let it pass as a clean grid.
+    fixed = placer(got.pattern) if placer else nina
+    if fixed:
+        nonsense = []
+        for slot in got.grid.slots(3):
+            if not all(c in fixed for c in slot.cells):
+                continue
+            word = got.grid.pattern(slot)
+            bucket = index.lengths.get(len(word))
+            if bucket is None or bucket.by_word.get(word) is None:
+                nonsense.append(word)
+        if nonsense:
+            print(f"WARNING: {len(nonsense)} entries are fixed entirely by the "
+                  f"nina and are not words: {', '.join(sorted(nonsense))}")
+            print("         a message has to break into real words at the "
+                  "entry boundaries")
 
     problems = validate(got.grid)
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")

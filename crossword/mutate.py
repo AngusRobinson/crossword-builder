@@ -357,7 +357,13 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
     chosen = sorted(patterns, key=lambda p: fitness(p, targets), reverse=True)[:seeds]
     grown = tailor_by_fill(chosen, targets, index, rules, beam=beam, steps=steps,
                            width=width, max_change=max_change,
-                           min_long=min_long, keep_white=tuple(preset or ()),
+                           min_long=min_long,
+                           # A callable preset is a path nina, which is
+                           # re-resolved per grid: no particular cell has to
+                           # stay white, and a mutant whose path no longer
+                           # fits simply scores nothing.
+                           keep_white=() if callable(preset)
+                           else tuple(preset or ()),
                            preset=preset, aim=kwargs.get("aim", 0.85),
                            pangram=kwargs.get("pangram", 0),
                            deadline=time.time() + left * 0.75,

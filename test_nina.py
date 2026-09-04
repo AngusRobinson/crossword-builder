@@ -178,3 +178,61 @@ def test_two_ninas_can_make_a_perimeter():
     assert len(nina) == 30
     assert nina[(0, 0)] == "a" and nina[(0, 14)] == "o"
     assert nina[(14, 14)] == "p" and nina[(14, 0)] == "d"
+
+
+def test_path_nina_skips_blocked_cells():
+    """What a perimeter nina actually is.
+
+    A 15x15 perimeter is 56 cells and only 3 of the 120 published grids leave
+    all of them white, so fixed cells cannot express one. Setters read the
+    message off the white squares and let the blocks interrupt it.
+    """
+    cells, text = make_grid.read_nina_path("perimeter,NINA ROUND THE RIM")
+    assert len(cells) == 56
+    assert text == "ninaroundtherim"
+
+    place = make_grid.nina_placer(cells, text)
+    patterns = library.load()
+    fitted = [p for p in patterns if place(p) is not None]
+    assert len(fitted) > 100, "a short message should fit almost any grid"
+
+    placed = place(fitted[0])
+    assert len(placed) == len(text)
+    assert not (set(placed) & set(fitted[0].blocks)), "landed on a block"
+    # In path order, skipping blocks, it spells the message.
+    order = [c for c in cells if c in placed]
+    assert "".join(placed[c] for c in order) == text
+
+
+def test_path_nina_rejects_a_grid_with_too_few_white_cells():
+    cells, text = make_grid.read_nina_path("toprow,ABCDEFGHIJKLMNO")
+    place = make_grid.nina_placer(cells, text)
+    patterns = library.load()
+    # 15 letters needs a completely open top row, which is rare.
+    fitted = [p for p in patterns if place(p) is not None]
+    assert 0 < len(fitted) < 20
+    for pattern in patterns:
+        if place(pattern) is None:
+            assert any((0, c) in pattern.blocks for c in range(15))
+
+
+@pytest.mark.parametrize("spec,message", [
+    ("spiral,ABC", "path must be one of"),
+    ("perimeter,", "no letters"),
+    ("toprow,ABCDEFGHIJKLMNOP", "15 cells, message has 16"),
+])
+def test_path_specs_are_checked(spec, message):
+    with pytest.raises(ValueError) as caught:
+        make_grid.read_nina_path(spec)
+    assert message in str(caught.value)
+
+
+def test_cover_accepts_a_placer_and_rejects_unusable_grids(index):
+    """cover() resolves a path nina per grid, because which cell holds which
+    letter depends on where that grid's blocks fall."""
+    cells, text = make_grid.read_nina_path("toprow,ABCDEFGHIJKLMNO")
+    place = make_grid.nina_placer(cells, text)
+    patterns = library.load()
+    unusable = next(p for p in patterns if place(p) is None)
+    got = coverage.cover(unusable, index, [], attempts=1, preset=place, seed=0)
+    assert not got.ok, "a grid that cannot carry the message must not succeed"

@@ -340,6 +340,16 @@ def cover(
     bound = ceiling(pattern.profile(rules.min_entry_length), targets)
     best = Cover(ceiling=bound, attempts=attempts)
 
+    if callable(preset):
+        # A path nina: the letters land on the white cells along a path, so
+        # which cell holds which letter depends on where this grid's blocks
+        # fall.  It cannot be settled before the pattern is known, and a grid
+        # whose path has the wrong number of white cells cannot carry the
+        # message at all.
+        preset = preset(pattern)
+        if preset is None:
+            return Cover(ceiling=bound, attempts=attempts)
+
     for attempt in range(attempts):
         if deadline is not None and time.time() > deadline:
             break
