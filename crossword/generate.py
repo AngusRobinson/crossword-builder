@@ -153,6 +153,7 @@ class Generator:
         temperature: float = 1.0,
         pool: int = 24,
         family: str | None = None,
+        max_row_blocks: int | None = None,
         max_short: int | None = None,
         short_penalty: float = 1.0,
         variety_reward: float = 1.0,
@@ -171,6 +172,13 @@ class Generator:
         self.temperature = temperature
         self.pool = pool
         self.family = family
+        # Cap the blocks a single row may carry.  Without it the move set is
+        # sampled uniformly from every legal row, and at size 15 only 8.3% of
+        # those carry four blocks or fewer -- so an American grid, which needs
+        # about 2.4 per row, is never drawn.  The alternating family solves
+        # the same problem for British grids by restricting the move set; this
+        # is the blunter version for styles that have no lattice.
+        self.max_row_blocks_allowed = max_row_blocks
         self.max_short = max_short
         self.short_penalty = short_penalty
         self.variety_reward = variety_reward
@@ -181,6 +189,13 @@ class Generator:
         self.length_counts: dict = {}
 
         self.patterns = row_patterns(size, self.rules.min_entry_length)
+        if max_row_blocks is not None:
+            self.patterns = tuple(p for p in self.patterns
+                                  if len(p) <= max_row_blocks)
+            if not self.patterns:
+                raise ValueError(
+                    f"no legal row of width {size} has {max_row_blocks} "
+                    f"blocks or fewer")
         if family == "alternating":
             self.by_parity = {
                 parity: alternating_row_patterns(
@@ -282,8 +297,16 @@ class Generator:
                 else:
                     marks.append(perp[0] >= self.rules.min_entry_length)
 
-            for first, second in zip(marks, marks[1:]):
-                if first is False and second is False:
+            # Honours rules.max_consecutive_unchecked rather than assuming
+            # it is 1.  Assuming it cost nothing while only British grids were
+            # being built, and made American ones impossible: their limit is
+            # 0, every cell being checked, so the search happily produced
+            # patterns with single unchecked cells and only found out at
+            # validation, after paying for the whole subtree.
+            streak = 0
+            for mark in marks:
+                streak = 0 if mark is not False else streak + 1
+                if streak > self.rules.max_consecutive_unchecked:
                     self.stats.note("consecutive_unchecked")
                     return False
             # Unknown cells are optimistically counted as checked, so this
