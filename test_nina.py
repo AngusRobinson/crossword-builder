@@ -36,7 +36,7 @@ def test_parsing_folds_and_merges():
 
 
 @pytest.mark.parametrize("spec,message", [
-    ("1,1,sideways,ABC", "across or down"),
+    ("1,1,sideways,ABC", "direction must be one of"),
     ("1,1,across", "ROW,COL,DIR,LETTERS"),
     ("14,14,across,TOOLONG", "runs off the grid"),
     ("1,1,across,", "no letters"),
@@ -149,3 +149,32 @@ def test_stdin_is_still_read_when_it_carries_words():
         capture_output=True, text=True, timeout=600)
     assert done.returncode == 0, done.stderr
     assert "placed 3 of 3 targets" in done.stdout
+
+
+@pytest.mark.parametrize("spec,expected", [
+    ("1,1,diagonal,ABC", [((0, 0), "a"), ((1, 1), "b"), ((2, 2), "c")]),
+    ("1,15,antidiagonal,ABC", [((0, 14), "a"), ((1, 13), "b"), ((2, 12), "c")]),
+    ("1,15,back,ABC", [((0, 14), "a"), ((0, 13), "b"), ((0, 12), "c")]),
+    ("3,1,up,ABC", [((2, 0), "a"), ((1, 0), "b"), ((0, 0), "c")]),
+])
+def test_adventurous_directions(spec, expected):
+    """A diagonal touches nine entries by one letter each rather than sitting
+    inside one or two, which is a tighter fit on the grid and a looser one on
+    the fill."""
+    assert make_grid.read_nina([spec]) == dict(expected)
+
+
+def test_directions_still_have_to_stay_on_the_grid():
+    for spec in ("1,1,antidiagonal,ABCD", "1,1,up,AB", "14,14,diagonal,ABCD"):
+        with pytest.raises(ValueError) as caught:
+            make_grid.read_nina([spec])
+        assert "runs off the grid" in str(caught.value)
+
+
+def test_two_ninas_can_make_a_perimeter():
+    """Composing is how the more elaborate shapes are reached."""
+    nina = make_grid.read_nina(["1,1,across,ABCDEFGHIJKLMNO",
+                                "15,15,back,PQRSTUVWXYZABCD"])
+    assert len(nina) == 30
+    assert nina[(0, 0)] == "a" and nina[(0, 14)] == "o"
+    assert nina[(14, 14)] == "p" and nina[(14, 0)] == "d"

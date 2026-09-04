@@ -30,6 +30,21 @@ from crossword.words import _fold, load
 WORDLIST = "crossword/UKACD.txt"
 
 
+# How each direction walks the grid, as (row step, column step).  Diagonals
+# are the interesting ones for a nina: a straight run of six sits inside one
+# or two entries and constrains them hard, while a diagonal of nine touches
+# nine different entries by one letter each.  It is a tighter fit on the grid
+# and a looser one on the fill.
+STEPS = {
+    "across": (0, 1),
+    "down": (1, 0),
+    "diagonal": (1, 1),          # top-left to bottom-right
+    "antidiagonal": (1, -1),     # top-right to bottom-left
+    "up": (-1, 0),
+    "back": (0, -1),             # right to left, for a nina read backwards
+}
+
+
 def read_nina(specs, size: int = 15) -> dict:
     """Parse --nina arguments into a cell -> letter map.
 
@@ -44,8 +59,9 @@ def read_nina(specs, size: int = 15) -> dict:
             raise ValueError(f"expected ROW,COL,DIR,LETTERS but got {spec!r}")
         row_s, col_s, direction, letters = parts
         direction = direction.lower()
-        if direction not in ("across", "down"):
-            raise ValueError(f"direction must be across or down, not {direction!r}")
+        if direction not in STEPS:
+            raise ValueError(f"direction must be one of "
+                             f"{', '.join(sorted(STEPS))}, not {direction!r}")
         try:
             row, col = int(row_s) - 1, int(col_s) - 1
         except ValueError:
@@ -54,8 +70,9 @@ def read_nina(specs, size: int = 15) -> dict:
         text = _fold(letters)
         if not text:
             raise ValueError(f"no letters in {spec!r}")
+        down_step, across_step = STEPS[direction]
         for step, char in enumerate(text):
-            cell = (row, col + step) if direction == "across" else (row + step, col)
+            cell = (row + down_step * step, col + across_step * step)
             if not (0 <= cell[0] < size and 0 <= cell[1] < size):
                 raise ValueError(f"{spec!r} runs off the grid at row "
                                  f"{cell[0] + 1}, col {cell[1] + 1}")
@@ -145,12 +162,14 @@ def main() -> int:
                              "roomiest, and 7x fits none")
     parser.add_argument("--nina", action="append", default=[],
                         metavar="ROW,COL,DIR,LETTERS",
-                        help="fix letters in the grid before any word is "
-                             "chosen, e.g. --nina 1,1,down,HIDDEN. Rows and "
-                             "columns count from 1, DIR is across or down. "
-                             "Repeat for several. A nina rules out every grid "
-                             "that blocks one of its cells, so a long one "
-                             "leaves few grids and may not fill")
+                        help="fix letters before any word is chosen, e.g. "
+                             "--nina 1,1,diagonal,LABYRINTH. Rows and columns "
+                             "count from 1; DIR is across, down, diagonal, "
+                             "antidiagonal, up or back. Repeat for several -- "
+                             "two make a perimeter. A nina rules out every "
+                             "grid that blocks one of its cells: a six-letter "
+                             "column leaves 42 grids of 120, a nine-letter "
+                             "diagonal 11")
     parser.add_argument("--long", type=int, default=0, metavar="N",
                         help="require at least N entries of 11+ letters. "
                              "Default 0. Long entries are the hardest to fill, "
