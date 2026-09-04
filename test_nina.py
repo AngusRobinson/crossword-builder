@@ -104,3 +104,48 @@ def test_breeding_never_blocks_a_nina_cell(patterns):
     keep = {(4, 4), (4, 5), (4, 6)}
     for _cell, grid in mutate.neighbours(patterns[0], BRITISH, keep_white=keep):
         assert not (keep & grid.blocks)
+
+
+def test_no_target_words_is_a_valid_request(tmp_path):
+    """A grid with no theme words is something to ask for, not a mistake.
+
+    --pangram, --nina and the fill-quality settings all give a grid something
+    to be without a single target in it. This used to be refused outright.
+    """
+    import subprocess
+    import sys
+
+    done = subprocess.run(
+        [sys.executable, "make_grid.py", "--time-limit", "40", "--no-tailor"],
+        stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=600)
+    assert done.returncode == 0, done.stderr
+    assert "filled in" in done.stdout
+    assert "rules: clean" in done.stdout
+
+
+def test_no_arguments_does_not_hang_on_stdin():
+    """`not isatty()` is true for any non-interactive context, not just a pipe.
+
+    A bare read() there waits for input that will never come, so a cron job or
+    a background shell would hang for ever rather than build a grid.
+    """
+    import subprocess
+    import sys
+
+    done = subprocess.run(
+        [sys.executable, "make_grid.py", "--time-limit", "20", "--no-tailor",
+         "--patterns", "2"],
+        stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=300)
+    assert done.returncode == 0, done.stderr
+
+
+def test_stdin_is_still_read_when_it_carries_words():
+    import subprocess
+    import sys
+
+    done = subprocess.run(
+        [sys.executable, "make_grid.py", "--time-limit", "40", "--no-tailor"],
+        input="kestrel, curlew, avocet\n",
+        capture_output=True, text=True, timeout=600)
+    assert done.returncode == 0, done.stderr
+    assert "placed 3 of 3 targets" in done.stdout

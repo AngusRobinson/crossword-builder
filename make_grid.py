@@ -73,7 +73,17 @@ def read_targets(args) -> list:
         with open(args.file, encoding="utf-8") as handle:
             raw.extend(re.split(r"[,\n]", handle.read()))
     if not raw and not sys.stdin.isatty():
-        raw.extend(re.split(r"[,\n]", sys.stdin.read()))
+        # Read a pipe, but do not sit waiting on one that will never arrive.
+        # `not isatty()` is true for any non-interactive context, including a
+        # cron job or a background shell with no input at all, where a bare
+        # read() blocks for ever.  Ask first.
+        import select
+        try:
+            ready, _, _ = select.select([sys.stdin], [], [], 0.2)
+        except (OSError, ValueError):
+            ready = []
+        if ready:
+            raw.extend(re.split(r"[,\n]", sys.stdin.read()))
 
     # Split on lines and commas only, never on spaces: a multi-word answer is
     # one target.  "Twelfth Night" is a twelve-letter entry, not a seven and
@@ -166,7 +176,12 @@ def main() -> int:
     for word, why in dropped:
         print(f"skipped {word!r}: {why}", file=sys.stderr)
     if not targets:
-        parser.error("no usable target words given")
+        # No theme words is a real request, not a mistake: --pangram, --nina
+        # and the fill-quality settings all give the grid something to be
+        # without a single target in it.  Everything downstream already copes
+        # -- an empty target list simply seats nothing and fills the grid.
+        print("no target words: filling a grid on its own merits",
+              file=sys.stderr)
 
     if args.pangram < 0:
         parser.error("--pangram cannot be negative")
@@ -217,7 +232,9 @@ def main() -> int:
     common = dict(top=args.patterns, attempts=3, budget=6000,
                   commonness=args.commonness, aim=args.aim,
                   pangram=args.pangram, seed=args.seed)
-    if args.no_tailor:
+    # Breeding exists to fit a word list, so with no list there is nothing to
+    # breed towards and it is pure cost.
+    if args.no_tailor or not targets:
         got = coverage.best_over_library(
             patterns, index, targets, time_limit=args.time_limit,
             preset=nina, **common)
@@ -248,9 +265,12 @@ def main() -> int:
         if word in placed:
             where[word] = f"{slot.direction} at row {slot.row + 1}, col {slot.col + 1}"
 
-    print(f"placed {got.n} of {len(targets)} targets "
-          f"({got.score:.0%} of the {got.ceiling} that could fit this library) "
-          f"in {elapsed:.0f}s")
+    if targets:
+        print(f"placed {got.n} of {len(targets)} targets "
+              f"({got.score:.0%} of the {got.ceiling} that could fit this "
+              f"library) in {elapsed:.0f}s")
+    else:
+        print(f"filled in {elapsed:.0f}s")
     for word in sorted(placed):
         print(f"   {word:18} {where.get(word, '')}")
     missed = [w for w in targets if w not in placed]
