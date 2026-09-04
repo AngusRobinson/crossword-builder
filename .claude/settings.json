@@ -1,10 +1,14 @@
 {
   "sandbox": {
-    "enabled":true,
-    "allowUnsandboxedCommands":false,
+    "enabled": true,
+    "allowUnsandboxedCommands": false,
     "filesystem": {
       "denyRead": ["~/"],
-      "allowRead": ["."]
+      "allowRead": [
+        ".",
+        "~/.gitconfig",
+        "~/.config/git"
+      ]
     }
   },
   "permissions": {
