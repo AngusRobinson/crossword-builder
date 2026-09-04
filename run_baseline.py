@@ -38,6 +38,23 @@ QUALITY_SCAN = 4
 # committed baseline.
 TAILOR = False
 TAILOR_RULES = None
+TIME_LIMIT = 45.0
+
+
+def _quality(got, counts, scores):
+    if not got.ok:
+        return None
+    placed = set(got.placed)
+    fill = [got.grid.pattern(sl) for sl in got.grid.slots(3)
+            if got.grid.pattern(sl) not in placed]
+    return sum(1 for w in fill
+               if not counts.get(w) and not scores.get(w)) / len(fill)
+
+
+def _report(item, got, elapsed):
+    flag = "" if got.ok else "  <- did not fill"
+    print(f"  {item['id']:16} {got.n:3}/{got.ceiling:<3} of {item['size']:2} "
+          f"({got.score:4.0%}) {elapsed:5.1f}s{flag}")
 
 
 def main():
@@ -58,12 +75,22 @@ def main():
     start = time.time()
     for item in bench:
         began = time.time()
+        if TAILOR == "fill":
+            got = mutate.best_with_tailoring(
+                patterns, index, item["words"], TAILOR_RULES,
+                top=14, attempts=3, budget=6000, time_limit=TIME_LIMIT,
+                commonness=COMMONNESS, quality_scan=QUALITY_SCAN, seed=0,
+            )
+            rows.append((item, got, time.time() - began, _quality(got, counts, scores)))
+            _report(item, got, time.time() - began)
+            familiar.append(got.quality if got.ok else 0.0)
+            continue
         pool = patterns
         if TAILOR:
             pool = mutate.candidates(patterns, item["words"], TAILOR_RULES)
         got = coverage.best_over_library(
             pool, index, item["words"], top=14, attempts=3, budget=6000,
-            time_limit=45.0, commonness=COMMONNESS,
+            time_limit=TIME_LIMIT, commonness=COMMONNESS,
             quality_scan=QUALITY_SCAN, seed=0
         )
         # Fill quality: the words we chose, not the targets we were given.
