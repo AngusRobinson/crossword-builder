@@ -67,3 +67,24 @@ frequency. It is only meaningful with `min_score` at 0; set a floor and it is
                       in the alternating family. No configuration improved it.
                       Mutating library grids reaches legal neighbours at 0.4s
                       per seed instead.
+
+    tailoring grids to the list (crossword/mutate.py)
+                      Raises the length-profile ceiling as designed --
+                      arbitrary 90% -> 96%, realistic 99% -> 100% -- and
+                      places FEWER words: 70 against 79 across the eight
+                      lists the library cannot fully seat, worse on five of
+                      eight. Whole benchmark: controls 14/16 -> 11/16,
+                      arbitrary 81% -> 73%, runtime 366s -> 854s.
+
+                      The cause is Goodhart, not a bug. best_over_library
+                      ranks patterns by (ceiling, spare), and mutants are bred
+                      to maximise precisely that, so they sort above the
+                      library grids -- including above the grid that was
+                      filling best. A better length profile is not a better
+                      grid, and optimising the proxy displaced the objective.
+
+                      Even as a strict fallback, used only where the library
+                      comes up short, the gain is 81 words against 79. The
+                      module is kept and tested because the neighbourhood
+                      primitive is sound and the result is worth not
+                      rediscovering; tailoring is off.

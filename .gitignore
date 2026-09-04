@@ -16,4 +16,9 @@ guardian-cc-master.zip
 # Generated puzzles.
 out/
 *.swp
+# Backup bundles.
+*.bundle
+
+# Machine-local sandbox config: absolute paths, and the sandbox write-denies
+# it, so git cannot update it on checkout.
 .claude/settings.json
