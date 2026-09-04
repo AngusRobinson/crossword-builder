@@ -22,9 +22,9 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from crossword import coverage, export, frequency, library
+from crossword import coverage, export, frequency, library, mutate
 from crossword.index import Index
-from crossword.rules import validate
+from crossword.rules import RuleSet, validate
 from crossword.words import _fold, load
 
 WORDLIST = "crossword/UKACD.txt"
@@ -81,6 +81,12 @@ def main() -> int:
                         help="how hard to prefer words that have been "
                              "published as answers, 0 for no preference "
                              "(default 3.0; above 4 makes little difference)")
+    parser.add_argument("--no-tailor", action="store_true",
+                        help="skip breeding grids to fit your words. Faster "
+                             "(about a third of the time) and a little worse: "
+                             "on the benchmark, tailoring gains 5 points of "
+                             "coverage on 18-word lists and cuts unfamiliar "
+                             "fill from 7.8%% to 5.2%%")
     parser.add_argument("--out", metavar="BASE",
                         help="write BASE.ipuz and BASE.html (Exolve). ipuz is "
                              "what Exet imports; the HTML opens in a browser")
@@ -111,11 +117,18 @@ def main() -> int:
     index = Index(kept, scores)
 
     began = time.time()
-    got = coverage.best_over_library(
-        patterns, index, targets,
-        top=args.patterns, attempts=3, budget=6000,
-        time_limit=args.time_limit, commonness=args.commonness, seed=args.seed,
-    )
+    common = dict(top=args.patterns, attempts=3, budget=6000,
+                  commonness=args.commonness, seed=args.seed)
+    if args.no_tailor:
+        got = coverage.best_over_library(
+            patterns, index, targets, time_limit=args.time_limit, **common)
+    else:
+        # The rules the breeding must keep: the British family the library
+        # grids belong to, so a bred grid is still one a setter would print.
+        british = RuleSet(alternating=True, max_checked_fraction=0.5)
+        got = mutate.best_with_tailoring(
+            patterns, index, targets, british,
+            time_limit=args.time_limit, **common)
     elapsed = time.time() - began
 
     if not got.ok:

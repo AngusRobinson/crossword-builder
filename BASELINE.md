@@ -68,23 +68,44 @@ frequency. It is only meaningful with `min_score` at 0; set a floor and it is
                       Mutating library grids reaches legal neighbours at 0.4s
                       per seed instead.
 
-    tailoring grids to the list (crossword/mutate.py)
-                      Raises the length-profile ceiling as designed --
-                      arbitrary 90% -> 96%, realistic 99% -> 100% -- and
-                      places FEWER words: 70 against 79 across the eight
-                      lists the library cannot fully seat, worse on five of
-                      eight. Whole benchmark: controls 14/16 -> 11/16,
-                      arbitrary 81% -> 73%, runtime 366s -> 854s.
+    tailoring by length profile (mutate.tailor)
+                      Raises the ceiling as designed -- arbitrary 90% -> 96% --
+                      and places FEWER words: 70 against 79 across the eight
+                      lists the library cannot fully seat. Goodhart:
+                      best_over_library ranks by (ceiling, spare) and mutants
+                      are bred to maximise exactly that, so they outrank the
+                      grids that were filling. A better length profile is not
+                      a better grid. Superseded by the below; kept because the
+                      failure is instructive.
 
-                      The cause is Goodhart, not a bug. best_over_library
-                      ranks patterns by (ceiling, spare), and mutants are bred
-                      to maximise precisely that, so they sort above the
-                      library grids -- including above the grid that was
-                      filling best. A better length profile is not a better
-                      grid, and optimising the proxy displaced the objective.
+## Tailoring by fill (mutate.best_with_tailoring)
 
-                      Even as a strict fallback, used only where the library
-                      comes up short, the gain is 81 words against 79. The
-                      module is kept and tested because the neighbourhood
-                      primitive is sound and the result is worth not
-                      rediscovering; tailoring is off.
+Breeding on the length profile fails. Breeding on words actually seated works.
+The profile survives only as a cheap filter that picks which few of a grid's
+33 neighbours are worth filling; the fill itself decides what to keep, scoring
+(filled, targets seated, fill quality) -- the same order the pattern scan uses.
+
+Time-matched, both arms given 120s per list:
+
+    stratum        library   tailored        size   library   tailored
+    feasible           97%        99%           6      100%       100%
+    realistic          86%        89%          10       91%        95%
+    arbitrary          81%        83%          14       88%        89%
+    theme             100%       100%          18       78%        83%
+
+    fill unknown to both      7.8%       5.2%
+    mean familiarity         2.557      2.899
+    controls                 14/16      14/16
+    runtime                   451s      1224s
+
+Coverage and fill quality both improve, because the breeding objective
+includes quality. The cost is 2.7x runtime. The library arm at 120s is
+identical to the library arm at 45s, so the gain is mutation and not budget.
+
+It runs as a fallback, not a merge: the library's own answer is computed
+first and kept unless mutation beats it outright. Breeding can still surface a
+grid that outranks a better one -- that is exactly how the profile version
+lost ground -- and a fallback makes that impossible.
+
+Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
+feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

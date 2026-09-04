@@ -29,6 +29,9 @@ to keep.
 
 from __future__ import annotations
 
+import random
+import time
+
 from .coverage import ceiling, spare
 from .library import Pattern
 from .rules import RuleSet, validate
@@ -143,3 +146,120 @@ def candidates(patterns, targets, rules: RuleSet = None, *, seeds: int = 8,
     grown = tailor(chosen, targets, rules, beam=beam, steps=steps,
                    limit=limit, min_length=min_length)
     return patterns + grown
+
+
+# -- guided by the fill, not by the profile --------------------------------
+
+
+def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
+                   beam: int = 3, steps: int = 3, width: int = 6,
+                   min_length: int = 3, attempts: int = 1, budget: int = 1500,
+                   commonness: float = 3.0, deadline=None, seed: int = 0):
+    """Hill-climb on words actually seated, rather than on slot lengths.
+
+    `tailor` optimises a length histogram, which is a bound and not a result:
+    it counts how many targets *could* go in, with no letters consulted.
+    Measured, grids bred on it place fewer words than the untouched library,
+    because a profile that scores well can still cross badly, and the mutants
+    outrank the grids that were filling.
+
+    So score each candidate by filling it.  Two stages, because filling every
+    neighbour is far too slow: the profile is kept as a cheap filter to pick
+    the `width` most promising of the thirty-odd neighbours, and only those
+    are actually filled.  The proxy chooses what to look at; the objective
+    decides what to keep.
+
+    Scores are (filled, targets seated, fill quality), the same order
+    `coverage.best_over_library` uses, so a grid that holds more words always
+    wins and elegance only breaks ties.
+    """
+    from .coverage import cover
+
+    rules = rules or RuleSet()
+    if not seeds:
+        return []
+    size = seeds[0].size
+    rng = random.Random(seed)
+
+    def score(pattern):
+        got = cover(pattern, index, targets, rules, attempts=attempts,
+                    budget=budget, commonness=commonness, deadline=deadline,
+                    seed=rng.randrange(1 << 30))
+        return (got.ok, got.n, got.quality)
+
+    scored = {p.blocks: (score(p), p) for p in seeds}
+    frontier = [p for _s, p in sorted(scored.values(), key=lambda sp: sp[0],
+                                      reverse=True)[:beam]]
+
+    for depth in range(1, steps + 1):
+        if deadline is not None and time.time() > deadline:
+            break
+        children = []
+        for parent in frontier:
+            root = parent.source.split("+")[0]
+            fresh = []
+            for _cell, grid in neighbours(parent, rules, min_length=min_length):
+                key = frozenset(grid.blocks)
+                if key not in scored:
+                    fresh.append(_as_pattern(grid, f"{root}+{depth}", size))
+            # The cheap filter: look only at the most promising few.
+            fresh.sort(key=lambda p: fitness(p, targets, min_length), reverse=True)
+            for child in fresh[:width]:
+                if deadline is not None and time.time() > deadline:
+                    break
+                scored[child.blocks] = (score(child), child)
+                children.append(child)
+        if not children:
+            break
+        frontier = sorted(children, key=lambda p: scored[p.blocks][0],
+                          reverse=True)[:beam]
+
+    started = {p.blocks for p in seeds}
+    grown = [(s, p) for key, (s, p) in scored.items() if key not in started]
+    grown.sort(key=lambda sp: sp[0], reverse=True)
+    return [p for _s, p in grown]
+
+
+def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
+                        fill_rules: RuleSet = None, seeds: int = 4,
+                        beam: int = 3, steps: int = 3, width: int = 6,
+                        keep: int = 20, share: float = 0.6,
+                        time_limit: float = 120.0, seed: int = 0, **kwargs):
+    """Best cover from the library, then from grids bred to fit the list.
+
+    Run as a fallback rather than a merge, and deliberately: breeding can
+    still surface a grid that outranks a better one, so the library's own
+    answer is computed first and kept unless mutation beats it outright.  The
+    arms cannot lose to each other, only win.
+
+    `share` is how much of the budget mutation may spend before the final
+    search has to run on what it found.
+    """
+    from .coverage import best_over_library
+
+    rules = rules or RuleSet()
+    fill_rules = fill_rules or rules
+    started = time.time()
+
+    plain = best_over_library(patterns, index, targets, fill_rules,
+                              time_limit=time_limit * (1 - share),
+                              seed=seed, **kwargs)
+
+    left = time_limit - (time.time() - started)
+    if left <= 1.0:
+        return plain
+
+    chosen = sorted(patterns, key=lambda p: fitness(p, targets), reverse=True)[:seeds]
+    grown = tailor_by_fill(chosen, targets, index, rules, beam=beam, steps=steps,
+                           width=width, deadline=time.time() + left * 0.75,
+                           seed=seed, **{k: v for k, v in kwargs.items()
+                                         if k in ("commonness",)})
+    if not grown:
+        return plain
+
+    left = time_limit - (time.time() - started)
+    bred = best_over_library(list(patterns) + grown[:keep], index, targets,
+                             fill_rules, time_limit=max(5.0, left), seed=seed,
+                             **kwargs)
+    return bred if (bred.ok, bred.n, bred.quality) > (plain.ok, plain.n,
+                                                      plain.quality) else plain

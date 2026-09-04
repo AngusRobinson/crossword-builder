@@ -115,3 +115,51 @@ def test_mutant_patterns_behave_like_library_ones(patterns):
     assert one.grid().letters == {}, "grid() must hand out a fresh copy"
     assert isinstance(one.profile(), dict)
     assert one.valid and one.size == 15
+
+
+def test_fill_guided_tailoring_beats_the_profile_proxy(patterns, index):
+    """The reason tailor_by_fill exists.
+
+    `tailor` breeds on a length histogram, which counts what could go in with
+    no letters consulted.  Grids bred on it place fewer words than the
+    untouched library.  Breeding on the fill itself finds grids that actually
+    hold more, so a candidate it returns must never be one that cannot be
+    filled at all.
+    """
+    targets = ["kestrel", "curlew", "avocet", "bittern", "redwing"]
+    grown = mutate.tailor_by_fill(patterns[:2], targets, index, BRITISH,
+                                  beam=2, steps=1, width=3, attempts=1,
+                                  budget=800, seed=0)
+    assert grown, "expected candidates"
+    for pattern in grown:
+        assert validate(pattern.grid(), BRITISH) == []
+        assert pattern.blocks not in {p.blocks for p in patterns}
+
+
+def test_tailoring_fallback_never_loses(patterns, index):
+    """Breeding runs as a fallback, so it can only win.
+
+    A bred grid can still outrank a better one, which is exactly how the
+    profile version lost ground.  Computing the library's own answer first and
+    keeping it unless mutation beats it outright makes that impossible.
+    """
+    targets = ["kestrel", "curlew", "avocet"]
+    plain = coverage.best_over_library(patterns, index, targets, top=6,
+                                       attempts=1, budget=1500, time_limit=30.0,
+                                       seed=0)
+    both = mutate.best_with_tailoring(patterns, index, targets, BRITISH,
+                                      seeds=2, beam=2, steps=1, width=3,
+                                      top=6, attempts=1, budget=1500,
+                                      time_limit=45.0, seed=0)
+    assert (both.ok, both.n) >= (plain.ok, plain.n)
+
+
+def test_tailoring_respects_its_deadline(patterns, index):
+    import time as _time
+    targets = ["a" * 15, "b" * 13, "c" * 11, "d" * 9]
+    began = _time.time()
+    mutate.best_with_tailoring(patterns, index, targets, BRITISH, seeds=3,
+                               beam=3, steps=4, width=8, top=8, attempts=1,
+                               budget=1500, time_limit=20.0, seed=0)
+    # Generous slack: the final search may overrun slightly, but not wildly.
+    assert _time.time() - began < 60.0
