@@ -15,3 +15,4 @@ guardian-cc-master.zip
 
 # Generated puzzles.
 out/
+*.swp
