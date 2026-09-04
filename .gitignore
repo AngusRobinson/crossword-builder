@@ -9,7 +9,10 @@ __pycache__/
 # rule set and the grid library; not ours to version.
 guardian-cc-master/
 
-# UKACD word list: 2.6 MB, licensed separately, not ours to redistribute.
+# UKACD word list, 2.6 MB. Copyright (c) 2009 J Ross Beresford,
+# 3-clause BSD: redistribution IS permitted, provided the notice at the
+# top of the file travels with it. Kept out of the repository for size
+# and because it is obtainable upstream, not for licensing reasons.
 UKACD.txt
 guardian-cc-master.zip
 
