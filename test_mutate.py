@@ -231,3 +231,28 @@ def test_breeding_stays_inside_the_envelope_by_default(patterns):
     assert len(held) <= len(free)
     for _cell, grid in held:
         assert mutate.within_envelope(grid)
+
+
+def test_min_long_is_a_floor_the_library_can_meet(patterns):
+    """Asking for long entries must be possible, and must cost something.
+
+    Long entries are the hardest to fill, so the search under-supplies them.
+    The floor is opt-in for that reason, and its useful range is bounded by
+    what the library actually holds.
+    """
+    have = [mutate.long_entries(p.grid()) for p in patterns]
+    assert sum(1 for c in have if c >= 1) >= 80
+    assert sum(1 for c in have if c >= 3) >= 40
+    # Beyond about four the library itself runs thin, which is why the CLI
+    # refuses a floor that leaves too few grids.
+    assert sum(1 for c in have if c >= 5) < 20
+
+
+def test_envelope_enforces_the_long_floor(patterns):
+    roomy = max(patterns, key=lambda p: mutate.long_entries(p.grid()))
+    n = mutate.long_entries(roomy.grid())
+    assert mutate.within_envelope(roomy.grid(), min_long=n)
+    assert not mutate.within_envelope(roomy.grid(), min_long=n + 1)
+
+    for _cell, grid in mutate.neighbours(roomy, BRITISH, min_long=2):
+        assert mutate.long_entries(grid) >= 2

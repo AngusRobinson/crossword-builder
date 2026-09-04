@@ -48,8 +48,17 @@ def _as_pattern(grid, source: str, size: int) -> Pattern:
 MAX_SHORT = 7
 MAX_ENTRIES = 32
 
+# What counts as a long entry.  Eleven rather than nine because nine is
+# ordinary -- the median grid has eight entries of nine or more -- while the
+# median has just two of eleven or more, so that is the one worth asking for.
+LONG_LENGTH = 11
 
-def within_envelope(grid, min_length: int = 3) -> bool:
+
+def long_entries(grid, min_length: int = 3) -> int:
+    return sum(1 for s in grid.slots(min_length) if s.length >= LONG_LENGTH)
+
+
+def within_envelope(grid, min_length: int = 3, min_long: int = 0) -> bool:
     """Does this grid look like one the Guardian would print?
 
     Breeding needs this and pattern-picking does not, because the two face
@@ -66,11 +75,22 @@ def within_envelope(grid, min_length: int = 3) -> bool:
     and no scoring tweak reaches it, because filling really is easier there.
     A constraint is the honest instrument: some grids are simply not ones a
     setter would use, however well they fill.
+
+    `min_long` is the same argument from the other end.  Long entries are the
+    hardest to fill, so the search under-supplies them too -- 1.1 of eleven or
+    more letters against 2.2 in the library.  Asking for them costs coverage,
+    which is why it is a setting and not a default.  Of the 120 published
+    grids, 85 have at least one such entry, 76 have two, 46 have three and
+    only 6 have five, so beyond three the library itself runs thin.
     """
     slots = grid.slots(min_length)
     if len(slots) > MAX_ENTRIES:
         return False
-    return sum(1 for s in slots if s.length <= 4) <= MAX_SHORT
+    if sum(1 for s in slots if s.length <= 4) > MAX_SHORT:
+        return False
+    if min_long and sum(1 for s in slots if s.length >= LONG_LENGTH) < min_long:
+        return False
+    return True
 
 
 def _profile_of(grid, min_length: int = 3) -> dict:
@@ -92,7 +112,8 @@ def disturbance(before: dict, after: dict) -> int:
 
 
 def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
-               max_change: int = None, like_library: bool = True):
+               max_change: int = None, like_library: bool = True,
+               min_long: int = 0):
     """Every legal grid one symmetric block-pair flip away.
 
     Flipping a cell flips its rotational partner too, so symmetry is never
@@ -134,7 +155,7 @@ def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
             seen.add(key)
             if validate(grid, rules):
                 continue
-            if like_library and not within_envelope(grid, min_length):
+            if like_library and not within_envelope(grid, min_length, min_long):
                 continue
             if max_change is not None:
                 if disturbance(before, _profile_of(grid, min_length)) > max_change:
@@ -227,7 +248,7 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
                    beam: int = 3, steps: int = 3, width: int = 6,
                    min_length: int = 3, attempts: int = 1, budget: int = 1500,
                    commonness: float = 3.0, max_change: int = None,
-                   deadline=None, seed: int = 0):
+                   min_long: int = 0, deadline=None, seed: int = 0):
     """Hill-climb on words actually seated, rather than on slot lengths.
 
     `tailor` optimises a length histogram, which is a bound and not a result:
@@ -272,7 +293,8 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
             root = parent.source.split("+")[0]
             fresh = []
             for _cell, grid in neighbours(parent, rules, min_length=min_length,
-                                          max_change=max_change):
+                                          max_change=max_change,
+                                          min_long=min_long):
                 key = frozenset(grid.blocks)
                 if key not in scored:
                     fresh.append(_as_pattern(grid, f"{root}+{depth}", size))
@@ -298,7 +320,7 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
                         fill_rules: RuleSet = None, seeds: int = 4,
                         beam: int = 3, steps: int = 3, width: int = 6,
                         keep: int = 20, share: float = 0.6,
-                        max_change: int = None,
+                        max_change: int = None, min_long: int = 0,
                         time_limit: float = 120.0, seed: int = 0, **kwargs):
     """Best cover from the library, then from grids bred to fit the list.
 
@@ -327,6 +349,7 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
     chosen = sorted(patterns, key=lambda p: fitness(p, targets), reverse=True)[:seeds]
     grown = tailor_by_fill(chosen, targets, index, rules, beam=beam, steps=steps,
                            width=width, max_change=max_change,
+                           min_long=min_long,
                            deadline=time.time() + left * 0.75,
                            seed=seed, **{k: v for k, v in kwargs.items()
                                          if k in ("commonness",)})

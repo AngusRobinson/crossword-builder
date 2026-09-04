@@ -81,6 +81,12 @@ def main() -> int:
                         help="how hard to prefer words that have been "
                              "published as answers, 0 for no preference "
                              "(default 3.0; above 4 makes little difference)")
+    parser.add_argument("--long", type=int, default=0, metavar="N",
+                        help="require at least N entries of 11+ letters. "
+                             "Default 0. Long entries are the hardest to fill, "
+                             "so this costs coverage. Of the 120 library "
+                             "grids, 85 have one, 76 have two, 46 have three "
+                             "and only 6 have five")
     parser.add_argument("--no-tailor", action="store_true",
                         help="skip breeding grids to fit your words. Faster "
                              "(about a third of the time) and a little worse: "
@@ -103,6 +109,14 @@ def main() -> int:
         parser.error("no usable target words given")
 
     patterns = library.load()
+    if args.long:
+        patterns = [p for p in patterns
+                    if mutate.long_entries(p.grid()) >= args.long]
+        if len(patterns) < 5:
+            parser.error(f"--long {args.long} leaves only {len(patterns)} grids; "
+                         f"try a smaller number")
+        print(f"grids with {args.long}+ long entries: {len(patterns)} of 120",
+              file=sys.stderr)
     entries = load(WORDLIST, strict=False)
     counts = frequency.load()
     scores = frequency.load_scores()
@@ -127,7 +141,7 @@ def main() -> int:
         # grids belong to, so a bred grid is still one a setter would print.
         british = RuleSet(alternating=True, max_checked_fraction=0.5)
         got = mutate.best_with_tailoring(
-            patterns, index, targets, british,
+            patterns, index, targets, british, min_long=args.long,
             time_limit=args.time_limit, **common)
     elapsed = time.time() - began
 
@@ -167,8 +181,10 @@ def main() -> int:
             if got.grid.pattern(s) not in placed]
     unpublished = [w for w in fill if not counts.get(w)]
     unknown = [w for w in fill if not counts.get(w) and not scores.get(w)]
-    print(f"fill: {len(fill)} words, mean familiarity {got.quality:.2f}, "
-          f"{len(unknown)} unknown to both sources"
+    # got.quality is measured against the average for each word's own length,
+    # so 0 is "typical for its length" and the sign is what to read.
+    print(f"fill: {len(fill)} words, {got.quality:+.2f} vs typical for their "
+          f"length, {len(unknown)} unknown to both sources"
           + (f" ({', '.join(sorted(unknown)[:6])})" if unknown else ""))
 
     problems = validate(got.grid)
