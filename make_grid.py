@@ -30,6 +30,43 @@ from crossword.words import _fold, load
 WORDLIST = "crossword/UKACD.txt"
 
 
+def read_nina(specs, size: int = 15) -> dict:
+    """Parse --nina arguments into a cell -> letter map.
+
+    Rows and columns are given from 1, matching how placements are reported
+    back, because a setter reading "across at row 9, col 10" and then writing
+    a nina should not have to change counting systems halfway.
+    """
+    preset: dict = {}
+    for spec in specs:
+        parts = [p.strip() for p in spec.split(",")]
+        if len(parts) != 4:
+            raise ValueError(f"expected ROW,COL,DIR,LETTERS but got {spec!r}")
+        row_s, col_s, direction, letters = parts
+        direction = direction.lower()
+        if direction not in ("across", "down"):
+            raise ValueError(f"direction must be across or down, not {direction!r}")
+        try:
+            row, col = int(row_s) - 1, int(col_s) - 1
+        except ValueError:
+            raise ValueError(f"row and column must be numbers in {spec!r}")
+
+        text = _fold(letters)
+        if not text:
+            raise ValueError(f"no letters in {spec!r}")
+        for step, char in enumerate(text):
+            cell = (row, col + step) if direction == "across" else (row + step, col)
+            if not (0 <= cell[0] < size and 0 <= cell[1] < size):
+                raise ValueError(f"{spec!r} runs off the grid at row "
+                                 f"{cell[0] + 1}, col {cell[1] + 1}")
+            if preset.get(cell, char) != char:
+                raise ValueError(f"two ninas disagree at row {cell[0] + 1}, "
+                                 f"col {cell[1] + 1}: "
+                                 f"{preset[cell]!r} and {char!r}")
+            preset[cell] = char
+    return preset
+
+
 def read_targets(args) -> list:
     raw = list(args.words)
     if args.file:
@@ -81,6 +118,14 @@ def main() -> int:
                         help="how hard to prefer words that have been "
                              "published as answers, 0 for no preference "
                              "(default 3.0; above 4 makes little difference)")
+    parser.add_argument("--nina", action="append", default=[],
+                        metavar="ROW,COL,DIR,LETTERS",
+                        help="fix letters in the grid before any word is "
+                             "chosen, e.g. --nina 1,1,down,HIDDEN. Rows and "
+                             "columns count from 1, DIR is across or down. "
+                             "Repeat for several. A nina rules out every grid "
+                             "that blocks one of its cells, so a long one "
+                             "leaves few grids and may not fill")
     parser.add_argument("--long", type=int, default=0, metavar="N",
                         help="require at least N entries of 11+ letters. "
                              "Default 0. Long entries are the hardest to fill, "
@@ -108,7 +153,19 @@ def main() -> int:
     if not targets:
         parser.error("no usable target words given")
 
+    try:
+        nina = read_nina(args.nina)
+    except ValueError as problem:
+        parser.error(str(problem))
+
     patterns = library.load()
+    if nina:
+        patterns = [p for p in patterns if not (set(nina) & set(p.blocks))]
+        if not patterns:
+            parser.error("no grid in the library leaves all those cells open; "
+                         "try a shorter nina or a different position")
+        print(f"grids leaving the nina cells open: {len(patterns)} of 120",
+              file=sys.stderr)
     if args.long:
         patterns = [p for p in patterns
                     if mutate.long_entries(p.grid()) >= args.long]
@@ -135,14 +192,15 @@ def main() -> int:
                   commonness=args.commonness, seed=args.seed)
     if args.no_tailor:
         got = coverage.best_over_library(
-            patterns, index, targets, time_limit=args.time_limit, **common)
+            patterns, index, targets, time_limit=args.time_limit,
+            preset=nina, **common)
     else:
         # The rules the breeding must keep: the British family the library
         # grids belong to, so a bred grid is still one a setter would print.
         british = RuleSet(alternating=True, max_checked_fraction=0.5)
         got = mutate.best_with_tailoring(
             patterns, index, targets, british, min_long=args.long,
-            time_limit=args.time_limit, **common)
+            preset=nina, time_limit=args.time_limit, **common)
     elapsed = time.time() - began
 
     if not got.ok:
@@ -186,6 +244,12 @@ def main() -> int:
     print(f"fill: {len(fill)} words, {got.quality:+.2f} vs typical for their "
           f"length, {len(unknown)} unknown to both sources"
           + (f" ({', '.join(sorted(unknown)[:6])})" if unknown else ""))
+
+    if nina:
+        shown = "".join(sorted(f"{got.grid.letters.get(c, '?')}" for c in nina))
+        held = all(got.grid.letters.get(c) == ch for c, ch in nina.items())
+        print(f"nina: {len(nina)} cells fixed, "
+              + ("all held" if held else "NOT HELD -- this is a bug"))
 
     problems = validate(got.grid)
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")

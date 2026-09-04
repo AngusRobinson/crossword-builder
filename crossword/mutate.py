@@ -113,7 +113,7 @@ def disturbance(before: dict, after: dict) -> int:
 
 def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
                max_change: int = None, like_library: bool = True,
-               min_long: int = 0):
+               min_long: int = 0, keep_white=()):
     """Every legal grid one symmetric block-pair flip away.
 
     Flipping a cell flips its rotational partner too, so symmetry is never
@@ -153,6 +153,9 @@ def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
             if key in seen:
                 continue
             seen.add(key)
+            if any(c in grid.blocks for c in keep_white):
+                # A nina cell cannot be bred into a block.
+                continue
             if validate(grid, rules):
                 continue
             if like_library and not within_envelope(grid, min_length, min_long):
@@ -248,7 +251,8 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
                    beam: int = 3, steps: int = 3, width: int = 6,
                    min_length: int = 3, attempts: int = 1, budget: int = 1500,
                    commonness: float = 3.0, max_change: int = None,
-                   min_long: int = 0, deadline=None, seed: int = 0):
+                   min_long: int = 0, keep_white=(), preset: dict = None,
+                   deadline=None, seed: int = 0):
     """Hill-climb on words actually seated, rather than on slot lengths.
 
     `tailor` optimises a length histogram, which is a bound and not a result:
@@ -277,8 +281,8 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
 
     def score(pattern):
         got = cover(pattern, index, targets, rules, attempts=attempts,
-                    budget=budget, commonness=commonness, deadline=deadline,
-                    seed=rng.randrange(1 << 30))
+                    budget=budget, commonness=commonness, preset=preset,
+                    deadline=deadline, seed=rng.randrange(1 << 30))
         return (got.ok, got.n, got.quality)
 
     scored = {p.blocks: (score(p), p) for p in seeds}
@@ -294,7 +298,8 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
             fresh = []
             for _cell, grid in neighbours(parent, rules, min_length=min_length,
                                           max_change=max_change,
-                                          min_long=min_long):
+                                          min_long=min_long,
+                                          keep_white=keep_white):
                 key = frozenset(grid.blocks)
                 if key not in scored:
                     fresh.append(_as_pattern(grid, f"{root}+{depth}", size))
@@ -321,6 +326,7 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
                         beam: int = 3, steps: int = 3, width: int = 6,
                         keep: int = 20, share: float = 0.6,
                         max_change: int = None, min_long: int = 0,
+                        preset: dict = None,
                         time_limit: float = 120.0, seed: int = 0, **kwargs):
     """Best cover from the library, then from grids bred to fit the list.
 
@@ -340,7 +346,7 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
 
     plain = best_over_library(patterns, index, targets, fill_rules,
                               time_limit=time_limit * (1 - share),
-                              seed=seed, **kwargs)
+                              preset=preset, seed=seed, **kwargs)
 
     left = time_limit - (time.time() - started)
     if left <= 1.0:
@@ -349,7 +355,8 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
     chosen = sorted(patterns, key=lambda p: fitness(p, targets), reverse=True)[:seeds]
     grown = tailor_by_fill(chosen, targets, index, rules, beam=beam, steps=steps,
                            width=width, max_change=max_change,
-                           min_long=min_long,
+                           min_long=min_long, keep_white=tuple(preset or ()),
+                           preset=preset,
                            deadline=time.time() + left * 0.75,
                            seed=seed, **{k: v for k, v in kwargs.items()
                                          if k in ("commonness",)})
@@ -358,7 +365,7 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
 
     left = time_limit - (time.time() - started)
     bred = best_over_library(list(patterns) + grown[:keep], index, targets,
-                             fill_rules, time_limit=max(5.0, left), seed=seed,
-                             **kwargs)
+                             fill_rules, time_limit=max(5.0, left),
+                             preset=preset, seed=seed, **kwargs)
     return bred if (bred.ok, bred.n, bred.quality) > (plain.ok, plain.n,
                                                       plain.quality) else plain

@@ -289,6 +289,7 @@ def cover(
     budget: int = 1500,
     deadline: float | None = None,
     commonness: float = 3.0,
+    preset: dict = None,
     seed: int | None = None,
 ) -> Cover:
     """Build a filled grid holding as many targets as possible.
@@ -308,6 +309,14 @@ def cover(
         if deadline is not None and time.time() > deadline:
             break
         grid = pattern.grid()
+        if preset:
+            # A nina: letters the setter fixed before any word was chosen.
+            # The grid is rebuilt each attempt, so they go back on each
+            # attempt.  Everything downstream honours them already: `_fits`
+            # reads the slot's current pattern, so a target disagreeing with
+            # a nina letter is never offered that slot, and the filler treats
+            # them as preset exactly like a seeded theme word.
+            grid.letters.update(preset)
         slots = grid.slots(rules.min_entry_length)
         seated, _open = _seat_targets(
             grid, index, slots, targets, rng, budget=budget, enough=bound
