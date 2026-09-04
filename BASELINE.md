@@ -107,5 +107,22 @@ first and kept unless mutation beats it outright. Breeding can still surface a
 grid that outranks a better one -- that is exactly how the profile version
 lost ground -- and a fallback makes that impossible.
 
+    capping the size of a move (mutate.neighbours max_change)
+                      A flip is coarse: removing one block can merge two
+                      seven-letter entries into a fifteen. Measured over 674
+                      legal flips, 38% disturb the length histogram by 4 or
+                      less and 89% by 6 or less, but 8.3% lengthen the longest
+                      entry by four or more. Restricting to gentle moves is
+                      worse, monotonically: over ten hard lists, 112 words
+                      uncapped, 110 at a cap of 6, 108 at 4, and never better
+                      on any single list. The coarse moves are how the search
+                      leaves the library's own neighbourhood; gentle ones
+                      shuffle within it. The knob is kept and off.
+
+                      Sliding a block one cell along is not the gentler move
+                      it looks: it is a removal and an addition at once, so it
+                      disturbs more (median 10 against 6) and only 8.4 are
+                      legal per grid against 65.5 flips.
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

@@ -163,3 +163,32 @@ def test_tailoring_respects_its_deadline(patterns, index):
                                budget=1500, time_limit=20.0, seed=0)
     # Generous slack: the final search may overrun slightly, but not wildly.
     assert _time.time() - began < 60.0
+
+
+def test_disturbance_measures_profile_change():
+    assert mutate.disturbance({7: 2}, {7: 2}) == 0
+    # Two sevens merged into a fifteen: two gone, one arrived.
+    assert mutate.disturbance({7: 2, 15: 0}, {7: 0, 15: 1}) == 3
+    assert mutate.disturbance({5: 1}, {6: 1}) == 2
+
+
+def test_max_change_restricts_the_neighbourhood(patterns):
+    """The cap exists, works, and is off by default -- because it loses.
+
+    A flip is coarse: removing one block can merge two seven-letter entries
+    into a fifteen, and 8.3% of legal flips lengthen the longest entry by four
+    or more. Restricting to gentle moves explores more finely and reaches less
+    far, and measured over ten hard lists it places fewer words: 112 uncapped,
+    110 at a cap of 6, 108 at 4. Reach beats finesse at three steps.
+    """
+    seed = patterns[0]
+    everything = list(mutate.neighbours(seed, BRITISH))
+    gentle = list(mutate.neighbours(seed, BRITISH, max_change=4))
+    assert 0 < len(gentle) < len(everything)
+
+    before = mutate._profile_of(seed.grid())
+    for _cell, grid in gentle:
+        assert mutate.disturbance(before, mutate._profile_of(grid)) <= 4
+    # Every gentle neighbour is also a plain one; the cap only filters.
+    assert ({frozenset(g.blocks) for _c, g in gentle}
+            <= {frozenset(g.blocks) for _c, g in everything})

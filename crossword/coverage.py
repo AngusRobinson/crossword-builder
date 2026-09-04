@@ -278,7 +278,7 @@ def cover(
     relax: int = 3,
     budget: int = 1500,
     deadline: float | None = None,
-    commonness: float = 1.0,
+    commonness: float = 3.0,
     seed: int | None = None,
 ) -> Cover:
     """Build a filled grid holding as many targets as possible.

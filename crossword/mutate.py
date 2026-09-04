@@ -42,7 +42,26 @@ def _as_pattern(grid, source: str, size: int) -> Pattern:
                    source=source, valid=True)
 
 
-def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3):
+def _profile_of(grid, min_length: int = 3) -> dict:
+    counts: dict = {}
+    for slot in grid.slots(min_length):
+        counts[slot.length] = counts.get(slot.length, 0) + 1
+    return counts
+
+
+def disturbance(before: dict, after: dict) -> int:
+    """How far one grid's entry lengths are from another's.
+
+    L1 over the length histogram, so a move that turns two seven-letter
+    entries into one fifteen scores 3 (two sevens gone, one fifteen added)
+    plus whatever the crossing column did.  The gentlest legal flip scores 2.
+    """
+    return sum(abs(before.get(k, 0) - after.get(k, 0))
+               for k in set(before) | set(after))
+
+
+def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
+               max_change: int = None):
     """Every legal grid one symmetric block-pair flip away.
 
     Flipping a cell flips its rotational partner too, so symmetry is never
@@ -52,10 +71,21 @@ def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3):
     Legality is the full rule set, not a subset: a neighbour that breaks
     connectivity or over-checks an entry is no use however well its lengths
     line up.
+
+    `max_change` caps how much a move may disturb the entry-length histogram.
+    A flip is a coarse move -- removing one block can merge two seven-letter
+    entries into a fifteen -- and 8.3% of legal flips lengthen the longest
+    entry by four or more.  Measured over 674 flips, 38% score 4 or less and
+    89% score 6 or less, so a cap around 4 keeps the gentle third.
+
+    Sliding a block one cell along, the obvious smoother move, is not: it is a
+    removal and an addition at once, so it disturbs more (median 10 against 6)
+    and only 8.4 are legal per grid against 65.5 flips.
     """
     rules = rules or RuleSet()
     size = pattern.size
     seen = {pattern.blocks}
+    before = _profile_of(pattern.grid(), min_length) if max_change else None
     for row in range(size):
         for col in range(size):
             grid = pattern.grid()
@@ -68,8 +98,12 @@ def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3):
             if key in seen:
                 continue
             seen.add(key)
-            if not validate(grid, rules):
-                yield cell, grid
+            if validate(grid, rules):
+                continue
+            if max_change is not None:
+                if disturbance(before, _profile_of(grid, min_length)) > max_change:
+                    continue
+            yield cell, grid
 
 
 def fitness(pattern: Pattern, targets, min_length: int = 3):
@@ -87,7 +121,8 @@ def fitness(pattern: Pattern, targets, min_length: int = 3):
 
 
 def tailor(seeds, targets, rules: RuleSet = None, *, beam: int = 4,
-           steps: int = 3, min_length: int = 3, limit: int = 40):
+           steps: int = 3, min_length: int = 3, limit: int = 40,
+           max_change: int = None):
     """Hill-climb from library grids towards a list's length profile.
 
     A beam rather than a single chain: the neighbourhood is wide and mostly
@@ -111,7 +146,8 @@ def tailor(seeds, targets, rules: RuleSet = None, *, beam: int = 4,
         found = []
         for parent in frontier:
             root = parent.source.split("+")[0]
-            for _cell, grid in neighbours(parent, rules, min_length=min_length):
+            for _cell, grid in neighbours(parent, rules, min_length=min_length,
+                                          max_change=max_change):
                 key = frozenset(grid.blocks)
                 if key in best_by_blocks:
                     continue
@@ -154,7 +190,8 @@ def candidates(patterns, targets, rules: RuleSet = None, *, seeds: int = 8,
 def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
                    beam: int = 3, steps: int = 3, width: int = 6,
                    min_length: int = 3, attempts: int = 1, budget: int = 1500,
-                   commonness: float = 3.0, deadline=None, seed: int = 0):
+                   commonness: float = 3.0, max_change: int = None,
+                   deadline=None, seed: int = 0):
     """Hill-climb on words actually seated, rather than on slot lengths.
 
     `tailor` optimises a length histogram, which is a bound and not a result:
@@ -198,7 +235,8 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
         for parent in frontier:
             root = parent.source.split("+")[0]
             fresh = []
-            for _cell, grid in neighbours(parent, rules, min_length=min_length):
+            for _cell, grid in neighbours(parent, rules, min_length=min_length,
+                                          max_change=max_change):
                 key = frozenset(grid.blocks)
                 if key not in scored:
                     fresh.append(_as_pattern(grid, f"{root}+{depth}", size))
@@ -224,6 +262,7 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
                         fill_rules: RuleSet = None, seeds: int = 4,
                         beam: int = 3, steps: int = 3, width: int = 6,
                         keep: int = 20, share: float = 0.6,
+                        max_change: int = None,
                         time_limit: float = 120.0, seed: int = 0, **kwargs):
     """Best cover from the library, then from grids bred to fit the list.
 
@@ -251,7 +290,8 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
 
     chosen = sorted(patterns, key=lambda p: fitness(p, targets), reverse=True)[:seeds]
     grown = tailor_by_fill(chosen, targets, index, rules, beam=beam, steps=steps,
-                           width=width, deadline=time.time() + left * 0.75,
+                           width=width, max_change=max_change,
+                           deadline=time.time() + left * 0.75,
                            seed=seed, **{k: v for k, v in kwargs.items()
                                          if k in ("commonness",)})
     if not grown:
