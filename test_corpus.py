@@ -9,8 +9,8 @@ generator was tuned to satisfy it.
 This file closes that gap.  The corpus is the oracle: a predicate that fires
 on a published grid is wrong about crosswords, whatever the unit tests say.
 
-The corpus is ~8,300 Guardian puzzles from https://github.com/xteddy/guardian-cc
-and is deliberately not in the repository.  These tests skip without it.
+The corpus is ~8,300 Guardian puzzles as JSON, one file per puzzle, and is
+deliberately not in the repository.  These tests skip without it.
 """
 
 import collections

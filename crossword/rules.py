@@ -201,10 +201,10 @@ def check_no_repeated_entries(grid: Grid, rules: RuleSet):
 def check_connected(grid: Grid, rules: RuleSet):
     """Every white cell must be reachable from every other.
 
-    This rule was not in the list we agreed.  The stage 5 generator found the
-    omission immediately, producing a 9x9 whose middle row was entirely
-    blocked — two independent crosswords printed as one.  Nothing in rules 1-5
-    forbids it, because every rule up to here is local to a single entry.
+    Not in the original rule list, and its absence was found immediately: the
+    generator produced a 9x9 whose middle row was entirely blocked, which is
+    two independent crosswords printed as one.  Nothing in the other rules
+    forbids that, because every one of them is local to a single entry.
     """
     white = [
         (row, col)

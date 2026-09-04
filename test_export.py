@@ -167,12 +167,12 @@ def test_exolve_lists_every_entry_with_its_answer(filled):
 
 
 def test_exolve_page_is_self_contained(filled):
-    page = export.to_exolve(filled, title="Birds", setter="Arct Pr(a)e")
+    page = export.to_exolve(filled, title="Birds", setter="A. Setter")
     assert page.startswith("<!DOCTYPE html>")
     assert "createExolve(`" in page
     assert "exolve-begin" in page and "exolve-end" in page
     assert "exolve-title: Birds" in page
-    assert "exolve-setter: Arct Pr(a)e" in page
+    assert "exolve-setter: A. Setter" in page
     # exolve-m.js is the only thing it needs, and it comes from the CDN.
     assert "viresh-ratnakar.github.io/exolve-m.js" in page
 

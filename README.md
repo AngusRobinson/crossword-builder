@@ -1,0 +1,303 @@
+# Crossword Builder
+
+Builds British cryptic crossword grids around a list of words you want in them.
+
+Give it a theme — the answers you have already decided on — and it finds a grid
+those words fit into, fills the rest, and writes a puzzle file you can take
+into [Exet](https://exet.app) to write clues. It can also hide a message in the
+grid, insist on a pangram, and tune how obscure the fill is allowed to be.
+
+```
+$ python3 make_grid.py --file birds.txt --out out/birds --title "Dawn Chorus"
+
+█ S U B G E N R E S █ K Y L E
+█ H █ I █ P █ E █ U █ E █ A █
+L A S T W O R D █ B U S I N G
+█ K █ T █ C █ W █ S █ T █ G █
+J O S E P H █ I N T E R C O M
+█ █ █ R █ █ █ N █ R █ E █ U █
+G U N N E R █ G O A L L E S S
+█ N █ █ █ E █ █ █ T █ █ █ T █
+N I G H T J A R █ A V O C E T
+█ F █ A █ O █ O █ █ █ C █ █ █
+M O D I F I E R █ C U R L E W
+█ R █ R █ N █ Q █ U █ E █ D █
+S M R I T I █ U M B R A T I C
+█ L █ E █ N █ A █ I █ T █ C █
+D Y E R █ G O L D C R E S T █
+
+placed 7 of 7 targets (100% of the 7 that could fit this library) in 2s
+   avocet             across at row 9, col 10
+   bittern            down at row 1, col 4
+   ...
+grid: library pattern 26192 (used by 237 published puzzles)
+fill: 23 words, familiarity rank 0.77 (published answers average 0.86), 1 unknown to both sources (umbratic)
+rules: clean
+wrote out/birds.ipuz and out/birds.html
+```
+
+That last line is the honest kind of output this aims for: it placed every
+target, but `umbratic` is a word neither source has a record of, and it says so
+rather than letting it pass.
+
+## Contents
+
+- [Getting started](#getting-started)
+- [The settings](#the-settings)
+- [Ninas](#ninas)
+- [Pangrams](#pangrams)
+- [How it works](#how-it-works)
+- [Reading the output](#reading-the-output)
+- [Measuring changes](#measuring-changes)
+- [Rebuilding the data files](#rebuilding-the-data-files)
+- [Design notes](#design-notes)
+
+## Getting started
+
+You need Python 3.8 or later and a word list. The project is built around
+UKACD, the UK Advanced Cryptics Dictionary — 221,835 entries, copyright J Ross
+Beresford, 3-clause BSD and so redistributable provided its notice travels with
+it. Put it at `crossword/UKACD.txt`. Any similar list will work, though the
+familiarity tables are keyed to UKACD's spellings.
+
+Nothing else is required. The grid library and the word-familiarity tables are
+committed as data files.
+
+```bash
+python3 make_grid.py kestrel curlew avocet bittern redwing
+```
+
+Words can be arguments, a file (`--file words.txt`, one per line), or piped in.
+Quote multi-word answers: `"twelfth night"`. Case, spaces, hyphens and accents
+are folded away, and the original spelling is kept for the enumeration, so
+`Twelfth Night` is clued as `(7,5)` rather than `(12)`.
+
+No words at all is a valid request — a nina, a pangram or the quality settings
+give a grid something to be on their own.
+
+Write the puzzle out with `--out BASE`, which produces `BASE.ipuz` (Exet imports
+it) and `BASE.html` (a self-contained [Exolve](https://exolve.app) page that
+opens in a browser). Neither carries clues, because this project does not write
+them; both leave the clue slots empty with the answers and enumerations
+attached, which is the state a setter wants to start from.
+
+## The settings
+
+| Setting | Default | What it does |
+|---|---|---|
+| `--time-limit S` | 45 | Wall-clock budget for the whole search |
+| `--seed N` | 0 | Different grid from the same words; try a few |
+| `--aim Q` | 0.85 | How familiar the fill should be, as a rank within each word's own length. Lower is harder |
+| `--commonness F` | 3.0 | How hard to steer towards `--aim`; 0 disables |
+| `--min-score S` | 0 | Hard floor: refuse fill words below this familiarity |
+| `--max-uses N` | off | Hard ceiling: bar words used more than N times as a Guardian answer, to keep out tired crosswordese |
+| `--long N` | 0 | Require at least N entries of 11+ letters |
+| `--patterns N` | 14 | How many library grids to consider |
+| `--no-tailor` | off | Skip breeding grids to fit; about a third of the time, slightly worse |
+| `--nina`, `--nina-path` | — | Hide a message; see below |
+| `--pangram N` | 0 | Require every letter of the alphabet N times |
+
+`--aim` is the one to reach for first. It targets a familiarity *rank* rather
+than a maximum, because more common is not better without limit: maximising put
+43% of the fill above Zipf 4 where published answers put 17%. Real answers sit
+at the 86th percentile for their length, hence the default. Drop it to 0.5 for a
+markedly harder puzzle.
+
+The hard cuts (`--min-score`, `--max-uses`, `--long`) all cost coverage, which
+is why they are off. Prefer `--commonness` and `--aim` unless you want purity at
+any price — though `--min-score 1.0` is worth it on a very tightly constrained
+grid, where it is often the difference between some unknown words and none.
+
+## Ninas
+
+A nina is a message hidden in the grid, read somewhere the solver would not
+normally read.
+
+**Fixed cells** — `--nina ROW,COL,DIR,LETTERS`, counting from 1:
+
+```bash
+python3 make_grid.py --nina "1,1,diagonal,ICARUS" ariadne theseus minotaur
+```
+
+`DIR` is `across`, `down`, `diagonal`, `antidiagonal`, `up` or `back`. Repeat
+the option for several.
+
+A diagonal is usually the better shape. It crosses entries at single cells and
+can hardly help being hidden, whereas a straight run along an edge tends to lie
+*along* entries — and a message that is exactly two whole entries is not hidden
+at all, it is just those two answers. The tool says which you have:
+
+```
+hidden: spans 6 entries, 6 of 6 letters not readable as a whole entry
+```
+
+**Along a path** — `--nina-path PATH,LETTERS`, which skips whatever cells are
+blocked. This is what a perimeter nina actually is:
+
+```bash
+python3 make_grid.py --nina-path "perimeter,DICTIONARIES ARE LIKE WATCHES" \
+    --min-score 1.0 --seed 2
+```
+
+`PATH` is `perimeter`, `toprow`, `bottomrow`, `leftcol`, `rightcol`, `diagonal`
+or `antidiagonal`. A perimeter message must use every white cell on the circuit,
+so its length has to match a grid exactly; if it does not, the error lists the
+lengths that would work and how many grids take each.
+
+The lengths worth aiming at are those whose grids have **no entry lying along
+the edge** — 21 of the 120 grids are like that, and there the message is hidden
+by construction and forces no entry to be anything. On a 15x15 those lengths are
+26, 24, 28, 16 and 22.
+
+Otherwise you hit the real difficulty of a perimeter nina: the edge cells are
+parts of entries, so a message that does not break into words at the entry
+boundaries leaves nonsense round the outside. The tool warns rather than passing
+it off as clean.
+
+## Pangrams
+
+`--pangram N` requires every letter of the alphabet N times.
+
+An ordinary fill is never a pangram — 25 fills missed 4.2 letters on average,
+almost always j, q, x and z — and it is not for want of freedom: disabling the
+familiarity preference entirely only reached 3.5. Nothing in the search was ever
+*asking* for a z. So words supplying a missing letter get a bonus, escalating
+with the requirement.
+
+| N | Result | Cost |
+|---|---|---|
+| 1 | reliable | fill familiarity 0.79 against 0.81 — near-free |
+| 2 | reliable | 0.70 — noticeable |
+| 3 | about 1 attempt in 8 | raise `--time-limit`, try several seeds |
+| 4+ | allowed, has never succeeded | the obstruction is English, not the search |
+
+## How it works
+
+Four nested searches. Each layer only commits when the layer below can actually
+deliver, so no grid is ever accepted before words have gone into it.
+
+**1. Vocabulary.** The word list is folded to bare letters, filtered by any
+floor or ceiling, and indexed. The index is one bitset per word length: bit *i*
+is set if word *i* has letter *c* at position *p*, so matching a pattern is an
+AND chain and counting survivors is a single `int.bit_count()`.
+
+**2. Choose a grid.** 8,348 published Guardian 15x15 cryptics use only **130
+distinct block patterns** between them, 120 of which pass the rule set — setters
+pick from a library rather than inventing grids. Those are scored against your
+words by how many could fit on length alone, then by spare capacity, and the
+best are tried in turn.
+
+**3. Seat the targets.** Branch and bound over assignments of your words to
+slots. Most-constrained word first, ties to the longest, because a fifteen-letter
+word has one or two homes and a four-letter word has a dozen. Every placement is
+undoable, and the bound — seated plus still-seatable — cuts branches that cannot
+beat the best arrangement so far.
+
+**4. Fill the rest.** At each node one candidate mask is computed per empty slot.
+That single pass is both the forward check (an empty mask kills the node) and the
+ordering heuristic (smallest mask expanded first). Candidates are ordered by
+nearness to `--aim` plus Gumbel noise, which is weighted sampling without
+replacement, and the best 200 are tried.
+
+If the fill fails, the last-seated target is lifted and it tries again: a grid
+holding nine targets that completes beats one holding ten that does not, because
+the second is not a crossword.
+
+**Breeding.** After the library has had its turn, the best-fitting grids are
+*edited* — flip a cell and its rotational partner, keep the result if the whole
+rule set still passes — and hill-climbed towards grids that hold more of your
+words. Candidates are scored by actually filling them, not by their shape.
+
+This runs as a fallback, never a merge: the library's own answer is computed
+first and kept unless breeding beats it outright.
+
+**Output.** Cell numbering (a cell starting both an across and a down entry
+carries one shared number), then `.ipuz` and Exolve, with separators restored so
+multi-word answers are enumerated correctly.
+
+## Reading the output
+
+```
+placed 7 of 7 targets (100% of the 7 that could fit this library)
+fill: 23 words, familiarity rank 0.77 (published answers average 0.86), 1 unknown to both sources (umbratic)
+hidden: spans 6 entries, 6 of 6 letters not readable as a whole entry
+rules: clean
+```
+
+**Coverage is scored against the length-profile ceiling, not against how many
+words you gave it.** An arbitrary 20-word list has a mean ceiling of 80% before a
+single letter is considered, so coverage over list size would confuse a weak
+search with an impossible request.
+
+That ceiling ignores letters entirely, so it flatters dense lists badly. Twenty-eight
+prime ministers have a ceiling of 23 but only about 14 are really achievable —
+once targets outnumber the ordinary fill, they start crossing *each other*, and
+two arbitrary surnames only agree if they happen to share a letter in the right
+place. Nothing searches its way out of that.
+
+**Familiarity rank** is where the chosen words sit within the familiarity range
+for their own length, so 0.86 is what published answers average. **Unknown to
+both sources** means no record as a Guardian answer *and* no general-English
+frequency — the words that would embarrass a setter.
+
+## Measuring changes
+
+`BASELINE.md` records what the tool currently scores, the settings those numbers
+describe, and the things that were tried and rejected. Update it in the same
+commit as any change that moves it.
+
+```bash
+python3 run_baseline.py     # about six minutes
+python3 -m pytest -q        # 111 tests
+```
+
+The benchmark is 44 frozen word lists in `benchmark/lists.json`, stratified by
+difficulty rather than only by size. The important stratum is `feasible`: those
+words co-occurred in one published puzzle whose grid is in the library, so the
+optimum is *known to exist* and any shortfall is the search's fault rather than
+an impossible request. Do not regenerate the lists to chase a result — paired
+comparison on fixed lists is the whole point.
+
+## Rebuilding the data files
+
+Three files are committed so that ordinary use needs no corpus:
+`crossword/grids.txt` (the grid library), `crossword/frequency.txt` (Guardian
+answer counts) and `crossword/scores.txt` (combined familiarity).
+
+Rebuilding them needs a corpus of published Guardian crosswords as JSON — the
+"guardian-cc" collection, one file per puzzle, about 130 MB — and `wordfreq`:
+
+```bash
+python3 build_library.py    path/to/guardian-cc-master/crosswords
+python3 build_frequency.py  path/to/guardian-cc-master/crosswords
+python3 make_benchmark.py   path/to/guardian-cc-master/crosswords
+```
+
+`wordfreq` is a build-time dependency only. Nothing at run time imports it.
+
+## Design notes
+
+**The rule set is checked against real crosswords.** `test_corpus.py` validates
+against published puzzles rather than against anyone's opinion of the rules —
+which is how a bug that rejected 34% of the Guardian's output was found. The
+rule required `ceil(L/2)` checked letters per entry; the real convention rounds
+down, and the difference is exactly the `UCUC...U` shape British grids are built
+from.
+
+**Familiarity comes from two sources.** Guardian usage alone is a domain
+frequency: it ranks `isle` and `stye` absurdly high and gives zero to ordinary
+words that simply have not come up. General English alone has never heard of a
+phrase, and 42,125 UKACD entries are phrases. The score is the better of the two,
+which routes phrases to the corpus for free, since a general corpus scores a
+concatenated phrase at zero.
+
+**Grids are held to what gets published.** Grids with more, shorter entries are
+genuinely easier to fill, so an unconstrained search walks straight towards them
+— 9.9 entries of three or four letters against 3.3 in the library. No scoring
+tweak reaches that, because the preference is *correct*; those grids really do
+fill. So breeding is constrained to stay inside the range published grids
+occupy.
+
+**Negative results are kept.** `mutate.tailor` breeds on the length profile and
+is measurably worse than doing nothing. It is retained, tested and off, with the
+reason recorded, because a specific negative result is worth not rediscovering.

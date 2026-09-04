@@ -5,7 +5,7 @@ __pycache__/
 .DS_Store
 
 # Third-party corpus: 130 MB of Guardian JSON, re-downloadable from
-# https://github.com/xteddy/guardian-cc  Kept locally as ground truth for the
+# the "guardian-cc" corpus. Kept locally as ground truth for the
 # rule set and the grid library; not ours to version.
 guardian-cc-master/
 
@@ -25,3 +25,9 @@ out/
 # Machine-local sandbox config: absolute paths, and the sandbox write-denies
 # it, so git cannot update it on checkout.
 .claude/settings.json
+
+# Working word lists are the setter's own material, not project data.
+*.txt
+!crossword/grids.txt
+!crossword/frequency.txt
+!crossword/scores.txt
