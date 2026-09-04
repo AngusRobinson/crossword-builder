@@ -445,6 +445,29 @@ def main() -> int:
     # edge.  Say which, rather than let it pass as a clean grid.
     fixed = placer(got.pattern) if placer else nina
     if fixed:
+        # Is it actually hidden?  A nina is a message read where the solver
+        # would not normally read: across entry boundaries, or in a direction
+        # entries do not run.  If the cells are exactly a set of whole
+        # entries, reading them reads those answers and conceals nothing --
+        # MYSTERY and THEATRE along a top row that is two seven-letter entries
+        # is not a nina, it is 1 and 5 Across.
+        whole = [s for s in got.grid.slots(3) if set(s.cells) <= set(fixed)]
+        covered = set()
+        for slot in whole:
+            covered |= set(slot.cells)
+        exposed = set(fixed) - covered
+        touched = len({id(s) for s in got.grid.slots(3)
+                       for c in fixed if c in s.cells})
+        if not exposed:
+            print(f"WARNING: this is not hidden -- the cells are exactly "
+                  f"{len(whole)} whole entries "
+                  f"({', '.join(got.grid.pattern(s).upper() for s in whole)}), "
+                  f"so reading them just reads those answers")
+        else:
+            print(f"hidden: spans {touched} entries, "
+                  f"{len(exposed)} of {len(fixed)} letters not readable as a "
+                  f"whole entry")
+
         nonsense = []
         for slot in got.grid.slots(3):
             if not all(c in fixed for c in slot.cells):
