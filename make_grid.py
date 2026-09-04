@@ -311,9 +311,34 @@ def main() -> int:
 
     patterns = library.load()
     if placer:
+        exact = args.nina_path.split(",")[0].strip().lower() == "perimeter"
         patterns = [p for p in patterns if placer(p) is not None]
         if not patterns:
-            parser.error("no grid has enough white cells on that path")
+            # Say which lengths would have worked.  For a perimeter the
+            # message has to close the circuit exactly, so the viable lengths
+            # are few and specific, and guessing at them is miserable.
+            options = {}
+            for candidate in library.load():
+                white = sum(1 for c in path_cells if c not in candidate.blocks)
+                clean = not [s for s in candidate.grid().slots(3)
+                             if set(s.cells) <= set(path_cells)]
+                options.setdefault(white, [0, 0])
+                options[white][0] += 1
+                options[white][1] += clean
+            # Best first: a length whose grids have no entry lying along the
+            # path is worth far more than one with many grids, because those
+            # are the grids where the message is hidden by construction and
+            # forces no entry to be anything.
+            ranked = sorted(options, key=lambda n: (-options[n][1],
+                                                    -options[n][0]))[:6]
+            lengths = "\n    ".join(
+                f"{n:>2} letters -- {options[n][0]:>2} grids, "
+                f"{options[n][1]:>2} of them with no entry along the edge"
+                for n in ranked)
+            parser.error(
+                f"no grid takes a {len(message)}-letter message on that path."
+                f"\n  a perimeter message must use every white cell, so it "
+                f"has to be exactly one of:\n    {lengths}")
         print(f"grids that can carry a {len(message)}-letter message there: "
               f"{len(patterns)} of 120", file=sys.stderr)
     if nina:
