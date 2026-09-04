@@ -96,6 +96,21 @@ def _fits(pattern: str, word: str) -> bool:
     )
 
 
+def _fits_slot(letters: dict, slot, word: str) -> bool:
+    """Whether a word can go in a slot, without building its pattern.
+
+    The obvious spelling is `_fits(grid.pattern(slot), word)`, and it was
+    almost a fifth of the run: half a million calls, each joining a fifteen
+    character string only to compare it and throw it away.  Reading the cells
+    directly short-circuits on the first disagreement and allocates nothing.
+    """
+    for cell, char in zip(slot.cells, word):
+        seen = letters.get(cell)
+        if seen is not None and seen != char:
+            return False
+    return True
+
+
 def _crossing(slots, placed):
     """The open slots that share a cell with `placed`, and so just changed.
 
@@ -225,7 +240,8 @@ def _seat_targets(grid, index, slots, targets, rng, *, budget=1500, branch=5,
             fits = [
                 slot
                 for slot in open_slots
-                if slot.length == len(word) and _fits(grid.pattern(slot), word)
+                if slot.length == len(word)
+                and _fits_slot(grid.letters, slot, word)
             ]
             if fits:
                 found[word] = fits

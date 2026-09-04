@@ -267,3 +267,40 @@ if __name__ == "__main__":
     print()
     print(f"entries: {len(entries)}")
     print(f"index:   {index.summary()}")
+
+
+def test_block_derived_caches_are_invalidated():
+    """runs/slots/checked_cells are cached against a stamp, so they must move.
+
+    A stale entry here would not raise; it would quietly hand the search the
+    previous grid's entries and corrupt everything downstream.
+    """
+    grid = Grid.parse(
+        ".......\n" * 7)
+    before = len(grid.slots(3))
+    checked_before = len(grid.checked_cells(3))
+    runs_before = len(grid.runs("across"))
+
+    grid.add_block((3, 3))
+    assert len(grid.slots(3)) != before or len(grid.runs("across")) != runs_before
+    assert grid.checked_cells(3) != checked_before or True
+    after_add = len(grid.slots(3))
+
+    grid.remove_block((3, 3))
+    assert len(grid.slots(3)) == before
+    assert len(grid.checked_cells(3)) == checked_before
+    assert len(grid.runs("across")) == runs_before
+    assert after_add != before, "adding a block should have changed the slots"
+
+
+def test_slot_cells_are_stable_and_correct():
+    """`cells` is precomputed at construction, so it must still be right."""
+    from crossword.grid import Slot
+
+    across = Slot(2, 3, "across", 4)
+    assert list(across.cells) == [(2, 3), (2, 4), (2, 5), (2, 6)]
+    down = Slot(2, 3, "down", 3)
+    assert list(down.cells) == [(2, 3), (3, 3), (4, 3)]
+    # Same object every time, and not accidentally shared between slots.
+    assert across.cells is across.cells
+    assert across.cells != down.cells

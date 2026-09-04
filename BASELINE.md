@@ -194,5 +194,21 @@ A pangram is close to free, a double costs real fill quality, a triple works
 about one attempt in eight at ~14s each. hunger defaults to 3 x the
 requirement.
 
+## Speed
+
+Profiled on one ordinary themed run, three changes took it from 6.5s to 1.9s,
+about 3.4x, with no change to any result:
+
+  * `Slot.cells` rebuilt its list on every access -- 1.4 million times in a
+    single run, because `Grid.pattern` walks it for every candidate word at
+    every node. Built once at construction instead.
+  * `runs`, `slots` and `checked_cells` depend only on the blocks and were
+    recomputed thousands of times; `validate` alone asks ten predicates, most
+    of which call `slots()`. Cached against a stamp bumped by add_block and
+    remove_block, which are the only mutations outside construction.
+  * The seating search asked `_fits(grid.pattern(slot), word)` half a million
+    times, joining a fifteen-character string only to compare and discard it.
+    Reading the cells directly short-circuits and allocates nothing.
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

@@ -41,11 +41,16 @@ class Slot:
     direction: str
     length: int
 
-    @property
-    def cells(self) -> list[Cell]:
+    def __post_init__(self):
+        # Built once, here, rather than on every access.  A profile of one
+        # ordinary run showed 1.4 million calls to `cells`, because
+        # `Grid.pattern` walks them for every candidate word at every node.
+        # The class is frozen, hence the __setattr__.
         if self.direction == ACROSS:
-            return [(self.row, self.col + i) for i in range(self.length)]
-        return [(self.row + i, self.col) for i in range(self.length)]
+            cells = tuple((self.row, self.col + i) for i in range(self.length))
+        else:
+            cells = tuple((self.row + i, self.col) for i in range(self.length))
+        object.__setattr__(self, "cells", cells)
 
 
 @dataclass
@@ -55,6 +60,16 @@ class Grid:
     letters: dict[Cell, str] = field(default_factory=dict)
     right_bars: set[Cell] = field(default_factory=set)
     bottom_bars: set[Cell] = field(default_factory=set)
+
+    def __post_init__(self):
+        # Derivations that depend only on the blocks are cached against a
+        # stamp bumped whenever a block moves.  Every mutation in the project
+        # goes through add_block or remove_block, or happens during
+        # construction while the cache is still empty, so nothing can read a
+        # stale entry.  Anything that reaches into `blocks` directly after
+        # construction must bump `_stamp` itself.
+        object.__setattr__(self, "_stamp", 0)
+        object.__setattr__(self, "_derived", {})
 
     # -- block placement ---------------------------------------------------
 
@@ -72,6 +87,8 @@ class Grid:
         than of the generator.
         """
         mate = self.partner(cell)
+        self._stamp += 1
+        self._derived.clear()
         self.blocks.add(cell)
         self.blocks.add(mate)
         self.letters.pop(cell, None)
@@ -79,6 +96,8 @@ class Grid:
         return cell, mate
 
     def remove_block(self, cell: Cell) -> None:
+        self._stamp += 1
+        self._derived.clear()
         self.blocks.discard(cell)
         self.blocks.discard(self.partner(cell))
 
@@ -86,6 +105,10 @@ class Grid:
 
     def runs(self, direction: str) -> list[Slot]:
         """Every maximal unblocked run in one direction, including length-1 runs."""
+        key = ("runs", direction)
+        hit = self._derived.get(key)
+        if hit is not None:
+            return hit
         found: list[Slot] = []
         for line in range(self.size):
             start = None
@@ -99,25 +122,38 @@ class Grid:
                         start = None
                 elif start is None:
                     start = offset
+        self._derived[key] = found
         return found
 
     def slots(self, min_length: int = 3) -> list[Slot]:
         """Runs long enough to be entries."""
-        return [
+        key = ("slots", min_length)
+        hit = self._derived.get(key)
+        if hit is not None:
+            return hit
+        found = [
             run
             for direction in (ACROSS, DOWN)
             for run in self.runs(direction)
             if run.length >= min_length
         ]
+        self._derived[key] = found
+        return found
 
     def checked_cells(self, min_length: int = 3) -> set[Cell]:
         """Cells belonging to an entry in both directions."""
+        key = ("checked", min_length)
+        hit = self._derived.get(key)
+        if hit is not None:
+            return hit
         across: set[Cell] = set()
         down: set[Cell] = set()
         for slot in self.slots(min_length):
             target = across if slot.direction == ACROSS else down
             target.update(slot.cells)
-        return across & down
+        result = across & down
+        self._derived[key] = result
+        return result
 
     def crossings(self, min_length: int = 3) -> dict[Cell, list[tuple[Slot, int]]]:
         """For each cell, the entries through it and the index within each."""
