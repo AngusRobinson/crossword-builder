@@ -131,6 +131,41 @@ class Grid:
         """The committed letters of a slot, with EMPTY for unknowns."""
         return "".join(self.letters.get(cell, EMPTY) for cell in slot.cells)
 
+    def numbering(self, min_length: int = 3):
+        """Clue numbers in reading order, with the entries they start.
+
+        A white cell earns a number when an entry begins there, in either
+        direction, and a cell beginning both across and down entries carries
+        one number shared by the two.  That sharing is the whole subtlety: it
+        is why the across list and the down list have gaps in them rather than
+        each running 1, 2, 3.
+
+        Returns (numbers, across, down): a cell -> number map, and the two
+        lists of (number, slot) ordered as they would be printed.
+        """
+        heads = {ACROSS: {}, DOWN: {}}
+        for slot in self.slots(min_length):
+            heads[slot.direction][(slot.row, slot.col)] = slot
+
+        numbers: dict = {}
+        across: list = []
+        down: list = []
+        count = 0
+        for row in range(self.size):
+            for col in range(self.size):
+                cell = (row, col)
+                starts_across = heads[ACROSS].get(cell)
+                starts_down = heads[DOWN].get(cell)
+                if not starts_across and not starts_down:
+                    continue
+                count += 1
+                numbers[cell] = count
+                if starts_across:
+                    across.append((count, starts_across))
+                if starts_down:
+                    down.append((count, starts_down))
+        return numbers, across, down
+
     # -- serialisation -----------------------------------------------------
 
     def render(self) -> str:

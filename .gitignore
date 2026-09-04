@@ -12,3 +12,6 @@ guardian-cc-master/
 # UKACD word list: 2.6 MB, licensed separately, not ours to redistribute.
 UKACD.txt
 guardian-cc-master.zip
+
+# Generated puzzles.
+out/

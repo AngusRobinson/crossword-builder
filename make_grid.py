@@ -22,7 +22,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from crossword import coverage, frequency, library
+from crossword import coverage, export, frequency, library
 from crossword.index import Index
 from crossword.rules import validate
 from crossword.words import _fold, load
@@ -42,7 +42,7 @@ def read_targets(args) -> list:
     # one target.  "Twelfth Night" is a twelve-letter entry, not a seven and
     # a five, and splitting it produced a spurious three-letter "the" from
     # "The Tempest".
-    targets, dropped = [], []
+    targets, dropped, spelling = [], [], {}
     for item in raw:
         folded = _fold(item)
         if not folded:
@@ -51,7 +51,8 @@ def read_targets(args) -> list:
             dropped.append((item.strip(), f"{len(folded)} letters after folding"))
         elif folded not in targets:
             targets.append(folded)
-    return targets, dropped
+            spelling[folded] = item.strip()
+    return targets, dropped, spelling
 
 
 def main() -> int:
@@ -80,11 +81,16 @@ def main() -> int:
                         help="how hard to prefer words that have been "
                              "published as answers, 0 for no preference "
                              "(default 3.0; above 4 makes little difference)")
+    parser.add_argument("--out", metavar="BASE",
+                        help="write BASE.ipuz and BASE.html (Exolve). ipuz is "
+                             "what Exet imports; the HTML opens in a browser")
+    parser.add_argument("--title", default="Untitled", help="puzzle title")
+    parser.add_argument("--setter", default="", help="setter's name")
     parser.add_argument("--solution", action="store_true",
                         help="also print the grid as plain text")
     args = parser.parse_args()
 
-    targets, dropped = read_targets(args)
+    targets, dropped, spelling = read_targets(args)
     for word, why in dropped:
         print(f"skipped {word!r}: {why}", file=sys.stderr)
     if not targets:
@@ -154,6 +160,17 @@ def main() -> int:
 
     problems = validate(got.grid)
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")
+
+    if args.out:
+        # The setter's own spelling wins over the dictionary's: they typed
+        # "Twelfth Night", and the enumeration a solver sees should say (7,5).
+        surfaces = {e.text: e.surface for e in kept}
+        surfaces.update(spelling)
+        export.write_ipuz(got.grid, args.out + ".ipuz", title=args.title,
+                          author=args.setter, surfaces=surfaces)
+        export.write_exolve(got.grid, args.out + ".html", title=args.title,
+                            setter=args.setter, surfaces=surfaces)
+        print(f"wrote {args.out}.ipuz and {args.out}.html")
     if args.solution:
         print()
         print(got.grid.render())
