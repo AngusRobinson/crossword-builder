@@ -42,6 +42,37 @@ def _as_pattern(grid, source: str, size: int) -> Pattern:
                    source=source, valid=True)
 
 
+# The envelope the published grids occupy, measured from crossword/grids.txt.
+# Short entries (three or four letters): median 4, 90th percentile 7, max 10.
+# Entries in total: median 28, 90th percentile 32, max 34.
+MAX_SHORT = 7
+MAX_ENTRIES = 32
+
+
+def within_envelope(grid, min_length: int = 3) -> bool:
+    """Does this grid look like one the Guardian would print?
+
+    Breeding needs this and pattern-picking does not, because the two face
+    different pressures.  A grid with more, shorter entries is easier to fill:
+    short slots have more candidates and fewer crossings to satisfy.  The
+    ranking puts `filled` first, quite rightly, so the walk discovers that
+    chopping entries up makes grids that fill -- and it is correct, and the
+    result is not a crossword.
+
+    Unconstrained, breeding produced 8.4 entries of three or four letters
+    against 3.3 in the published library, and 33.5 entries against 29.0, both
+    past the 90th percentile of anything ever printed.  Fixing the quality
+    metric's length bias moved that only from 9.9 to 8.4; the rest is this,
+    and no scoring tweak reaches it, because filling really is easier there.
+    A constraint is the honest instrument: some grids are simply not ones a
+    setter would use, however well they fill.
+    """
+    slots = grid.slots(min_length)
+    if len(slots) > MAX_ENTRIES:
+        return False
+    return sum(1 for s in slots if s.length <= 4) <= MAX_SHORT
+
+
 def _profile_of(grid, min_length: int = 3) -> dict:
     counts: dict = {}
     for slot in grid.slots(min_length):
@@ -61,7 +92,7 @@ def disturbance(before: dict, after: dict) -> int:
 
 
 def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
-               max_change: int = None):
+               max_change: int = None, like_library: bool = True):
     """Every legal grid one symmetric block-pair flip away.
 
     Flipping a cell flips its rotational partner too, so symmetry is never
@@ -81,6 +112,9 @@ def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
     Sliding a block one cell along, the obvious smoother move, is not: it is a
     removal and an addition at once, so it disturbs more (median 10 against 6)
     and only 8.4 are legal per grid against 65.5 flips.
+
+    `like_library` keeps the result inside the envelope real grids occupy;
+    see `within_envelope` for why breeding cannot be trusted without it.
     """
     rules = rules or RuleSet()
     size = pattern.size
@@ -99,6 +133,8 @@ def neighbours(pattern: Pattern, rules: RuleSet = None, *, min_length: int = 3,
                 continue
             seen.add(key)
             if validate(grid, rules):
+                continue
+            if like_library and not within_envelope(grid, min_length):
                 continue
             if max_change is not None:
                 if disturbance(before, _profile_of(grid, min_length)) > max_change:

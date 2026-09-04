@@ -45,6 +45,7 @@ class LengthIndex:
             if scores is not None
             else None
         )
+        self._mean = None
 
         # Word -> id, so a caller holding a word (a themed entry the setter
         # chose, say) can ask whether it is in the dictionary without a linear
@@ -58,6 +59,21 @@ class LengthIndex:
             bit = 1 << word_id
             for position, char in enumerate(word):
                 self.masks[position][char] |= bit
+
+    @property
+    def mean_score(self) -> float:
+        """Average familiarity of the words at this length.
+
+        Familiarity falls steeply with length -- 2.60 at three letters, 0.40
+        at fifteen -- because long words are rarer in every corpus.  Anything
+        comparing words *across* lengths has to divide that out, or it is
+        really just measuring how short they are.
+        """
+        if self.score is None:
+            return 0.0
+        if self._mean is None:
+            self._mean = sum(self.score) / len(self.score) if self.score else 0.0
+        return self._mean
 
     def match(self, pattern: str, exclude: int = 0) -> int:
         """The mask of words fitting a pattern, minus any excluded ids."""

@@ -128,11 +128,20 @@ def _alive(grid: Grid, index: Index, slots) -> bool:
 
 
 def fill_quality(grid, index, placed, min_length: int = 3) -> float:
-    """Mean familiarity of the words the search chose, targets excluded.
+    """How familiar the chosen words are *for their length*.
 
-    Targets were the setter's choice and are not the fill's to answer for, so
-    they are left out -- otherwise a themed grid full of proper nouns would
-    score as badly written when the obscurity was deliberate.
+    Targets are excluded: they were the setter's choice and are not the
+    fill's to answer for, or a themed grid full of proper nouns would score
+    as badly written when the obscurity was deliberate.
+
+    Each word is measured against the average for its own length, and that
+    correction is the whole point.  Raw familiarity falls steeply with length
+    -- 2.60 at three letters against 0.40 at fifteen -- so averaging it over a
+    grid rewards grids made of short entries.  Ranking on the raw mean did
+    exactly that: the grids this picked carried 9.9 entries of three or four
+    letters against 3.3 in the published library, three times as many, and
+    never once chose a grid with a fifteen.  The metric was measuring entry
+    length while claiming to measure quality.
     """
     values = []
     for slot in grid.slots(min_length):
@@ -143,7 +152,8 @@ def fill_quality(grid, index, placed, min_length: int = 3) -> float:
         if bucket is None or bucket.score is None:
             continue
         word_id = bucket.by_word.get(word)
-        values.append(bucket.score[word_id] if word_id is not None else 0.0)
+        raw = bucket.score[word_id] if word_id is not None else 0.0
+        values.append(raw - bucket.mean_score)
     return sum(values) / len(values) if values else 0.0
 
 

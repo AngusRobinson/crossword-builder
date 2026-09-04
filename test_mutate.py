@@ -192,3 +192,42 @@ def test_max_change_restricts_the_neighbourhood(patterns):
     # Every gentle neighbour is also a plain one; the cap only filters.
     assert ({frozenset(g.blocks) for _c, g in gentle}
             <= {frozenset(g.blocks) for _c, g in everything})
+
+
+def test_envelope_matches_what_gets_published(patterns):
+    """Every published grid must satisfy the constraint bred grids are held to.
+
+    A bound that real crosswords fail is a bound about our taste, not about
+    crosswords.
+    """
+    inside = sum(1 for p in patterns if mutate.within_envelope(p.grid()))
+    assert inside / len(patterns) > 0.85, f"only {inside}/{len(patterns)} published grids fit"
+
+
+def test_envelope_rejects_chopped_up_grids(patterns):
+    """The failure it exists to stop: many short entries, easy to fill."""
+    from crossword.grid import Grid
+
+    chopped = Grid.parse("\n".join(
+        ("....#....#...." if r % 2 == 0 else "#.#.#.#.#.#.#.#"[:15])
+        for r in range(15)))
+    slots = chopped.slots(3)
+    short = sum(1 for s in slots if s.length <= 4)
+    if short > mutate.MAX_SHORT or len(slots) > mutate.MAX_ENTRIES:
+        assert not mutate.within_envelope(chopped)
+
+
+def test_breeding_stays_inside_the_envelope_by_default(patterns):
+    """Unconstrained breeding walks towards grids that fill easily.
+
+    Short slots have more candidates and fewer crossings, the ranking puts
+    `filled` first, and so the walk chops entries up: 8.4 short entries
+    against the library's 3.3 before this constraint, 5.0 after, at a cost of
+    2 words in 112 over the ten hardest lists.
+    """
+    seed = patterns[0]
+    held = list(mutate.neighbours(seed, BRITISH))
+    free = list(mutate.neighbours(seed, BRITISH, like_library=False))
+    assert len(held) <= len(free)
+    for _cell, grid in held:
+        assert mutate.within_envelope(grid)

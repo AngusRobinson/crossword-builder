@@ -124,5 +124,32 @@ lost ground -- and a fallback makes that impossible.
                       disturbs more (median 10 against 6) and only 8.4 are
                       legal per grid against 65.5 flips.
 
+## Entry lengths
+
+Two separate pressures push bred grids towards short entries, and both were
+found by using the tool rather than by the benchmark, which never looked at
+entry lengths at all.
+
+First, `fill_quality` averaged raw familiarity, and familiarity falls steeply
+with length -- 2.60 at three letters against 0.40 at fifteen -- so the metric
+rewarded grids made of short words while claiming to measure quality. It now
+scores each word against the average for its own length.
+
+Second, and larger: a grid with more, shorter entries is genuinely easier to
+fill, and `filled` rightly outranks everything else, so breeding walks towards
+chopped-up grids. No scoring tweak reaches that, because the preference is
+correct -- those grids really do fill. `mutate.within_envelope` is the honest
+instrument: bred grids must stay inside the range published ones occupy, at
+most 7 entries of three or four letters and at most 32 entries in total, both
+the 90th percentile of the library.
+
+    entries of 3-4 letters, per grid          published library   3.3
+                                              library pick only   4.2
+                                              breeding, before    9.9
+                                              after length fix    8.4
+                                              after envelope      5.0
+
+    cost of the envelope: 110 words against 112 over the ten hardest lists
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.
