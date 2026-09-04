@@ -17,3 +17,4 @@ guardian-cc-master.zip
 out/
 *.swp
 *.bundle
+.claude/settings.json
