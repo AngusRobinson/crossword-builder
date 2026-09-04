@@ -90,19 +90,23 @@ def read_nina_path(spec, size: int = 15):
     return cells, text
 
 
-def nina_placer(cells, text):
+def nina_placer(cells, text, exact: bool = False):
     """Build the per-pattern rule cover() needs.
 
     The message takes the white cells from the start of the path onward, so a
     short one sits in the first corner and a full-length one reads the whole
-    way round.  A grid with too few white cells on the path simply cannot
-    carry it.
+    way round.  A grid with too few white cells on the path cannot carry it.
+
+    `exact` demands that the message use every white cell on the path, which
+    is what a perimeter nina means: a circuit that stops three quarters of the
+    way round is not one.  For an open path like a single row, stopping early
+    is fine and exact is off.
     """
     path = list(cells)
 
     def place(pattern):
         white = [c for c in path if c not in pattern.blocks]
-        if len(white) < len(text):
+        if len(white) < len(text) or (exact and len(white) != len(text)):
             return None
         return dict(zip(white, text))
 
@@ -300,7 +304,10 @@ def main() -> int:
             path_cells, message = read_nina_path(args.nina_path)
         except ValueError as problem:
             parser.error(str(problem))
-        placer = nina_placer(path_cells, message)
+        # A perimeter message must close the circuit; an open path need not.
+        placer = nina_placer(path_cells, message,
+                             exact=args.nina_path.split(",")[0].strip().lower()
+                             == "perimeter")
 
     patterns = library.load()
     if placer:
