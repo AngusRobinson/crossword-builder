@@ -22,7 +22,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from crossword import coverage, frequency, library
+from crossword import coverage, frequency, library, mutate
 from crossword.index import Index
 from crossword.words import load
 
@@ -34,6 +34,10 @@ COMMONNESS = 3.0
 # None means "the combined table"; a dict overrides it, for A/B runs.
 SCORES = None
 QUALITY_SCAN = 4
+# Grow tailored mutants from the library for each list.  Off reproduces the
+# committed baseline.
+TAILOR = False
+TAILOR_RULES = None
 
 
 def main():
@@ -54,8 +58,11 @@ def main():
     start = time.time()
     for item in bench:
         began = time.time()
+        pool = patterns
+        if TAILOR:
+            pool = mutate.candidates(patterns, item["words"], TAILOR_RULES)
         got = coverage.best_over_library(
-            patterns, index, item["words"], top=14, attempts=3, budget=6000,
+            pool, index, item["words"], top=14, attempts=3, budget=6000,
             time_limit=45.0, commonness=COMMONNESS,
             quality_scan=QUALITY_SCAN, seed=0
         )
