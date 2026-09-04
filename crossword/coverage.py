@@ -127,21 +127,29 @@ def _alive(grid: Grid, index: Index, slots) -> bool:
     return True
 
 
-def fill_quality(grid, index, placed, min_length: int = 3) -> float:
+def fill_quality(grid, index, placed, min_length: int = 3,
+                 aim: float = 0.85) -> float:
     """How familiar the chosen words are *for their length*.
 
     Targets are excluded: they were the setter's choice and are not the
     fill's to answer for, or a themed grid full of proper nouns would score
     as badly written when the obscurity was deliberate.
 
-    Each word is measured against the average for its own length, and that
-    correction is the whole point.  Raw familiarity falls steeply with length
-    -- 2.60 at three letters against 0.40 at fifteen -- so averaging it over a
-    grid rewards grids made of short entries.  Ranking on the raw mean did
-    exactly that: the grids this picked carried 9.9 entries of three or four
-    letters against 3.3 in the published library, three times as many, and
-    never once chose a grid with a fifteen.  The metric was measuring entry
-    length while claiming to measure quality.
+    Each word is scored by how near its familiarity rank *within its own
+    length* comes to `aim`.  Two things follow from that, and both were
+    mistakes this replaced.
+
+    Ranking is per length because raw familiarity falls steeply with it --
+    2.60 at three letters against 0.40 at fifteen -- so averaging the raw
+    figure rewards grids built from short words.  It did: the grids this
+    picked carried 9.9 entries of three or four letters against 3.3 in the
+    library, and never once chose a grid with a fifteen.
+
+    And the target is 0.85 rather than the maximum, because more familiar is
+    not better without limit.  Measured on 21,895 published answers, setters
+    sit at a median rank of 0.86 for the length.  Maximising instead put 43%
+    of the fill above Zipf 4 where real answers put 17%: not obscure, just
+    obvious.
     """
     values = []
     for slot in grid.slots(min_length):
@@ -152,8 +160,16 @@ def fill_quality(grid, index, placed, min_length: int = 3) -> float:
         if bucket is None or bucket.score is None:
             continue
         word_id = bucket.by_word.get(word)
-        raw = bucket.score[word_id] if word_id is not None else 0.0
-        values.append(raw - bucket.mean_score)
+        if aim is None:
+            # The superseded monotonic measure, kept reachable so the two can
+            # be compared. Normalised by length, or it just counts short words.
+            raw = bucket.score[word_id] if word_id is not None else 0.0
+            values.append(raw - bucket.mean_score)
+            continue
+        if bucket.quantile is None or word_id is None:
+            values.append(-1.0)
+            continue
+        values.append(-abs(bucket.quantile[word_id] - aim))
     return sum(values) / len(values) if values else 0.0
 
 
@@ -289,6 +305,9 @@ def cover(
     budget: int = 1500,
     deadline: float | None = None,
     commonness: float = 3.0,
+    aim: float = 0.85,
+    pangram: int = 0,
+    hunger: float = None,
     preset: dict = None,
     seed: int | None = None,
 ) -> Cover:
@@ -331,13 +350,18 @@ def cover(
 
             filler = Filler(
                 grid, index, rules,
-                node_budget=8000, commonness=commonness,
+                node_budget=8000, commonness=commonness, aim=aim,
+                pangram=pangram, hunger=hunger,
                 seed=rng.randrange(1 << 30),
             )
-            ok = filler.fill(restarts=fill_restarts)
+            # A pangram is reached by biasing and retrying, so it needs far
+            # more restarts than an ordinary fill: each near miss is thrown
+            # away rather than backtracked.
+            ok = filler.fill(restarts=max(fill_restarts, 25) if pangram
+                             else fill_restarts)
             placed = tuple(word for word, _s, _w in seated)
             worth = fill_quality(grid, index, set(placed),
-                                 rules.min_entry_length) if ok else 0.0
+                                 rules.min_entry_length, aim) if ok else 0.0
 
             # Lexicographic, and the order is the policy: a completed grid
             # always beats an incomplete one, more targets always beat fewer,

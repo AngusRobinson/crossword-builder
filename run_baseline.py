@@ -31,6 +31,7 @@ BENCH = "benchmark/lists.json"
 # The production configuration, so the benchmark measures what the tool does.
 MIN_USES = 0
 COMMONNESS = 3.0
+AIM = 0.85
 # None means "the combined table"; a dict overrides it, for A/B runs.
 SCORES = None
 QUALITY_SCAN = 4
@@ -79,7 +80,8 @@ def main():
             got = mutate.best_with_tailoring(
                 patterns, index, item["words"], TAILOR_RULES,
                 top=14, attempts=3, budget=6000, time_limit=TIME_LIMIT,
-                commonness=COMMONNESS, quality_scan=QUALITY_SCAN, seed=0,
+                commonness=COMMONNESS, aim=AIM, quality_scan=QUALITY_SCAN,
+                seed=0,
             )
             rows.append((item, got, time.time() - began, _quality(got, counts, scores)))
             _report(item, got, time.time() - began)
@@ -90,7 +92,7 @@ def main():
             pool = mutate.candidates(patterns, item["words"], TAILOR_RULES)
         got = coverage.best_over_library(
             pool, index, item["words"], top=14, attempts=3, budget=6000,
-            time_limit=TIME_LIMIT, commonness=COMMONNESS,
+            time_limit=TIME_LIMIT, commonness=COMMONNESS, aim=AIM,
             quality_scan=QUALITY_SCAN, seed=0
         )
         # Fill quality: the words we chose, not the targets we were given.

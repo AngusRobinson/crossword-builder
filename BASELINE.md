@@ -151,5 +151,48 @@ the 90th percentile of the library.
 
     cost of the envelope: 110 words against 112 over the ten hardest lists
 
+## Aiming, rather than maximising
+
+Familiarity was a ramp: more common was always better, so the search climbed
+to the most ordinary word available. Checked on the Zipf scale, which is
+independent of the Guardian counts and so not circular, that put 43% of the
+fill above Zipf 4 where published answers put 17%. Not obscure -- obvious, and
+full of the crosswordese --max-uses was invented to suppress.
+
+Real answers sit at the 86th percentile of familiarity *for their own length*,
+steady from 0.77 at four letters to 0.93 at fifteen. So `--aim` (default 0.85)
+targets that rank instead of the maximum. A rank within the length, not an
+absolute band, or long words would be excluded and --long undone.
+
+    distance from the published Zipf distribution
+        monotonic   63        aim 0.85   19
+        aim 0.75    46        aim 0.90   17
+        aim 0.80    32        aim 0.95   22
+
+Free in coverage: against the monotonic version, feasible 99% either way,
+realistic 87% to 88%, arbitrary 81% to 82%, controls 14/16 both, unknown fill
+5.4% to 5.5%. It also doubles as a difficulty dial -- aim 0.5 gives a fill at
+rank 0.52 -- which largely subsumes --max-uses.
+
+## Pangrams
+
+An ordinary fill is never one: 25 fills missed 4.2 letters on average, almost
+always j, q, x and z, and turning the familiarity preference off entirely only
+reached 3.5. Freedom was never the constraint -- nothing was asking for a z.
+
+`--pangram N` adds a bonus in Filler._order for each still-missing letter a
+word supplies, scaled by `hunger`, and discards a completed fill that falls
+short so the next restart tries again.
+
+    requirement   hunger   achieved   fill rank
+    none               -      0/16         0.81
+    pangram            2     16/16         0.79
+    double            10     16/16         0.70
+    triple            24      1/8          --
+
+A pangram is close to free, a double costs real fill quality, a triple works
+about one attempt in eight at ~14s each. hunger defaults to 3 x the
+requirement.
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

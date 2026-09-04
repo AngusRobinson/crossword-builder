@@ -115,9 +115,22 @@ def main() -> int:
                              "crosswordese out. 20 removes 684 words (isle, "
                              "extra, star, blue, bridge, echo, stud)")
     parser.add_argument("--commonness", type=float, default=3.0, metavar="F",
-                        help="how hard to prefer words that have been "
-                             "published as answers, 0 for no preference "
-                             "(default 3.0; above 4 makes little difference)")
+                        help="how hard to steer towards --aim, 0 for no "
+                             "preference at all (default 3.0)")
+    parser.add_argument("--aim", type=float, default=0.85, metavar="Q",
+                        help="what familiarity to aim at, as a rank within "
+                             "each word's own length. 1.0 always takes the "
+                             "most ordinary word available and fills the grid "
+                             "with ISLE and OVER; published answers sit at "
+                             "0.86 (default 0.85). Lower for a harder puzzle")
+    parser.add_argument("--pangram", type=int, default=0, metavar="N",
+                        choices=(0, 1, 2, 3),
+                        help="require every letter of the alphabet N times: "
+                             "1 for a pangram, 2 for a double, 3 for a triple. "
+                             "A pangram is close to free; a double costs some "
+                             "fill quality; a triple succeeds about one "
+                             "attempt in eight, so expect to raise "
+                             "--time-limit and try several seeds")
     parser.add_argument("--nina", action="append", default=[],
                         metavar="ROW,COL,DIR,LETTERS",
                         help="fix letters in the grid before any word is "
@@ -189,7 +202,8 @@ def main() -> int:
 
     began = time.time()
     common = dict(top=args.patterns, attempts=3, budget=6000,
-                  commonness=args.commonness, seed=args.seed)
+                  commonness=args.commonness, aim=args.aim,
+                  pangram=args.pangram, seed=args.seed)
     if args.no_tailor:
         got = coverage.best_over_library(
             patterns, index, targets, time_limit=args.time_limit,
@@ -241,9 +255,26 @@ def main() -> int:
     unknown = [w for w in fill if not counts.get(w) and not scores.get(w)]
     # got.quality is measured against the average for each word's own length,
     # so 0 is "typical for its length" and the sign is what to read.
-    print(f"fill: {len(fill)} words, {got.quality:+.2f} vs typical for their "
-          f"length, {len(unknown)} unknown to both sources"
+    ranks = []
+    for word in fill:
+        bucket = index.lengths.get(len(word))
+        word_id = bucket.by_word.get(word) if bucket else None
+        if bucket and bucket.quantile and word_id is not None:
+            ranks.append(bucket.quantile[word_id])
+    typical = sum(ranks) / len(ranks) if ranks else 0.0
+    print(f"fill: {len(fill)} words, familiarity rank {typical:.2f} "
+          f"(published answers average 0.86), "
+          f"{len(unknown)} unknown to both sources"
           + (f" ({', '.join(sorted(unknown)[:6])})" if unknown else ""))
+
+    if args.pangram:
+        import collections as _c
+        seen = _c.Counter("".join(got.grid.letters.values()))
+        import string as _s
+        short = [c for c in _s.ascii_lowercase if seen[c] < args.pangram]
+        word = {1: "pangram", 2: "double pangram", 3: "triple pangram"}[args.pangram]
+        print(f"{word}: " + ("achieved" if not short
+                             else "NOT achieved, short of " + "".join(short)))
 
     if nina:
         shown = "".join(sorted(f"{got.grid.letters.get(c, '?')}" for c in nina))

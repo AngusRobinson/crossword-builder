@@ -252,7 +252,8 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
                    min_length: int = 3, attempts: int = 1, budget: int = 1500,
                    commonness: float = 3.0, max_change: int = None,
                    min_long: int = 0, keep_white=(), preset: dict = None,
-                   deadline=None, seed: int = 0):
+                   aim: float = 0.85, pangram: int = 0, deadline=None,
+                   seed: int = 0):
     """Hill-climb on words actually seated, rather than on slot lengths.
 
     `tailor` optimises a length histogram, which is a bound and not a result:
@@ -281,8 +282,9 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
 
     def score(pattern):
         got = cover(pattern, index, targets, rules, attempts=attempts,
-                    budget=budget, commonness=commonness, preset=preset,
-                    deadline=deadline, seed=rng.randrange(1 << 30))
+                    budget=budget, commonness=commonness, aim=aim,
+                    pangram=pangram, preset=preset, deadline=deadline,
+                    seed=rng.randrange(1 << 30))
         return (got.ok, got.n, got.quality)
 
     scored = {p.blocks: (score(p), p) for p in seeds}
@@ -356,7 +358,8 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
     grown = tailor_by_fill(chosen, targets, index, rules, beam=beam, steps=steps,
                            width=width, max_change=max_change,
                            min_long=min_long, keep_white=tuple(preset or ()),
-                           preset=preset,
+                           preset=preset, aim=kwargs.get("aim", 0.85),
+                           pangram=kwargs.get("pangram", 0),
                            deadline=time.time() + left * 0.75,
                            seed=seed, **{k: v for k, v in kwargs.items()
                                          if k in ("commonness",)})
