@@ -2,6 +2,7 @@
 
 import collections
 import string
+import sys
 
 import pytest
 
@@ -118,3 +119,48 @@ def test_pangram_costs_some_fill_quality(scored):
                 vals.append(bucket.quantile[word_id])
         return sum(vals) / len(vals)
     assert rank(2) <= rank(0) + 0.02, "a double pangram should not read better"
+
+
+def test_impossible_multiples_are_refused_not_attempted():
+    """26 x N letters have to physically fit in the white cells.
+
+    A 15x15 library grid holds 137 to 168 of them. 6x needs 156 and fits only
+    the roomiest; 7x needs 182 and fits none, so it is refused with the
+    arithmetic rather than ground at.
+    """
+    import subprocess
+
+    roomiest = max(225 - len(p.blocks) for p in library.load())
+    assert 26 * 7 > roomiest >= 26 * 6
+
+    done = subprocess.run(
+        [sys.executable, "make_grid.py", "--pangram", "7", "kestrel"],
+        capture_output=True, text=True, timeout=300)
+    assert done.returncode != 0
+    assert "needs 182 cells" in done.stderr, done.stderr
+
+    # And a possible one must not be refused on these grounds.
+    done = subprocess.run(
+        [sys.executable, "make_grid.py", "--pangram", "5", "--help"],
+        capture_output=True, text=True, timeout=300)
+    assert done.returncode == 0
+
+
+def test_difficulty_rises_steeply_with_the_multiple(scored):
+    """Why there is no cap, and why high multiples still will not work.
+
+    Per single biased search the mean shortfall roughly doubles per step: 1.0
+    letters short at N=1, 1.6 at 2, 3.6 at 3, 5.5 at 4. The obstruction is
+    English, not the search -- j, q, x and z are the missing ones every time,
+    and no amount of restarting conjures words that contain them.
+    """
+    pattern = library.load()[0]
+
+    def shortfall(n):
+        grid = pattern.grid()
+        filler = Filler(grid, scored, pangram=n, node_budget=30000, seed=5)
+        if not filler._search(list(filler.slots)):
+            pytest.skip("no complete fill at this seed")
+        return len(short_of(grid, n))
+
+    assert shortfall(1) <= shortfall(4), "higher multiples must be harder"

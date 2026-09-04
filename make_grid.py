@@ -124,13 +124,15 @@ def main() -> int:
                              "with ISLE and OVER; published answers sit at "
                              "0.86 (default 0.85). Lower for a harder puzzle")
     parser.add_argument("--pangram", type=int, default=0, metavar="N",
-                        choices=(0, 1, 2, 3),
-                        help="require every letter of the alphabet N times: "
-                             "1 for a pangram, 2 for a double, 3 for a triple. "
-                             "A pangram is close to free; a double costs some "
-                             "fill quality; a triple succeeds about one "
-                             "attempt in eight, so expect to raise "
-                             "--time-limit and try several seeds")
+                        help="require every letter of the alphabet N times. "
+                             "1 is close to free, 2 costs some fill quality, "
+                             "3 succeeds about one attempt in eight -- raise "
+                             "--time-limit and try several seeds. Higher is "
+                             "allowed and will simply be attempted, though 4 "
+                             "and up have never succeeded here. A 15x15 holds "
+                             "137-168 white cells, so 5x needs 130 and fits "
+                             "any grid, 6x needs 156 and fits only the "
+                             "roomiest, and 7x fits none")
     parser.add_argument("--nina", action="append", default=[],
                         metavar="ROW,COL,DIR,LETTERS",
                         help="fix letters in the grid before any word is "
@@ -165,6 +167,17 @@ def main() -> int:
         print(f"skipped {word!r}: {why}", file=sys.stderr)
     if not targets:
         parser.error("no usable target words given")
+
+    if args.pangram < 0:
+        parser.error("--pangram cannot be negative")
+    if args.pangram:
+        # 26 * N letters have to physically fit. The grid is not chosen yet,
+        # so this uses the roomiest the library offers; a tighter grid will
+        # simply fail to fill and say so.
+        roomiest = max(225 - len(p.blocks) for p in library.load())
+        if 26 * args.pangram > roomiest:
+            parser.error(f"--pangram {args.pangram} needs {26 * args.pangram} "
+                         f"cells but the roomiest grid has {roomiest}")
 
     try:
         nina = read_nina(args.nina)
