@@ -246,5 +246,25 @@ American grid drawn from it reads oddly -- gyve, sasarara, yealm. `--min-score
 1.0` removes the unrecognised words at some cost in variety, but an American
 word list would serve the style far better.
 
+## Searching harder does not work; searching again does
+
+`--effort` scales the shortlist, the seating budget, the restarts and the
+breeding together. Measured on the two lists that have never reached their
+known optimum, it is flat at best and monotonically worse at worst:
+
+    list          normal        deep    exhaustive
+    feas-14-20    13/14 27s   13/14 72s   13/14 176s
+    feas-18-30    16/18 43s   15/18 244s  14/18 469s
+
+Eight ordinary runs at different seeds do better than one long one, in less
+time: feas-18-30 gave [16, 15, 14, 13, 16, 16, 16, 16] in 273s against 14/18
+in 469s for a single exhaustive run.
+
+Two things follow. The search is randomised and peaks early, so the way to
+spend a time budget is more starts rather than longer ones. And both lists
+plateau below an optimum that provably exists -- 13/14 and 16/18 -- which no
+parameter reaches, so the remaining gap is in the seating search itself and
+not in how long it is given.
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

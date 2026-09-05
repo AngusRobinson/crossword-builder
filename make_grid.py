@@ -45,6 +45,28 @@ STEPS = {
 }
 
 
+# How hard to look.  Every one of these was a constant buried in make_grid or
+# defaulted in the search; the levels move them together, because raising one
+# alone tends to spend time without buying anything -- more patterns with too
+# few attempts each, or more attempts on too narrow a shortlist.
+#
+#   top          library grids on the shortlist
+#   attempts     seating restarts per grid
+#   budget       nodes for the seating branch and bound
+#   quality_scan grids tried past the coverage optimum, for a better fill
+#   seeds/beam/steps/width   how widely breeding explores
+EFFORT = {
+    "quick": dict(top=6, attempts=1, budget=1500, quality_scan=0,
+                  seeds=2, beam=2, steps=2, width=4, time_limit=15.0),
+    "normal": dict(top=14, attempts=3, budget=6000, quality_scan=4,
+                   seeds=4, beam=3, steps=3, width=6, time_limit=45.0),
+    "deep": dict(top=40, attempts=6, budget=20000, quality_scan=8,
+                 seeds=8, beam=4, steps=4, width=8, time_limit=300.0),
+    "exhaustive": dict(top=120, attempts=10, budget=60000, quality_scan=16,
+                       seeds=12, beam=6, steps=5, width=10, time_limit=1200.0),
+}
+
+
 def _perimeter(size):
     return ([(0, c) for c in range(size)]
             + [(r, size - 1) for r in range(1, size)]
@@ -193,11 +215,20 @@ def main() -> int:
     )
     parser.add_argument("words", nargs="*", help="target words")
     parser.add_argument("--file", help="read targets from a file")
+    parser.add_argument("--effort", choices=tuple(EFFORT), default="normal",
+                        help="how hard to look. quick is for trying an idea "
+                             "out. deep and exhaustive widen everything and "
+                             "measurably do not help -- on the benchmark's "
+                             "hardest lists they were flat or worse (16, 15, "
+                             "14 of 18 for normal, deep, exhaustive) while "
+                             "taking ten times as long. To search harder, run "
+                             "several --seed values at normal instead")
     parser.add_argument("--seed", type=int, default=0, help="0 for repeatable runs")
-    parser.add_argument("--time-limit", type=float, default=45.0,
+    parser.add_argument("--time-limit", type=float, default=None,
                         help="seconds to spend searching (default 45)")
-    parser.add_argument("--patterns", type=int, default=14,
-                        help="how many grids from the library to try")
+    parser.add_argument("--patterns", type=int, default=None,
+                        help="how many grids from the library to try; "
+                             "overrides whatever --effort would have chosen")
     parser.add_argument("--min-score", type=float, default=0.0, metavar="S",
                         help="floor: refuse fill words with a familiarity "
                              "below S. 0 allows everything, 1.0 leaves 84,268 "
@@ -377,15 +408,20 @@ def main() -> int:
     index = Index(kept, scores)
 
     began = time.time()
-    common = dict(top=args.patterns, attempts=3, budget=6000,
-                  commonness=args.commonness, aim=args.aim,
-                  pangram=args.pangram, seed=args.seed)
+    effort = dict(EFFORT[args.effort])
+    limit = args.time_limit if args.time_limit is not None else effort.pop("time_limit")
+    effort.pop("time_limit", None)
+    breeding = {k: effort.pop(k) for k in ("seeds", "beam", "steps", "width")}
+    if args.patterns is not None:
+        effort["top"] = args.patterns
+    common = dict(commonness=args.commonness, aim=args.aim,
+                  pangram=args.pangram, seed=args.seed, **effort)
     # Breeding exists to fit a word list, so with no list there is nothing to
     # breed towards and it is pure cost.
     if args.no_tailor or not targets:
         got = coverage.best_over_library(
             patterns, index, targets, style_rules,
-            time_limit=args.time_limit, preset=placer or nina, **common)
+            time_limit=limit, preset=placer or nina, **common)
     else:
         # The rules breeding must keep, so a bred grid is still one a setter
         # would print.  The British family is tighter than the plain rule set:
@@ -397,7 +433,7 @@ def main() -> int:
         got = mutate.best_with_tailoring(
             patterns, index, targets, breed_rules, fill_rules=style_rules,
             min_long=args.long, preset=placer or nina,
-            time_limit=args.time_limit, **common)
+            time_limit=limit, **breeding, **common)
     elapsed = time.time() - began
 
     if not got.ok:
