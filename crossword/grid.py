@@ -104,11 +104,23 @@ class Grid:
     # -- derivation --------------------------------------------------------
 
     def runs(self, direction: str) -> list[Slot]:
-        """Every maximal unblocked run in one direction, including length-1 runs."""
+        """Every maximal run in one direction, including length-1 runs.
+
+        A run ends at a block, at a bar, or at the edge.  Blocked and barred
+        grids differ only here: a blocked grid removes cells and a barred one
+        draws a line between two cells that both stay.  Everything downstream
+        -- which cells are checked, every rule, the whole search -- reads runs
+        and so needs no idea which kind of grid it has.
+
+        A bar belongs to the cell on its left or above it, so `right_bars`
+        closes a run *after* that cell and `bottom_bars` does the same
+        downwards.
+        """
         key = ("runs", direction)
         hit = self._derived.get(key)
         if hit is not None:
             return hit
+        bars = self.right_bars if direction == ACROSS else self.bottom_bars
         found: list[Slot] = []
         for line in range(self.size):
             start = None
@@ -120,8 +132,15 @@ class Grid:
                         head = (line, start) if direction == ACROSS else (start, line)
                         found.append(Slot(head[0], head[1], direction, offset - start))
                         start = None
-                elif start is None:
+                    continue
+                if start is None:
                     start = offset
+                if cell in bars:
+                    # The bar is after this cell, so the run includes it.
+                    head = (line, start) if direction == ACROSS else (start, line)
+                    found.append(Slot(head[0], head[1], direction,
+                                      offset + 1 - start))
+                    start = None
         self._derived[key] = found
         return found
 

@@ -304,3 +304,49 @@ def test_slot_cells_are_stable_and_correct():
     # Same object every time, and not accidentally shared between slots.
     assert across.cells is across.cells
     assert across.cells != down.cells
+
+
+def test_runs_split_on_bars_as_well_as_blocks():
+    """A barred grid removes no squares; it draws lines between them.
+
+    Everything downstream reads runs, so it needs no idea which kind of grid
+    it has. A bar belongs to the cell on its left or above it, so the run
+    includes that cell and ends after it.
+    """
+    from crossword.grid import ACROSS, DOWN
+
+    grid = Grid(size=6)
+    grid.right_bars.add((0, 2))
+    grid.bottom_bars.add((2, 0))
+
+    across = [(s.col, s.length) for s in grid.runs(ACROSS) if s.row == 0]
+    assert across == [(0, 3), (3, 3)]
+    down = [(s.row, s.length) for s in grid.runs(DOWN) if s.col == 0]
+    assert down == [(0, 3), (3, 3)]
+
+    # No squares were removed, so every cell is still in both directions.
+    assert grid.blocks == set()
+    assert len(grid.checked_cells(2)) == 36
+
+
+def test_a_single_cell_between_bars_is_unchecked():
+    """The only way a barred grid gets an unchecked letter.
+
+    Bars either side of one cell leave it in a run of length 1, which is no
+    entry at all, so that letter belongs to the perpendicular entry only.
+    """
+    grid = Grid(size=6)
+    grid.right_bars.add((0, 0))       # bar after the first cell
+    grid.right_bars.add((0, 1))       # and after the second: cell 1 is alone
+    lengths = [s.length for s in grid.runs("across") if s.row == 0]
+    assert lengths == [1, 1, 4]
+    assert (0, 1) not in grid.checked_cells(3)
+
+
+def test_bars_invalidate_the_cache_when_the_grid_is_stamped():
+    grid = Grid(size=6)
+    before = len(grid.runs("across"))
+    grid.right_bars.add((0, 2))
+    grid._stamp += 1
+    grid._derived.clear()
+    assert len(grid.runs("across")) == before + 1
