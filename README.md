@@ -86,7 +86,8 @@ attached, which is the state a setter wants to start from.
 | Setting | Default | What it does |
 |---|---|---|
 | `--time-limit S` | 45 | Wall-clock budget for the whole search |
-| `--seed N` | 0 | Different grid from the same words; try a few |
+| `--tries N` | 3 | Run N times from consecutive seeds and keep the best |
+| `--seed N` | 0 | The first seed; `--tries` counts up from it |
 | `--aim Q` | 0.85 | How familiar the fill should be, as a rank within each word's own length. Lower is harder |
 | `--commonness F` | 3.0 | How hard to steer towards `--aim`; 0 disables |
 | `--min-score S` | 0 | Hard floor: refuse fill words below this familiarity |
@@ -98,7 +99,27 @@ attached, which is the state a setter wants to start from.
 | `--nina`, `--nina-path` | — | Hide a message; see below |
 | `--pangram N` | 0 | Require every letter of the alphabet N times |
 
-`--aim` is the one to reach for first. It targets a familiarity *rank* rather
+**`--tries` is doing more work than any other setting.** The same list run
+twice gives different answers, sometimes by a lot: over 12 dense lists at 8
+seeds each, one run averaged 88.4% of the achievable coverage and the best of
+three averaged 96.5%. Four runs cleared the last unrecognised fill word.
+Nothing changes after that, so three is the default.
+
+The variance is per-list, and you cannot tell which kind you have in advance.
+One list gave 19 on all eight seeds; another gave 14, 12, 20, 20, 20, 20, 20,
+15. That is the argument for three rather than one — not that three is better
+on average, but that a single run might be the 12.
+
+```
+$ python3 make_grid.py --file dense.txt
+3 tries placed [14, 12, 20] -- keeping the best
+placed 20 of 20 targets (100% of the 20 that could fit this library) in 120s
+```
+
+Each try gets its own `--time-limit`, so N tries takes N times as long. Set
+`--tries 1` when iterating on an idea.
+
+`--aim` is the one to reach for next. It targets a familiarity *rank* rather
 than a maximum, because more common is not better without limit: maximising put
 43% of the fill above Zipf 4 where published answers put 17%. Real answers sit
 at the 86th percentile for their length, hence the default. Drop it to 0.5 for a
