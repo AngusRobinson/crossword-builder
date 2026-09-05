@@ -212,8 +212,8 @@ about 3.4x, with no change to any result:
 
 ## American grids
 
-`--style us` selects a second library: 1,200 patterns extracted from pre-1965
-New York Times puzzles, geometry only. The rule set already expressed the
+`--style us` selects a second library: 2,500 patterns sampled from 48,481
+distinct ones across 33 publications, geometry only. The rule set already expressed the
 convention -- every letter checked is
 `RuleSet(max_consecutive_unchecked=0, min_checked_fraction=1.0)` -- and real
 American grids validate against it, 3,091 of 4,451 puzzles passing with only
@@ -229,17 +229,22 @@ instantly, but they would not fill: 3/5 at 11x11, 1/5 at 13x13, 0/5 at 15x15.
 Real grids fill with the same dictionary, so the grids were the problem and
 not the word list. Allowing proper nouns made no measurable difference.
 
-Fill reliability depends steeply on density, since a sparser grid means longer
-entries and every letter is checked twice:
+How the library is sampled turned out to matter more than anything else about
+it. Spreading evenly across block counts over-represented the extremes, and a
+16-block grid is not something anyone publishes; that library filled 2/10 at
+its sparse end. Real grids cluster hard -- 36 and 38 blocks are 20% and 22% of
+the corpus, and 30 to 44 covers 93% -- so a random sample, which is
+proportional by construction, looks like American crosswords and an even one
+does not. The proportional library fills 20/20 at about 3s each.
 
-    43-49 blocks   9/10 filled    5s each
-    34 blocks      7/10          18s each
-    23-27 blocks   2/10          48s each
+That also fixed themed American grids, which had failed to complete in four
+minutes: a four-word theme now places 4/4 in about 135s.
 
-Still open: themed American grids. Seating targets into a fully checked grid
-is much harder than into a British one, and a four-word theme did not complete
-within four minutes. The pieces work separately; the combination needs the
-search parameters revisiting, which were all tuned on 28-entry grids.
+What remains is vocabulary rather than search. Fill familiarity runs about
+0.63 against the published 0.86, because UKACD is a British list and an
+American grid drawn from it reads oddly -- gyve, sasarara, yealm. `--min-score
+1.0` removes the unrecognised words at some cost in variety, but an American
+word list would serve the style far better.
 
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

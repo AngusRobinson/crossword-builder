@@ -2,17 +2,20 @@
 
     python3 build_us_library.py xd-puzzles.zip
 
-Only pre-1965 New York Times puzzles are read, and only their geometry: which
-squares are blocked. No clue, answer or title is taken, and nothing from any
-other publication or later year is touched.
+Only geometry is read: which squares are blocked. No clue, answer or title is
+taken from any puzzle. A block pattern is a functional layout rather than
+expressive content, which is the same basis on which the British library holds
+Guardian patterns.
 
-American grids, unlike British ones, are barely reused -- 4,451 puzzles yield
-3,091 distinct patterns, where 8,348 Guardian puzzles yield 130. So there is
-no usage count worth recording and the library is a sample rather than a
-census.
+American grids, unlike British ones, are barely reused -- and the more of the
+corpus is read the clearer that becomes -- so there is no usage count worth
+recording and the library is a sample rather than a census. Patterns are
+spread evenly across block counts, since taking the first N would draw them
+all from one publication and one era.
 """
 
 import collections
+import random
 import re
 import sys
 import zipfile
@@ -23,7 +26,7 @@ from crossword.rules import RuleSet, validate
 
 US = RuleSet(max_consecutive_unchecked=0, min_checked_fraction=1.0)
 OUT = "crossword/grids-us.txt"
-LIMIT = 1200
+LIMIT = 2500
 
 
 def grid_of(text):
@@ -49,13 +52,10 @@ def grid_of(text):
 
 def main(archive):
     with zipfile.ZipFile(archive) as bundle:
-        wanted = [
-            name for name in bundle.namelist()
-            if name.endswith(".xd") and "/nytimes/" in name
-            and (m := re.search(r"/((?:19)\d\d)/", name))
-            and int(m.group(1)) < 1965
-        ]
-        print(f"{len(wanted)} pre-1965 New York Times puzzles")
+        wanted = [name for name in bundle.namelist() if name.endswith(".xd")]
+        pubs = collections.Counter(
+            name.split("/")[1] for name in wanted if name.startswith("gxd/"))
+        print(f"{len(wanted)} puzzles across {len(pubs)} publications")
 
         seen, rejected, read = {}, collections.Counter(), 0
         for name in sorted(wanted):
@@ -71,20 +71,21 @@ def main(archive):
                 rejected.update(problems)
                 continue
             seen.setdefault(frozenset(grid.blocks), (grid, name))
+        print(f"  ...{len(seen)} distinct patterns so far", end="\r", flush=True)
 
     print(f"{read} were 15x15; {len(seen)} distinct patterns pass the rule set")
     print(f"rejected: {dict(rejected.most_common(5))}")
 
-    # Spread the sample across block counts rather than taking the first N,
-    # which would all come from the same few years and look alike.
-    by_blocks = collections.defaultdict(list)
-    for blocks, (grid, name) in seen.items():
-        by_blocks[len(blocks)].append((blocks, grid, name))
-    chosen = []
-    while len(chosen) < LIMIT and any(by_blocks.values()):
-        for count in sorted(by_blocks):
-            if by_blocks[count] and len(chosen) < LIMIT:
-                chosen.append(by_blocks[count].pop())
+    # A random sample, which is proportional to the real distribution by
+    # construction.  Spreading evenly across block counts instead was wrong:
+    # it over-represented the extremes, and a 16-block grid is not something
+    # anyone publishes.  Real ones cluster hard -- 36 and 38 blocks are 20%
+    # and 22% of the corpus, and 30 to 44 covers 93% -- so a random draw looks
+    # like American crosswords and an even one does not.  Sampling patterns
+    # rather than puzzles spreads publication and era for free.
+    pool = [(blocks, grid, name) for blocks, (grid, name) in seen.items()]
+    pool.sort(key=lambda item: item[2])          # deterministic before sampling
+    chosen = random.Random(20260905).sample(pool, min(LIMIT, len(pool)))
 
     patterns = [
         library.Pattern(size=15, blocks=blocks, uses=0,

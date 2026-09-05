@@ -31,7 +31,7 @@ def test_the_two_styles_differ_in_the_way_that_matters(us):
 
 
 def test_the_us_library_loads_and_is_legal(us):
-    assert len(us) == 1200
+    assert len(us) == 2500
     rules = library.rules_for("us")
     for pattern in us[:60]:
         assert validate(pattern.grid(), rules) == []
