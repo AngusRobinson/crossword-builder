@@ -93,6 +93,7 @@ attached, which is the state a setter wants to start from.
 | `--max-uses N` | off | Hard ceiling: bar words used more than N times as a Guardian answer, to keep out tired crosswordese |
 | `--long N` | 0 | Require at least N entries of 11+ letters |
 | `--patterns N` | 14 | How many library grids to consider |
+| `--style S` | british | `british` or `us`; see below |
 | `--no-tailor` | off | Skip breeding grids to fit; about a third of the time, slightly worse |
 | `--nina`, `--nina-path` | — | Hide a message; see below |
 | `--pangram N` | 0 | Require every letter of the alphabet N times |
@@ -107,6 +108,36 @@ The hard cuts (`--min-score`, `--max-uses`, `--long`) all cost coverage, which
 is why they are off. Prefer `--commonness` and `--aim` unless you want purity at
 any price — though `--min-score 1.0` is worth it on a very tightly constrained
 grid, where it is often the difference between some unknown words and none.
+
+## American grids
+
+`--style us` swaps the rule set and the library. British grids leave about half
+the letters unchecked; American ones check every letter, and everything else
+follows from that — 34 blocks against 69, and 74 entries against 28.
+
+```bash
+python3 make_grid.py --style us --time-limit 120
+```
+
+The library is 1,200 patterns taken from pre-1965 New York Times puzzles,
+geometry only. The rule set needed no new predicates: every letter checked is
+`RuleSet(max_consecutive_unchecked=0, min_checked_fraction=1.0)`, and real
+American grids validate against it — 3,091 of 4,451 puzzles pass, with about
+35 rejected in total.
+
+Fill reliability depends steeply on density, because a sparser grid means
+longer entries and every letter is checked twice:
+
+| blocks | filled | time |
+|---|---|---|
+| 43–49 | 9/10 | 5s |
+| 34 | 7/10 | 18s |
+| 23–27 | 2/10 | 48s |
+
+**Themed American grids do not work yet.** Seating target words into a fully
+checked grid is much harder than into a British one, and a four-word theme did
+not complete within four minutes. Every search parameter in the project was
+tuned on 28-entry British grids and needs revisiting for 74-entry ones.
 
 ## Ninas
 

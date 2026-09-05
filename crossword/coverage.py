@@ -374,9 +374,15 @@ def cover(
                 _word, _slot, written = seated.pop()
                 _erase(grid, [c for c in written if c in grid.letters])
 
+            # Scaled to the grid, not fixed.  8000 was tuned on British
+            # grids, which carry about 28 entries; an American one carries
+            # about 74, all of them fully checked, and ran out of nodes before
+            # it could finish -- reporting a grid as unfillable that a bare
+            # Filler completes in seconds.
             filler = Filler(
                 grid, index, rules,
-                node_budget=8000, commonness=commonness, aim=aim,
+                node_budget=max(8000, 400 * len(slots)),
+                commonness=commonness, aim=aim,
                 pangram=pangram, hunger=hunger,
                 seed=rng.randrange(1 << 30),
             )

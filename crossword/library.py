@@ -25,6 +25,24 @@ from .grid import BLOCK, Grid
 from .rules import RuleSet, validate
 
 DEFAULT_PATH = os.path.join(os.path.dirname(__file__), "grids.txt")
+US_PATH = os.path.join(os.path.dirname(__file__), "grids-us.txt")
+
+# The rule sets the two libraries are built to.  British grids leave about half
+# the letters unchecked; American ones check every one, which is the whole
+# difference and everything else follows from it.
+BRITISH_RULES = dict(max_consecutive_unchecked=1, min_checked_fraction=0.5)
+US_RULES = dict(max_consecutive_unchecked=0, min_checked_fraction=1.0)
+
+
+def rules_for(style: str) -> RuleSet:
+    """The rule set a style is built to."""
+    if style == "us":
+        return RuleSet(**US_RULES)
+    return RuleSet(**BRITISH_RULES)
+
+
+def path_for(style: str) -> str:
+    return US_PATH if style == "us" else DEFAULT_PATH
 
 
 @dataclass(frozen=True)
@@ -57,8 +75,22 @@ class Pattern:
 # -- reading and writing ---------------------------------------------------
 
 
-def load(path: str = DEFAULT_PATH, *, valid_only: bool = True) -> list:
-    """Read the library, most-used pattern first."""
+def load(path: str = None, *, style: str = "british",
+         valid_only: bool = True) -> list:
+    """Read a grid library, most-used pattern first.
+
+    `style` picks which: "british" is the Guardian library, 120 patterns from
+    8,348 published puzzles, about half the letters unchecked.  "us" is 1,200
+    patterns from pre-1965 New York Times puzzles, every letter checked.
+
+    The two are shaped very differently.  British setters reuse grids heavily
+    -- 8,348 puzzles share 130 patterns -- so the library is close to a census
+    and each pattern carries how often it was used.  American grids are
+    effectively never reused: 4,451 puzzles gave 3,091 distinct patterns, so
+    that library is a sample and `uses` is zero throughout.
+    """
+    if path is None:
+        path = path_for(style)
     patterns = []
     with open(path, encoding="utf-8") as handle:
         block: list = []

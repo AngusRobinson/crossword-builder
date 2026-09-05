@@ -210,5 +210,36 @@ about 3.4x, with no change to any result:
     times, joining a fifteen-character string only to compare and discard it.
     Reading the cells directly short-circuits and allocates nothing.
 
+## American grids
+
+`--style us` selects a second library: 1,200 patterns extracted from pre-1965
+New York Times puzzles, geometry only. The rule set already expressed the
+convention -- every letter checked is
+`RuleSet(max_consecutive_unchecked=0, min_checked_fraction=1.0)` -- and real
+American grids validate against it, 3,091 of 4,451 puzzles passing with only
+about 35 rejected in total.
+
+They are shaped quite differently from British grids: 34 blocks against 69,
+and 74 entries against 28.
+
+Building grids from scratch does not work and is not needed. A row-by-row
+search produced 0 of 3 at every density and row cap tried; local search --
+add a symmetric block pair, undo it if it breaks a rule -- produced legal ones
+instantly, but they would not fill: 3/5 at 11x11, 1/5 at 13x13, 0/5 at 15x15.
+Real grids fill with the same dictionary, so the grids were the problem and
+not the word list. Allowing proper nouns made no measurable difference.
+
+Fill reliability depends steeply on density, since a sparser grid means longer
+entries and every letter is checked twice:
+
+    43-49 blocks   9/10 filled    5s each
+    34 blocks      7/10          18s each
+    23-27 blocks   2/10          48s each
+
+Still open: themed American grids. Seating targets into a fully checked grid
+is much harder than into a British one, and a four-word theme did not complete
+within four minutes. The pieces work separately; the combination needs the
+search parameters revisiting, which were all tuned on 28-entry grids.
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.

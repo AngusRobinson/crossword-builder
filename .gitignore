@@ -31,3 +31,6 @@ out/
 !crossword/grids.txt
 !crossword/frequency.txt
 !crossword/scores.txt
+
+# Third-party puzzle corpora: large, and not ours to redistribute.
+*.zip

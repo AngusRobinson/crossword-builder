@@ -218,6 +218,12 @@ def main() -> int:
                              "most ordinary word available and fills the grid "
                              "with ISLE and OVER; published answers sit at "
                              "0.86 (default 0.85). Lower for a harder puzzle")
+    parser.add_argument("--style", choices=("british", "us"), default="british",
+                        help="british (default): about half the letters "
+                             "unchecked, 120 grids from published Guardian "
+                             "puzzles. us: every letter checked, 1,200 grids "
+                             "from pre-1965 New York Times puzzles, roughly "
+                             "74 entries against 28")
     parser.add_argument("--pangram", type=int, default=0, metavar="N",
                         help="require every letter of the alphabet N times. "
                              "1 is close to free, 2 costs some fill quality, "
@@ -309,7 +315,8 @@ def main() -> int:
                              exact=args.nina_path.split(",")[0].strip().lower()
                              == "perimeter")
 
-    patterns = library.load()
+    patterns = library.load(style=args.style)
+    style_rules = library.rules_for(args.style)
     if placer:
         exact = args.nina_path.split(",")[0].strip().lower() == "perimeter"
         patterns = [p for p in patterns if placer(p) is not None]
@@ -377,15 +384,20 @@ def main() -> int:
     # breed towards and it is pure cost.
     if args.no_tailor or not targets:
         got = coverage.best_over_library(
-            patterns, index, targets, time_limit=args.time_limit,
-            preset=placer or nina, **common)
+            patterns, index, targets, style_rules,
+            time_limit=args.time_limit, preset=placer or nina, **common)
     else:
-        # The rules the breeding must keep: the British family the library
-        # grids belong to, so a bred grid is still one a setter would print.
-        british = RuleSet(alternating=True, max_checked_fraction=0.5)
+        # The rules breeding must keep, so a bred grid is still one a setter
+        # would print.  The British family is tighter than the plain rule set:
+        # its grids alternate checked and unchecked cells, which no rule about
+        # fractions can express.  American grids have no such lattice, so
+        # their own rule set is the whole constraint.
+        breed_rules = (RuleSet(alternating=True, max_checked_fraction=0.5)
+                       if args.style == "british" else style_rules)
         got = mutate.best_with_tailoring(
-            patterns, index, targets, british, min_long=args.long,
-            preset=placer or nina, time_limit=args.time_limit, **common)
+            patterns, index, targets, breed_rules, fill_rules=style_rules,
+            min_long=args.long, preset=placer or nina,
+            time_limit=args.time_limit, **common)
     elapsed = time.time() - began
 
     if not got.ok:
