@@ -166,3 +166,30 @@ def test_seating_leaves_the_grid_consistent_after_an_early_exit(index):
         assert grid.pattern(slot) == word, f"{word} is not in its slot"
         owned.update(slot.cells)
     assert set(grid.letters) == owned, "stale letters left by the unwind"
+
+
+def test_the_hard_benchmark_tier_is_well_formed():
+    """A second tier, because the first stopped discriminating.
+
+    Most of the original 44 lists reach their ceiling at any setting, so a
+    change shows up on two or three of them at most. These are dense -- 20 to
+    28 targets in a 28-entry grid -- so the targets are most of the grid and
+    have to agree with each other letter by letter.
+    """
+    import json
+    import os
+
+    path = os.path.join("benchmark", "lists-hard.json")
+    data = json.load(open(path, encoding="utf-8"))
+    lists = data["lists"]
+    assert len(lists) == 24
+    assert len({item["id"] for item in lists}) == len(lists)
+
+    for item in lists:
+        assert item["stratum"] == "dense"
+        assert item["size"] in (20, 24, 28)
+        assert len(item["words"]) == item["size"]
+        assert item["known_optimum"] == item["size"]
+        # Not capped on lengths: the difficulty is entirely in the crossings.
+        assert item["library_ceiling"] == item["size"]
+        assert all(w.isalpha() and w.islower() for w in item["words"])

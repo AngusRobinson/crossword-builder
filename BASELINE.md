@@ -266,5 +266,38 @@ plateau below an optimum that provably exists -- 13/14 and 16/18 -- which no
 parameter reaches, so the remaining gap is in the seating search itself and
 not in how long it is given.
 
+## How many runs to keep
+
+Measured over 12 dense lists, 8 seeds each, keeping the best:
+
+    runs kept   mean coverage   at optimum   unknown fill
+            1           88.4%         2/12           4.2%
+            2           94.0%         3/12           1.3%
+            3           96.5%         4/12           0.8%
+            4           96.5%         4/12           0.0%
+          5-8           96.5%         4/12           0.0%
+
+Coverage saturates at three runs and fill quality at four; the fifth through
+eighth add nothing at all. One run leaves eight points of coverage on the
+table, which is far more than any parameter in the project is worth.
+
+The variance is per-list rather than uniform. Some lists give the same answer
+every time (`dense-20-01`: 19 eight times over) and some swing wildly
+(`dense-20-03`: 14, 12, 20, 20, 20, 20, 20, 15). There is no way to tell which
+kind you have without running it more than once, which is the practical
+argument for three.
+
+## A harder benchmark tier
+
+`benchmark/lists-hard.json` holds 24 dense lists -- 20, 24 and 28 targets --
+all `feasible`, all with a library ceiling equal to their size, so nothing is
+capped on lengths and every shortfall is the crossings. The original 44 had
+stopped discriminating: most reach their ceiling at any setting, so a change
+showed up on two or three lists at most.
+
+What made them easy was size. A 14-word theme sits in a 28-entry grid with
+fourteen ordinary entries to absorb the crossings; a 26-word theme leaves
+almost none.
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.
