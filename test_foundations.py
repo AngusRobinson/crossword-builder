@@ -350,3 +350,36 @@ def test_bars_invalidate_the_cache_when_the_grid_is_stamped():
     grid._stamp += 1
     grid._derived.clear()
     assert len(grid.runs("across")) == before + 1
+
+
+def test_checking_matches_a_published_barred_grid():
+    """The rule read off a real Mephisto, whose bars decide what is checked.
+
+    HANGER is 1 across. Its A and R are cut off from the light below by a bar,
+    so their down runs are a single cell and they carry no down entry. HUGGED
+    is 1 down; its E is cut off from the letter to its right the same way. The
+    H and N of HANGER have a light in both directions and are checked.
+
+    Nothing here is special to bars: a run of length 1 is not an entry, which
+    is the same rule a blocked grid uses.
+    """
+    from crossword.grid import ACROSS, DOWN
+
+    grid = Grid(size=12)
+    grid.right_bars.add((0, 5))        # after HANGER
+    grid.bottom_bars.add((0, 1))       # under its A
+    grid.bottom_bars.add((0, 5))       # under its R
+    grid.right_bars.add((4, 0))        # right of the E of HUGGED
+    grid._stamp += 1
+    grid._derived.clear()
+
+    checked = grid.checked_cells(3)
+    assert (0, 1) not in checked, "A of HANGER"
+    assert (0, 5) not in checked, "R of HANGER"
+    assert (4, 0) not in checked, "E of HUGGED"
+    assert (0, 0) in checked, "H of HANGER"
+    assert (0, 2) in checked, "N of HANGER"
+
+    # And the lights themselves are the length the puzzle shows.
+    assert next(s.length for s in grid.runs(ACROSS) if (0, 0) in s.cells) == 6
+    assert next(s.length for s in grid.runs(DOWN) if (0, 0) in s.cells) == 12

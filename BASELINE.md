@@ -299,5 +299,36 @@ What made them easy was size. A 14-word theme sits in a 28-entry grid with
 fourteen ordinary entries to absorb the crossings; a 26-word theme leaves
 almost none.
 
+## Barred grids
+
+`runs()` splits on bars as well as blocks, which is all the representation
+needs: everything downstream reads runs, so checkedness, the rules and the
+search are unchanged. Verified against a published Mephisto -- a cell is
+unchecked exactly when one of its two runs has length 1, which is the same
+rule a blocked grid uses, and bars produce it where neighbouring blocks would.
+
+Generating patterns is easy, unlike blocked ones. Nothing is removed, so there
+is no connectivity to keep and no isolated cells to avoid; a pattern is a
+partition of each row and column. Two dials, and they are independent, because
+a length-1 run is not an entry -- a single cell adds an unch without adding a
+light:
+
+    lights per line   entries   unchecked   mean length
+    about 1.5              36          14           7.6
+    2                      46          16           6.0
+    3                      62          14           4.5
+
+The first row is a Mephisto: about 36 entries averaging seven or eight
+letters. Sampling uniformly over partitions is not -- it favours many small
+parts and gives 60 entries averaging 4.5.
+
+They do not fill. 0 of 6 at the Mephisto shape, 0 of 12 at a looser one, about
+a minute each. Thirty-six entries averaging 7.6 letters with only 14 unchecked
+cells interlock more tightly than any American grid, and barred setters use
+Chambers rather than a standard word list for that reason.
+
+Not done: check_symmetry only inspects blocks, so bar symmetry is unenforced
+and the work above set symmetry="none".
+
 Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
 feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.
