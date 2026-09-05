@@ -322,10 +322,27 @@ The first row is a Mephisto: about 36 entries averaging seven or eight
 letters. Sampling uniformly over partitions is not -- it favours many small
 parts and gives 60 entries averaging 4.5.
 
-They do not fill. 0 of 6 at the Mephisto shape, 0 of 12 at a looser one, about
-a minute each. Thirty-six entries averaging 7.6 letters with only 14 unchecked
-cells interlock more tightly than any American grid, and barred setters use
-Chambers rather than a standard word list for that reason.
+They do not fill: 0 of 6 at the Mephisto shape, 0 of 12 at a looser one, about
+a minute each.
+
+The reason is not vocabulary, which was the first guess and was wrong. UKACD
+holds 250,378 entries and every slot in a failing grid has thousands of
+candidates -- 1,112 at worst, 17,945 at the median. What fails is the search:
+60,001 nodes produce 59,986 backtracks, 45,702 of them hitting a slot with
+nothing left, and one slot accounts for 10,278 of those on its own. It
+rediscovers the same dead end over and over, because backtracking is
+chronological and a conflict teaches it nothing.
+
+Restarts, the standard remedy for a thrashing search, do nothing here. The
+same 240,000 nodes spent as 4 searches of 60,000 or as 480 of 500 gives 0 of 8
+either way. So the failure is not bad luck that a fresh start could avoid.
+
+That leaves two possibilities and they are not yet separated: the search has a
+systematic weakness on tight interlock, or these randomly barred patterns are
+simply unsatisfiable. The American style faced exactly this question and
+answered it with real grids -- randomly built ones filled 0 of 5 while
+published ones filled 72 of 72 instantly. The same test needs a published
+barred grid, which the project does not have.
 
 Not done: check_symmetry only inspects blocks, so bar symmetry is unenforced
 and the work above set symmetry="none".
