@@ -107,6 +107,21 @@ A barred grid gets `BASE.html` alone, a printable page rather than a puzzle
 file — neither format can place a bar. Add `--blank` for the grid without its
 answers.
 
+**How long should the list be?** Longer helps, with sharply diminishing
+returns. On British grids, three lists at each size:
+
+| words offered | themed entries seated | as % of the grid |
+|---|---|---|
+| 8 | 7.7 | 26% |
+| 32 | 12.7 | 44% |
+| 128 | 15.7 | 54% |
+| 512 | 18.0 | 62% |
+
+Sixty-four times the list buys 2.3 times the themed entries. Past a hundred or
+so the list has stopped being the constraint, and what limits the grid is how
+its entries cross one another. So a list of 500 birds is worth having over a
+list of 30 — but it will not give you a grid of birds.
+
 ## The settings
 
 | Setting | Default | What it does |

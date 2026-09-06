@@ -533,3 +533,47 @@ to the search rather than to what is handed to it.
 The ordinary symmetric word square is a different problem: it needs
 grid[r][c] == grid[c][r], a relation between two cells, where every constraint
 in this project is between a cell and a word.
+
+## How much the size of the theme list matters
+
+A great deal, and with sharply diminishing returns. Lists were drawn at random
+from the 50,339 reasonably familiar words of 4 to 11 letters, three lists at
+each size, 30 seconds per run:
+
+    British, about 29 entries per grid
+      list size   seated   as % of the grid   completed
+            8        7.7         26%             3/3
+           32       12.7         44%             3/3
+          128       15.7         54%             3/3
+          512       18.0         62%             3/3
+
+Sixty-four times the list buys 2.3 times the themed entries. The growth is
+roughly logarithmic, which is what a bound of this shape should look like: the
+list stops being the constraint quite early, and what limits the grid after
+that is how its entries cross each other. Eighteen of 29 is close to the
+practical ceiling for a British grid, because the remaining entries are the
+ones pinned by several crossings at once.
+
+So a list of 500 is worth having over a list of 30 -- 18 entries against about
+12 -- but it will not fill a grid with the theme, and the second five hundred
+would add very little.
+
+Style changes the answer more than size does:
+
+    barred, about 37 entries per grid
+            8        5.5         15%             2/3
+           32        6.0         16%             1/3
+          128       10.0         27%             1/3
+          512       10.0         27%             1/3
+
+    American, about 77 entries per grid
+          every size                              0/3
+
+Barred grids take a theme but less of one, and complete unreliably: their
+entries are long and cross each other along their whole length, so a fixed word
+constrains far more than it does in a British grid. American grids seated
+nothing at all at this budget, at any list size, which is the same wall themed
+American grids have hit throughout -- 74 fully checked entries, and every
+search parameter here tuned on 28-entry British ones. The 30-second limit is
+part of that: it is not evidence that a longer run would fail, only that this
+one does.
