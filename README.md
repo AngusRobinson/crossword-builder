@@ -62,8 +62,9 @@ they read without being run.
 
 | | |
 |---|---|
-| [1. Building a grid](notebooks/01-building-a-grid.ipynb) | one puzzle end to end: dictionary, index, grid library, rules, seating, fill, export |
-| [2. The fill search](notebooks/02-the-fill-search.ipynb) | forward checking, which entry to expand, choosing words by familiarity, and what failure looks like |
+| [1. Building a grid](notebooks/01-building-a-grid.ipynb) | one puzzle end to end: dictionary, grid library, rules, seating, fill, export |
+| [2. Words and the index](notebooks/02-words-and-the-index.ipynb) | where the dictionary comes from, how familiarity is scored, what each of the three dials does, and how pattern matching becomes integer arithmetic |
+| [3. The fill search](notebooks/03-the-fill-search.ipynb) | forward checking, which entry to expand, choosing words without excluding any, and what failure looks like |
 
 ## Getting started
 
