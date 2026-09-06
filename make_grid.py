@@ -607,10 +607,17 @@ def main() -> int:
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")
 
     if args.out and args.style == "barred":
-        print("\nnot written: neither ipuz nor Exolve is given bars here, and "
-              "writing a barred grid into them would describe the wrong "
-              "puzzle. Use --solution and set the bars by hand.",
-              file=sys.stderr)
+        # Neither puzzle format here can place a bar, and a barred grid written
+        # into one would describe a different puzzle. A drawn page can carry
+        # it, so that is what barred grids get.
+        surfaces = {e.text: e.surface for e in kept}
+        surfaces.update(spelling)
+        export.write_html(got.grid, args.out + ".html", title=args.title,
+                          setter=args.setter, surfaces=surfaces,
+                          min_length=style_rules.min_entry_length,
+                          solution=True)
+        print(f"wrote {args.out}.html "
+              f"(no ipuz or Exolve: neither format can place a bar)")
     elif args.out:
         # The setter's own spelling wins over the dictionary's: they typed
         # "Twelfth Night", and the enumeration a solver sees should say (7,5).

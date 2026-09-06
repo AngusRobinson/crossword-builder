@@ -249,3 +249,18 @@ def to_exolve(grid: Grid, *, title: str = "Untitled", setter: str = "",
 def write_exolve(grid: Grid, path: str, **kwargs) -> None:
     with open(path, "w", encoding="utf-8") as handle:
         handle.write(to_exolve(grid, **kwargs))
+
+
+def write_html(grid: Grid, path: str, **kwargs) -> None:
+    """A printable page, for grids the puzzle formats cannot carry.
+
+    Neither writer above can place a bar, so this is what a barred grid gets:
+    the grid drawn correctly, with the two clue lists and their enumerations.
+    It is a page to work from rather than a puzzle file -- there is nothing to
+    import it into -- which is the honest position until one of the formats
+    grows bars.
+    """
+    from .render import page
+
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(page(grid, **kwargs))

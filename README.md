@@ -210,11 +210,12 @@ answers average 0.86. Long entries in both directions leave little room to
 absorb a fixed word, and every search parameter in the project was tuned on
 28-entry British grids.
 
-**Barred grids cannot be exported.** Neither ipuz nor Exolve is given bars by
-this project, and writing one into them would produce a well-formed file
-describing a completely different puzzle — a full square of white cells with
-every entry running the whole width. `--out` refuses and says so; use
-`--solution`, which prints the grid with its bars drawn.
+**Barred grids get an HTML page instead of a puzzle file.** Neither ipuz nor
+Exolve is given bars by this project, and writing one into them would produce a
+well-formed file describing a completely different puzzle — a full square of
+white cells with every entry running the whole width. So `--out` writes
+`<name>.html`: the grid drawn with its bars, the two clue lists, and the
+enumerations. It is a page to work from rather than a file to import.
 
 ## Ninas
 
