@@ -530,9 +530,41 @@ mutually crossing entries is where that costs most. Conflict-directed
 backjumping is the obvious next thing to try, and it would be the first change
 to the search rather than to what is handed to it.
 
-The ordinary symmetric word square is a different problem: it needs
-grid[r][c] == grid[c][r], a relation between two cells, where every constraint
-in this project is between a cell and a word.
+### The ordinary symmetric square
+
+A different problem, and it needs a solver of its own: grid[r][c] ==
+grid[c][r] is a relation between two cells, where every constraint the filler
+knows is between a cell and a word.
+
+The symmetry that makes it inexpressible makes it small. Only the upper
+triangle is free, so a square of order n is n words rather than 2n, and placing
+a row also places the matching column, which hands one letter to every row
+still open.
+
+That last part is what decides whether it works. Filling strictly top to
+bottom -- which the structure invites, since row i arrives with its first i
+letters already fixed -- checks only the row being placed:
+
+    order of placement     5x5      6x6      7x7
+    top to bottom          531    2,403    1.6M, none found
+    fewest candidates       20      109      38,524
+
+Doing what the filler does instead -- one pass per node over the rows not yet
+placed, pruning when any has nothing left and taking the one with least freedom
+next -- is worth two orders of magnitude at 6x6 and the difference between
+finding a 7x7 and not.
+
+Sizes 3 to 7 come out in seconds. Eight has not, across six budget shapes and
+about 36 million nodes, with and without the capitalised entries the larger
+squares in the literature rely on:
+
+    8x8                    20,000 x 200   200,000 x 40   2,000,000 x 6
+    common words only          none           none            none
+    proper nouns allowed       none           none            none
+
+That is not a proof that none exists. The search takes at most 200 candidates
+at any node, so it explores a slice of the space rather than all of it, and a
+run that finds nothing has not shown there was nothing to find.
 
 ## How much the size of the theme list matters
 
