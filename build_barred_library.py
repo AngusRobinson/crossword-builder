@@ -38,16 +38,23 @@ def main() -> None:
     parser.add_argument("--size", type=int, default=12)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--node-budget", type=int, default=20000)
-    # Loosely-checked patterns both fill more often and fail faster, so this
-    # is where the fill attempts are worth spending.  A published Mephisto
-    # leaves 48 of its 144 cells uncrossed.
-    parser.add_argument("--min-unchecked", type=int, default=34)
+    # Where the published grids are: a Mephisto leaves 48 of its 144 cells
+    # uncrossed and an Azed 54.  This was 34 while the shape was being guessed
+    # at, and patterns that tight fill about half the time; at the real shape
+    # they fill essentially always, so the floor is worth far more than any
+    # amount of patience below it.
+    parser.add_argument("--min-unchecked", type=int, default=44)
     # Generation is free next to a fill attempt, so this is tuned for how many
-    # usable patterns come out rather than for how few draws are wasted.  With
-    # columns drawn uniformly the default already reaches the shape of a real
-    # grid -- 226 patterns per 3,000 draws leave at least 34 cells unchecked,
-    # and the loosest reach 56 -- so there is nothing to correct for here.
-    parser.add_argument("--openness", type=float, default=1.0)
+    # patterns come out at the floor above rather than for how few draws are
+    # wasted.  Per 3,000 draws, 1.15 yields 95 patterns with 44 or more cells
+    # unchecked; 1.0 yields 83 and 1.5 yields 39.
+    parser.add_argument("--openness", type=float, default=1.15)
+    # Four-letter entries are legal -- an Azed has six -- but they are a
+    # garnish, not the fabric: 8% of published entries against 36% of what an
+    # unweighted sampler produces.  Penalising them is what brings the entry
+    # count, the mean length and the share of short entries onto the published
+    # figures together, rather than one at a time.
+    parser.add_argument("--short-bias", type=float, default=0.15)
     parser.add_argument("--words", default="crossword/UKACD.txt")
     parser.add_argument("--out", default=BARRED_PATH)
     args = parser.parse_args()
@@ -60,7 +67,8 @@ def main() -> None:
     started = time.time()
     while len(kept) < args.want:
         drawn += 1
-        grid = pattern(args.size, openness=args.openness, rng=rng)
+        grid = pattern(args.size, openness=args.openness,
+                       short_bias=args.short_bias, rng=rng)
         if grid is None or validate(grid, rules):
             continue
         unchecked = args.size ** 2 - len(grid.checked_cells(rules.min_entry_length))

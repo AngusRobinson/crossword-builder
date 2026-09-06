@@ -172,11 +172,11 @@ the entries are separated by bars drawn between neighbours.
 python3 make_grid.py --style barred --solution
 ```
 
-Two things follow from having no blocks. Entries are long — five letters
+Two things follow from having no blocks. Entries are long — four letters
 minimum, averaging closer to seven — and the unchecked letters come from
 *single cells*, runs of length one that carry a letter but begin no entry. A
-published Mephisto leaves 48 of its 144 cells uncrossed, a third of the grid,
-which is far looser than it looks.
+published Mephisto leaves 48 of its 144 cells uncrossed and an Azed 54, a third
+of the grid, which is far looser than it looks.
 
 That number is the whole difficulty. Barred patterns are easy to generate and
 mostly impossible to fill, and the reason is almost always that they are more
@@ -186,17 +186,19 @@ fill it, keeping only the ones that come out. A pattern that can be filled is
 filled in about a second; one that cannot burns the entire node budget first,
 so the test is decisive as well as cheap.
 
-The library shipped here is 60 such patterns, spanning 34 to 56 unchecked
-cells, built from 1,392 draws and 115 fill attempts in about thirteen
-minutes.
+The library shipped here is 200 such patterns. They are shaped to match the
+two published grids on four measures at once — entry count, mean entry length,
+unchecked cells, and the share of entries that are only four letters, which
+real setters use sparingly (8%) and an unweighted sampler produces constantly
+(36%).
 
 ```bash
 python3 build_barred_library.py --want 60
 ```
 
 **Themed barred grids are weak, as themed American ones are.** A fifteen-word
-vegetable list seated 5, against 13 that could fit the library's entry
-lengths at all, and the fill's familiarity came out at 0.63 where published
+vegetable list seated 5, against 13 that could fit the library's entry lengths
+at all, and the fill's familiarity came out at 0.63 where published
 answers average 0.86. Long entries in both directions leave little room to
 absorb a fixed word, and every search parameter in the project was tuned on
 28-entry British grids.

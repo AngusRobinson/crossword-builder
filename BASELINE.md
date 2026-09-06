@@ -336,61 +336,103 @@ and reaches the shape of a real grid.
 
 ### What settled it
 
-A published grid, which is what the American style needed too. The same
-filler, the same UKACD word list, the same rules:
+Published grids, which is what the American style needed too. The same filler,
+the same UKACD word list, the same rules:
 
     Mephisto, 12x12, 36 entries, 48 unchecked
     5 of 5 seeds filled, 196 to 1,352 nodes, 0.04 to 0.33 seconds
+    Azed,     12x12, 36 entries, 54 unchecked
+    5 of 5 seeds filled, 133 to 1,023 nodes, 0.03 to 0.25 seconds
 
-All 36 entries are dictionary words and all 144 cells are lettered. So the
-search was never the problem, and neither was the vocabulary. Both had been
-blamed in turn, and the earlier diagnosis in this file -- that the search
+Every entry is a dictionary word and every one of the 144 cells is lettered.
+So the search was never the problem, and neither was the vocabulary. Both had
+been blamed in turn, and the earlier diagnosis in this file -- that the search
 thrashes on tight interlock -- was measuring a grid no setter would print.
 
-Thirty generated patterns, sorted by how much of the grid they leave
-unchecked, against a 20,000-node budget:
+### A corpus of one teaches false rules
 
-    unchecked   filled
-    20-28        1 of 7
-    30-40        5 of 18
-    46-48        2 of 4
+The Mephisto arrived first and was treated as the form. It has no entry
+shorter than five letters, so the minimum was set to five. The Azed has six
+four-letter entries, and under that rule they stop being lights: the checking
+predicates then report the cells around them as belonging to no entry at all.
+Six isolated cells, ten consecutive unches and two entries under the checked
+fraction, in a puzzle printed in a national newspaper. A published grid
+failing a rule condemns the rule. The minimum is four.
 
-The trend is real but it is not the whole story: legal patterns fill about a
-quarter of the time whatever their shape. The sharper signal is the timing.
-Every success came in under 10,008 nodes and most in under 1,400; every
-failure spent the entire budget. Success is fast and failure is total, which
-is the signature of a pattern that has no filling rather than of a search that
-cannot find one -- and it means a bigger budget would rescue almost nothing.
+It was also, quietly, half of why nothing filled. At a matched shape, with the
+same generator and the same filler, the constant alone is worth a sevenfold
+difference in effort:
+
+    minimum entry   44-56 unchecked   filled     median nodes
+    5                                 10 of 12          2,049
+    4                                 11 of 12            290
+
+### What actually predicts a fill
+
+Six patterns in each band, 20,000-node budget, minimum entry of four:
+
+    unchecked   filled     median nodes   median seconds
+    20-27       5 of 6            4,574             2.5
+    28-35       5 of 6            3,139             1.1
+    36-43       6 of 6            1,179             0.2
+    44-51       5 of 6            2,782             0.1
+    52-60       6 of 6              216             0.1
+
+Success rate is flat; cost is not, and falls by a factor of twenty across the
+range. This corrects the claim made here earlier from a single sweep -- that
+legal patterns fill about a quarter of the time whatever their shape. They do
+not. That sweep was run at a minimum entry of five and drew almost all of its
+patterns from the tight end, so it measured the two errors above rather than
+anything about barred grids.
+
+What survives from it is the shape of a failure. Every success came in fast
+and every failure spent the entire budget, so a bigger budget rescues almost
+nothing, and one fill attempt is a cheap and decisive test of a pattern.
 
 ### What the library is for
 
-It also means the fill attempt is a cheap and decisive filter, so barred
-patterns are earned rather than assumed: `build_barred_library.py` generates
-one, checks it against the rules, and admits it only if a real fill comes out.
-Restricting the attempts to patterns leaving at least 34 cells unchecked
-raises the hit rate and makes the failures fast. The shipped library is 60
-patterns from 1,392 draws and 115 fill attempts, thirteen minutes in all, and
-it spans 34 to 56 unchecked cells against the Mephisto's 48. That cost is paid
-once, here, so that nothing pays it at build time.
+So barred patterns are earned rather than assumed: `build_barred_library.py`
+generates one, checks it against the rules, and admits it only if a real fill
+comes out. That cost is paid once, here, so that nothing pays it at build time.
 
-Which way the two directions are biased matters, and not in the obvious
+Matching the published shape needed one more dial. Four-letter entries are
+legal but they are a garnish: 8% of published entries, against 36% of what an
+unweighted sampler produces. Penalising them is what brings the whole profile
+onto the published figures together rather than one measure at a time, and
+biasing the *number* of runs per line -- the obvious knob -- does not do it,
+moving the share only from 36% to 31% while collapsing the yield.
+
+    per 3,000 draws       entries   mean length   unchecked   4-letter share
+    short_bias 1.0           42.3          5.71        47.8            36.1%
+    short_bias 0.4           39.0          6.18        48.8            19.9%
+    short_bias 0.15          37.5          6.44        47.4             8.0%
+    Mephisto and Azed        36.0          6.60       48, 54             8.3%
+
+That is fitted to the published shape, not to fill success, so the fill test
+remains an independent check on it -- and it costs something: the hit rate
+falls from essentially every pattern to about four in five, because the
+entries are genuinely longer. The library is 200 patterns.
+
+Which way the two directions are biased also matters, and not in the obvious
 direction. Rows are drawn towards few runs, because a Mephisto row usually
-holds two entries. Columns are drawn uniformly, and the tidier-looking choice
-of biasing them the same way is measurably worse -- 28% of those patterns fill
-against 53%. The reason is that the rows are drawn freely and the columns have
-to fit around them, and a uniform draw supplies single cells generously,
-because most ways of cutting a line have many parts.
+holds two entries. Columns are drawn uniformly, and biasing them the same way
+is measurably worse -- 28% of those patterns filled against 53%, at the
+settings in use when it was measured. The rows are drawn freely and the
+columns have to fit around them, and a uniform draw supplies single cells
+generously, because most ways of cutting a line have many parts.
 
 This is the American answer arrived at from the other end. There, published
 grids filled 72 of 72 and random ones 0 of 5, so the library was extracted
-from a corpus. Here there is exactly one published grid, so the library is
-generated and then filtered by the same test the corpus was implicitly
-passing.
+from a corpus. Here there are two published grids, so the library is generated
+and then filtered by the same test the corpus was implicitly passing.
 
 ### Still missing
 
-Neither exporter can write a bar. `to_ipuz` and `to_exolve` now refuse a
-barred grid rather than emit a full square of white cells with every entry
-running the whole width -- a well-formed file describing the wrong puzzle.
-`--out` says so and writes nothing; `--solution` prints the grid with its
-bars drawn.
+Neither exporter can write a bar. `to_ipuz` and `to_exolve` refuse a barred
+grid rather than emit a full square of white cells with every entry running
+the whole width -- a well-formed file describing the wrong puzzle. `--out`
+says so and writes nothing; `--solution` prints the grid with its bars drawn.
+
+Themed barred grids are weak, as themed American ones are. A fifteen-word
+vegetable list seated 5, against 13 that could fit the library's entry lengths
+at all, with the fill at 0.63 familiarity against a published 0.86.

@@ -22,12 +22,19 @@ import random
 
 from .grid import Grid
 
-# Read off the Mephisto.  Entries are long and mostly checked, but a third of
-# the grid is unchecked, because the single cells that separate the entries are
-# themselves letters.  Fewer unchecked cells than this interlocks the grid far
-# more tightly than any real barred puzzle, and it will not fill.
+# Read off two published grids, a Mephisto and an Azed.  Entries are long and
+# mostly checked, but a third of the grid is unchecked, because the single
+# cells that separate the entries are themselves letters.  Fewer unchecked
+# cells than this interlocks the grid far more tightly than any real barred
+# puzzle, and it will not fill.
+#
+# The minimum was 5 while the Mephisto was the only grid to hand, which is the
+# hazard of a corpus of one: it has no four-letter entry, but the Azed has six,
+# and the rule as written called each of them a run too short to be a light and
+# then reported the cells around it as isolated.  A published puzzle failing a
+# rule condemns the rule.
 BARRED_RULES = dict(
-    min_entry_length=5,
+    min_entry_length=4,
     max_consecutive_unchecked=1,
     min_checked_fraction=0.6,
     forbid_run_length_two=True,
@@ -130,10 +137,11 @@ def _line_bars(comp: tuple[int, ...]) -> list[int]:
 def pattern(
     size: int = 12,
     *,
-    min_entry: int = 5,
+    min_entry: int = 4,
     decay: float = 0.55,
     column_decay: float = 1.0,
     openness: float = 1.0,
+    short_bias: float = 1.0,
     rng: random.Random | None = None,
     attempts: int = 400,
 ) -> Grid | None:
@@ -169,7 +177,9 @@ def pattern(
 
     def bias(rate: float) -> list:
         return [
-            rate ** (len(c) - 1) * openness ** sum(1 for part in c if part == 1)
+            rate ** (len(c) - 1)
+            * openness ** sum(1 for part in c if part == 1)
+            * short_bias ** sum(1 for part in c if part == min_entry)
             for c in choices
         ]
 

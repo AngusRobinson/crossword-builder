@@ -109,8 +109,8 @@ def load(path: str = None, *, style: str = "british",
     `style` picks which: "british" is the Guardian library, 120 patterns from
     8,348 published puzzles, about half the letters unchecked.  "us" is 2,500
     patterns from pre-1965 New York Times puzzles, every letter checked.
-    "barred" is 60 generated 12x12 patterns, no blocks at all, each one filled
-    once before it was admitted; see build_barred_library.py.
+    "barred" is 200 generated 12x12 patterns, no blocks at all, each one
+    filled once before it was admitted; see build_barred_library.py.
 
     The two are shaped very differently.  British setters reuse grids heavily
     -- 8,348 puzzles share 130 patterns -- so the library is close to a census

@@ -1,11 +1,17 @@
-"""Barred grids, pinned against a published Mephisto.
+"""Barred grids, pinned against a published Mephisto and a published Azed.
 
 The project spent a while unable to fill a barred grid and blamed, in order,
 the dictionary and then the search.  Both were wrong.  This file exists because
 the only thing that settled it was a real grid: the same filler and the same
-word list complete this one five times out of five in a fraction of a second.
-What had been wrong was the patterns, which were built with a tenth of the grid
-unchecked when a real one leaves a third.
+word list complete both of these five times out of five in a fraction of a
+second.  What had been wrong was the patterns, which were built with a tenth of
+the grid unchecked when a real one leaves a third.
+
+There are two grids here rather than one because the first of them, on its
+own, taught a false rule.  A Mephisto has no four-letter entry, so a minimum
+of five looked like the form; the Azed has six of them, and against that rule
+the cells around each were reported as belonging to no entry at all.  Both
+grids are 12x12 and both are transcribed as geometry: no answers, no clues.
 """
 
 import random
@@ -42,9 +48,31 @@ _ * * * _ * * _ * * *|_
 """
 
 
+# An Azed, 12x12, same notation.  Six of its entries are four letters long.
+AZED = """\
+* * * * _ * _ * _ * _ *
+*|*|*|*|_ * * * * * _ *
+* * * * _ *|*|* * * _ *
+* * _ * _ * *|*|*|_|*|*
+* * _ _|*|*|* * * _ * _
+*|*|_ * * * *|* * _ * *
+_ * _ * *|* * * _ _|*|*
+* * _ * * *|*|_|* _ * *
+*|_|*|*|*|* * _ * * * *
+* _ * * *|*|* _ * * * *
+* _ * _ * _ * _|*|*|*|*
+* * * * * * * * * * * *
+"""
+
+
 @pytest.fixture(scope="module")
 def mephisto():
     return parse(MEPHISTO)
+
+
+@pytest.fixture(scope="module")
+def azed():
+    return parse(AZED)
 
 
 def test_notation_round_trips(mephisto):
@@ -61,7 +89,9 @@ def test_published_grid_shape(mephisto):
     """The measurements the generator is aimed at.
 
     The last of these is the one that matters.  A third of the grid carries no
-    crossing, and every earlier attempt at a barred pattern left a tenth.
+    crossing, and every earlier attempt at a barred pattern left a tenth.  The
+    minimum here is 5 rather than the rule set's 4 only because this grid has
+    nothing shorter; it reads the same either way.
     """
     slots = mephisto.slots(5)
     lengths = sorted(slot.length for slot in slots)
@@ -117,16 +147,61 @@ def test_symmetry_check_sees_bars(mephisto):
     mephisto._derived.clear()
 
 
+def test_azed_round_trips_and_is_symmetric(azed):
+    """Symmetry is also the transcription check.
+
+    These grids are read off a picture by hand, and almost any slip -- a bar
+    misplaced, a bar missed -- breaks the half-turn.  A transcription that
+    rotates onto itself is very unlikely to be wrong.
+    """
+    assert render(azed) == AZED.rstrip("\n")
+    right, bottom = mirror_bars(azed)
+    assert right == azed.right_bars and bottom == azed.bottom_bars
+
+
+def test_azed_shape_and_rules(azed):
+    """The grid that corrected the minimum entry length."""
+    slots = azed.slots(4)
+    lengths = sorted(slot.length for slot in slots)
+    assert len(slots) == 36
+    assert lengths.count(4) == 6, "the four-letter entries are the whole point"
+    assert min(lengths) == 4 and max(lengths) == 12
+    assert 144 - len(azed.checked_cells(4)) == 54
+    assert validate(azed, rules_for("barred")) == []
+
+
+def test_a_minimum_of_five_would_condemn_the_azed():
+    """Kept as a standing argument against a corpus of one.
+
+    With the minimum at five the Azed's four-letter entries stop being lights,
+    and the rules then report the cells around them as isolated -- six of them,
+    in a puzzle that was printed in a national newspaper.
+    """
+    from crossword.barred import BARRED_RULES
+
+    too_strict = RuleSet(**{**BARRED_RULES, "min_entry_length": 5})
+    violations = validate(parse(AZED), too_strict)
+    assert any(v.rule == "isolated_cell" for v in violations)
+    assert any(v.rule == "run_length" for v in violations)
+
+
+def test_azed_fills(azed, index):
+    filler = Filler(azed, index, rules=rules_for("barred"),
+                    seed=0, node_budget=60000, commonness=0.0)
+    assert filler.fill()
+    assert len(azed.letters) == 144
+
+
 def test_compositions_are_runs_or_single_cells():
     """Nothing between a single cell and a whole entry is representable.
 
     A run of two, three or four is neither an unchecked letter nor a light,
     which is what makes the line alphabet small enough to search over.
     """
-    every = compositions(12, 5)
+    every = compositions(12, 4)
     assert all(sum(comp) == 12 for comp in every)
-    assert all(part == 1 or part >= 5 for comp in every for part in comp)
-    assert len(every) == 52
+    assert all(part == 1 or part >= 4 for comp in every for part in comp)
+    assert len(every) == 117
 
 
 def test_generated_patterns_are_symmetric_and_legal():
@@ -158,7 +233,7 @@ def test_generator_reaches_a_published_shape():
         grid = pattern(12, rng=rng)
         if grid is None:
             continue
-        if 144 - len(grid.checked_cells(5)) >= 44 and not validate(grid, rules):
+        if 144 - len(grid.checked_cells(4)) >= 44 and not validate(grid, rules):
             loose += 1
     assert loose > 0, "no pattern came near the real grid's proportion of unches"
 
@@ -224,4 +299,4 @@ def test_shipped_library_is_all_legal_barred_grids():
         right, bottom = mirror_bars(grid)
         assert right == grid.right_bars and bottom == grid.bottom_bars
         assert validate(grid, rules) == []
-        assert 144 - len(grid.checked_cells(5)) >= 34
+        assert 144 - len(grid.checked_cells(4)) >= 44

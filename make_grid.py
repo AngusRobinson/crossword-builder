@@ -266,7 +266,7 @@ def main() -> int:
                              "puzzles. us: every letter checked, 1,200 grids "
                              "from pre-1965 New York Times puzzles, roughly "
                              "74 entries against 28. barred: 12x12 Mephisto "
-                             "shape, no blocks at all, entries of five letters "
+                             "shape, no blocks at all, entries of four letters "
                              "and up separated by bars")
     parser.add_argument("--pangram", type=int, default=0, metavar="N",
                         help="require every letter of the alphabet N times. "
