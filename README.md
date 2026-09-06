@@ -66,6 +66,7 @@ they read without being run.
 | [2. Words and the index](notebooks/02-words-and-the-index.ipynb) | where the dictionary comes from, how familiarity is scored, what each of the three dials does, and how pattern matching becomes integer arithmetic |
 | [3. The fill search](notebooks/03-the-fill-search.ipynb) | forward checking, which entry to expand, choosing words without excluding any, and what failure looks like |
 | [4. The other styles](notebooks/04-the-other-styles.ipynb) | American and barred grids, what changed for each, and why where the patterns come from matters more than any rule |
+| [5. Ninas and pangrams](notebooks/05-ninas-and-pangrams.ipynb) | hiding a message where the solver would not read, asking for the whole alphabet, and what each costs |
 
 ## Getting started
 
