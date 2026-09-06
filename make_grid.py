@@ -259,12 +259,15 @@ def main() -> int:
                              "most ordinary word available and fills the grid "
                              "with ISLE and OVER; published answers sit at "
                              "0.86 (default 0.85). Lower for a harder puzzle")
-    parser.add_argument("--style", choices=("british", "us"), default="british",
+    parser.add_argument("--style", choices=("british", "us", "barred"),
+                        default="british",
                         help="british (default): about half the letters "
                              "unchecked, 120 grids from published Guardian "
                              "puzzles. us: every letter checked, 1,200 grids "
                              "from pre-1965 New York Times puzzles, roughly "
-                             "74 entries against 28")
+                             "74 entries against 28. barred: 12x12 Mephisto "
+                             "shape, no blocks at all, entries of five letters "
+                             "and up separated by bars")
     parser.add_argument("--pangram", type=int, default=0, metavar="N",
                         help="require every letter of the alphabet N times. "
                              "1 is close to free, 2 costs some fill quality, "
@@ -435,6 +438,13 @@ def main() -> int:
     breed_rules = (RuleSet(alternating=True, max_checked_fraction=0.5)
                    if args.style == "british" else style_rules)
 
+    # Breeding moves blocks, and a barred grid has none: every neighbour it
+    # could propose is a different puzzle style rather than a variation on this
+    # one.  The library is the whole search space here, which is affordable
+    # because each pattern in it was filled once before it was let in.
+    if args.style == "barred":
+        args.no_tailor = True
+
     def once(seed):
         # Breeding exists to fit a word list, so with no list there is nothing
         # to breed towards and it is pure cost.
@@ -499,7 +509,7 @@ def main() -> int:
 
     # How ordinary the words we chose ourselves are.  Targets are excluded:
     # they were the setter's choice and are not the fill's to answer for.
-    fill = [got.grid.pattern(s) for s in got.grid.slots(3)
+    fill = [got.grid.pattern(s) for s in got.grid.slots(style_rules.min_entry_length)
             if got.grid.pattern(s) not in placed]
     unpublished = [w for w in fill if not counts.get(w)]
     unknown = [w for w in fill if not counts.get(w) and not scores.get(w)]
@@ -515,7 +525,10 @@ def main() -> int:
     print(f"fill: {len(fill)} words, familiarity rank {typical:.2f} "
           f"(published answers average 0.86), "
           f"{len(unknown)} unknown to both sources"
-          + (f" ({', '.join(sorted(unknown)[:6])})" if unknown else ""))
+          # Truncated, and it has to say so: "7 unknown" beside a list of six
+          # reads as a miscount rather than as an abridgement.
+          + (f" ({', '.join(sorted(unknown)[:6])}"
+             + (", ..." if len(unknown) > 6 else "") + ")" if unknown else ""))
 
     if args.pangram:
         import collections as _c
@@ -590,10 +603,15 @@ def main() -> int:
             print("         a message has to break into real words at the "
                   "entry boundaries")
 
-    problems = validate(got.grid)
+    problems = validate(got.grid, style_rules)
     print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")
 
-    if args.out:
+    if args.out and args.style == "barred":
+        print("\nnot written: neither ipuz nor Exolve is given bars here, and "
+              "writing a barred grid into them would describe the wrong "
+              "puzzle. Use --solution and set the bars by hand.",
+              file=sys.stderr)
+    elif args.out:
         # The setter's own spelling wins over the dictionary's: they typed
         # "Twelfth Night", and the enumeration a solver sees should say (7,5).
         surfaces = {e.text: e.surface for e in kept}
@@ -605,7 +623,13 @@ def main() -> int:
         print(f"wrote {args.out}.ipuz and {args.out}.html")
     if args.solution:
         print()
-        print(got.grid.render())
+        # `render` is the blocked-grid form and has nowhere to put a bar, so a
+        # barred solution printed through it reads as twelve-letter rows that
+        # are not words.  The compact `pretty` keeps the separators.
+        if args.style == "barred":
+            print(got.grid.pretty(gap="", upper=False))
+        else:
+            print(got.grid.render())
     return 0
 
 

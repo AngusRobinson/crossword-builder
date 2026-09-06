@@ -263,8 +263,45 @@ class Grid:
                         cells.append(empty)
                     else:
                         cells.append(char.upper() if upper else char)
-            rows.append(gap.join(cells))
+            # A barred grid is nothing but its separators, so drawing it
+            # without them shows a featureless square of letters.  The bar to
+            # the right of a cell takes the place of the column gap; the bar
+            # beneath one needs a line of its own between the rows.
+            line = []
+            for col, cell in enumerate(cells):
+                line.append(cell)
+                if col < self.size - 1:
+                    line.append("|" if (row, col) in self.right_bars else gap)
+            rows.append("".join(line))
+            if any((row, col) in self.bottom_bars for col in range(self.size)):
+                under = []
+                for col in range(self.size):
+                    here = (row, col) in self.bottom_bars
+                    under.append("\u2014" if here else " ")
+                    if col < self.size - 1:
+                        # However wide the separator above was: one character
+                        # for a vertical bar, otherwise the column gap.  Get
+                        # this wrong and the underline slides out of step with
+                        # the letters it is meant to sit beneath.
+                        width = 1 if (row, col) in self.right_bars else len(gap)
+                        joined = here and (row, col + 1) in self.bottom_bars
+                        under.append(("\u2014" if joined else " ") * width)
+                rows.append("".join(under))
         return "\n".join(rows)
+
+    def copy(self) -> "Grid":
+        """An independent grid with the same separators and letters.
+
+        Snapshots used to be taken as `Grid.parse(grid.render())`, which is a
+        round trip through the blocked-grid notation and therefore silently
+        drops every bar: a barred result came back as a bare 12x12 square.
+        """
+        made = Grid(size=self.size)
+        made.blocks = set(self.blocks)
+        made.letters = dict(self.letters)
+        made.right_bars = set(self.right_bars)
+        made.bottom_bars = set(self.bottom_bars)
+        return made
 
     @classmethod
     def parse(cls, text: str) -> "Grid":

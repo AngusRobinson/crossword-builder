@@ -307,45 +307,90 @@ search are unchanged. Verified against a published Mephisto -- a cell is
 unchecked exactly when one of its two runs has length 1, which is the same
 rule a blocked grid uses, and bars produce it where neighbouring blocks would.
 
-Generating patterns is easy, unlike blocked ones. Nothing is removed, so there
-is no connectivity to keep and no isolated cells to avoid; a pattern is a
-partition of each row and column. Two dials, and they are independent, because
-a length-1 run is not an entry -- a single cell adds an unch without adding a
-light:
+Generating patterns looked easy at first, and that was wrong twice over.
 
-    lights per line   entries   unchecked   mean length
-    about 1.5              36          14           7.6
-    2                      46          16           6.0
-    3                      62          14           4.5
+The first error was arithmetic dressed up as observation. The shape was read
+off a picture of a Mephisto -- 36 entries averaging seven or eight letters --
+except that the number of unchecked cells was not read off it at all, it was
+guessed, at 14. A real Mephisto leaves 48 of its 144 cells uncrossed: a third
+of the grid, not a tenth. Every barred pattern the project built was three
+times more interlocked than any published one, which is why none of them
+filled.
 
-The first row is a Mephisto: about 36 entries averaging seven or eight
-letters. Sampling uniformly over partitions is not -- it favours many small
-parts and gives 60 entries averaging 4.5.
+The second error was thinking the two directions were independent. Nothing is
+removed from a barred grid, so there is no connectivity to keep, and it is
+tempting to conclude that a pattern is just a partition of each row and each
+column chosen separately. It is not. A cell whose across run and down run are
+both single is in no entry at all, and two unchecked letters may not sit side
+by side, so where a row puts its single cells decides where every column may
+put its own. Drawing the two separately gives 2% legal patterns, and pushing
+for more unchecked cells drives that to zero:
 
-They do not fill: 0 of 6 at the Mephisto shape, 0 of 12 at a looser one, about
-a minute each.
+    openness   legal per 400 draws
+    1.0        9
+    1.5        0
+    2.0        0
 
-The reason is not vocabulary, which was the first guess and was wrong. UKACD
-holds 250,378 entries and every slot in a failing grid has thousands of
-candidates -- 1,112 at worst, 17,945 at the median. What fails is the search:
-60,001 nodes produce 59,986 backtracks, 45,702 of them hitting a slot with
-nothing left, and one slot accounts for 10,278 of those on its own. It
-rediscovers the same dead end over and over, because backtracking is
-chronological and a conflict teaches it nothing.
+Sampling the rows and then *searching* for columns that fit them gives 17%,
+and reaches the shape of a real grid.
 
-Restarts, the standard remedy for a thrashing search, do nothing here. The
-same 240,000 nodes spent as 4 searches of 60,000 or as 480 of 500 gives 0 of 8
-either way. So the failure is not bad luck that a fresh start could avoid.
+### What settled it
 
-That leaves two possibilities and they are not yet separated: the search has a
-systematic weakness on tight interlock, or these randomly barred patterns are
-simply unsatisfiable. The American style faced exactly this question and
-answered it with real grids -- randomly built ones filled 0 of 5 while
-published ones filled 72 of 72 instantly. The same test needs a published
-barred grid, which the project does not have.
+A published grid, which is what the American style needed too. The same
+filler, the same UKACD word list, the same rules:
 
-Not done: check_symmetry only inspects blocks, so bar symmetry is unenforced
-and the work above set symmetry="none".
+    Mephisto, 12x12, 36 entries, 48 unchecked
+    5 of 5 seeds filled, 196 to 1,352 nodes, 0.04 to 0.33 seconds
 
-Still open: the controls stay at 14/16. feas-14-20 improves 12 -> 13 of 14 and
-feas-18-30 improves 12 -> 15 of 18, both short of a known-achievable optimum.
+All 36 entries are dictionary words and all 144 cells are lettered. So the
+search was never the problem, and neither was the vocabulary. Both had been
+blamed in turn, and the earlier diagnosis in this file -- that the search
+thrashes on tight interlock -- was measuring a grid no setter would print.
+
+Thirty generated patterns, sorted by how much of the grid they leave
+unchecked, against a 20,000-node budget:
+
+    unchecked   filled
+    20-28        1 of 7
+    30-40        5 of 18
+    46-48        2 of 4
+
+The trend is real but it is not the whole story: legal patterns fill about a
+quarter of the time whatever their shape. The sharper signal is the timing.
+Every success came in under 10,008 nodes and most in under 1,400; every
+failure spent the entire budget. Success is fast and failure is total, which
+is the signature of a pattern that has no filling rather than of a search that
+cannot find one -- and it means a bigger budget would rescue almost nothing.
+
+### What the library is for
+
+It also means the fill attempt is a cheap and decisive filter, so barred
+patterns are earned rather than assumed: `build_barred_library.py` generates
+one, checks it against the rules, and admits it only if a real fill comes out.
+Restricting the attempts to patterns leaving at least 34 cells unchecked
+raises the hit rate and makes the failures fast. The shipped library is 60
+patterns from 1,392 draws and 115 fill attempts, thirteen minutes in all, and
+it spans 34 to 56 unchecked cells against the Mephisto's 48. That cost is paid
+once, here, so that nothing pays it at build time.
+
+Which way the two directions are biased matters, and not in the obvious
+direction. Rows are drawn towards few runs, because a Mephisto row usually
+holds two entries. Columns are drawn uniformly, and the tidier-looking choice
+of biasing them the same way is measurably worse -- 28% of those patterns fill
+against 53%. The reason is that the rows are drawn freely and the columns have
+to fit around them, and a uniform draw supplies single cells generously,
+because most ways of cutting a line have many parts.
+
+This is the American answer arrived at from the other end. There, published
+grids filled 72 of 72 and random ones 0 of 5, so the library was extracted
+from a corpus. Here there is exactly one published grid, so the library is
+generated and then filtered by the same test the corpus was implicitly
+passing.
+
+### Still missing
+
+Neither exporter can write a bar. `to_ipuz` and `to_exolve` now refuse a
+barred grid rather than emit a full square of white cells with every entry
+running the whole width -- a well-formed file describing the wrong puzzle.
+`--out` says so and writes nothing; `--solution` prints the grid with its
+bars drawn.

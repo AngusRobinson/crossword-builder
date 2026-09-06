@@ -44,6 +44,8 @@ rather than letting it pass.
 
 - [Getting started](#getting-started)
 - [The settings](#the-settings)
+- [American grids](#american-grids)
+- [Barred grids](#barred-grids)
 - [Ninas](#ninas)
 - [Pangrams](#pangrams)
 - [How it works](#how-it-works)
@@ -94,7 +96,7 @@ attached, which is the state a setter wants to start from.
 | `--max-uses N` | off | Hard ceiling: bar words used more than N times as a Guardian answer, to keep out tired crosswordese |
 | `--long N` | 0 | Require at least N entries of 11+ letters |
 | `--patterns N` | 14 | How many library grids to consider |
-| `--style S` | british | `british` or `us`; see below |
+| `--style S` | british | `british`, `us` or `barred`; see below |
 | `--no-tailor` | off | Skip breeding grids to fit; about a third of the time, slightly worse |
 | `--nina`, `--nina-path` | — | Hide a message; see below |
 | `--pangram N` | 0 | Require every letter of the alphabet N times |
@@ -140,7 +142,7 @@ follows from that — 34 blocks against 69, and 74 entries against 28.
 python3 make_grid.py --style us --time-limit 120
 ```
 
-The library is 1,200 patterns taken from pre-1965 New York Times puzzles,
+The library is 2,500 patterns taken from pre-1965 New York Times puzzles,
 geometry only. The rule set needed no new predicates: every letter checked is
 `RuleSet(max_consecutive_unchecked=0, min_checked_fraction=1.0)`, and real
 American grids validate against it — 3,091 of 4,451 puzzles pass, with about
@@ -159,6 +161,51 @@ longer entries and every letter is checked twice:
 checked grid is much harder than into a British one, and a four-word theme did
 not complete within four minutes. Every search parameter in the project was
 tuned on 28-entry British grids and needs revisiting for 74-entry ones.
+
+## Barred grids
+
+`--style barred` builds the 12x12 shape used by the Mephisto and the Azed. No
+squares are blocked out at all: every one of the 144 cells holds a letter, and
+the entries are separated by bars drawn between neighbours.
+
+```bash
+python3 make_grid.py --style barred --solution
+```
+
+Two things follow from having no blocks. Entries are long — five letters
+minimum, averaging closer to seven — and the unchecked letters come from
+*single cells*, runs of length one that carry a letter but begin no entry. A
+published Mephisto leaves 48 of its 144 cells uncrossed, a third of the grid,
+which is far looser than it looks.
+
+That number is the whole difficulty. Barred patterns are easy to generate and
+mostly impossible to fill, and the reason is almost always that they are more
+interlocked than a real one. `build_barred_library.py` therefore does not
+trust the rules alone: it generates a pattern, validates it, and then tries to
+fill it, keeping only the ones that come out. A pattern that can be filled is
+filled in about a second; one that cannot burns the entire node budget first,
+so the test is decisive as well as cheap.
+
+The library shipped here is 60 such patterns, spanning 34 to 56 unchecked
+cells, built from 1,392 draws and 115 fill attempts in about thirteen
+minutes.
+
+```bash
+python3 build_barred_library.py --want 60
+```
+
+**Themed barred grids are weak, as themed American ones are.** A fifteen-word
+vegetable list seated 5, against 13 that could fit the library's entry
+lengths at all, and the fill's familiarity came out at 0.63 where published
+answers average 0.86. Long entries in both directions leave little room to
+absorb a fixed word, and every search parameter in the project was tuned on
+28-entry British grids.
+
+**Barred grids cannot be exported.** Neither ipuz nor Exolve is given bars by
+this project, and writing one into them would produce a well-formed file
+describing a completely different puzzle — a full square of white cells with
+every entry running the whole width. `--out` refuses and says so; use
+`--solution`, which prints the grid with its bars drawn.
 
 ## Ninas
 

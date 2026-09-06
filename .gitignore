@@ -29,6 +29,8 @@ out/
 # Working word lists are the setter's own material, not project data.
 *.txt
 !crossword/grids.txt
+!crossword/grids-us.txt
+!crossword/grids-barred.txt
 !crossword/frequency.txt
 !crossword/scores.txt
 

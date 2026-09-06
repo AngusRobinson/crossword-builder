@@ -95,10 +95,26 @@ def _entries(grid: Grid, surfaces: dict, min_length: int):
 # -- ipuz ------------------------------------------------------------------
 
 
+def _refuse_bars(grid: Grid, format_name: str) -> None:
+    """Barred grids cannot yet be written out, and must not be written wrongly.
+
+    Neither writer here has any notion of a bar.  A barred grid has no blocks,
+    so both would happily emit a full square of white cells with every entry
+    running the whole width -- a valid file describing the wrong puzzle, which
+    is the worst thing an exporter can do.  Fail instead.
+    """
+    if grid.right_bars or grid.bottom_bars:
+        raise NotImplementedError(
+            f"{format_name} export does not support barred grids: "
+            "the format written here has no way to place a bar"
+        )
+
+
 def to_ipuz(grid: Grid, *, title: str = "Untitled", author: str = "",
             surfaces: dict = None, clues: dict = None,
             min_length: int = 3) -> dict:
     """The puzzle as an ipuz document, ready for Exet to import."""
+    _refuse_bars(grid, "ipuz")
     numbers, _across, _down = grid.numbering(min_length)
     clues = clues or {}
 
@@ -184,6 +200,7 @@ def to_exolve(grid: Grid, *, title: str = "Untitled", setter: str = "",
     empty cell.  The two conventions collide on the same character, which is
     worth saying out loud rather than discovering in a browser.
     """
+    _refuse_bars(grid, "Exolve")
     clues = clues or {}
     if puzzle_id is None:
         digest = hashlib.sha1(grid.render().encode()).hexdigest()[:8]

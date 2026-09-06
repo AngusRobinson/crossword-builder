@@ -403,7 +403,7 @@ def cover(
             if (ok, len(placed), worth) > (best.ok, best.n, best.quality):
                 best = Cover(
                     placed=placed,
-                    grid=Grid.parse(grid.render()) if ok else None,
+                    grid=grid.copy() if ok else None,
                     ok=ok,
                     ceiling=bound,
                     quality=worth,

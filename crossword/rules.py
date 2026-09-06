@@ -177,13 +177,27 @@ def check_min_checked(grid: Grid, rules: RuleSet):
 
 
 def check_symmetry(grid: Grid, rules: RuleSet):
-    """Rule 5: the block set maps onto itself under the required rotation."""
+    """Rule 5: the pattern maps onto itself under the required rotation.
+
+    Blocks are cells and rotate onto cells.  Bars are edges and rotate onto
+    edges, which is a different arithmetic and was missing here for as long as
+    barred grids were only half-supported: a barred pattern has no blocks, so
+    this check passed every one of them vacuously.
+    """
     if rules.symmetry != "rotational180":
         return
     for cell in grid.blocks:
         mate = grid.partner(cell)
         if mate not in grid.blocks:
             yield Violation("symmetry", f"block {cell} has no partner at {mate}")
+    if grid.right_bars or grid.bottom_bars:
+        from .barred import mirror_bars
+
+        right, bottom = mirror_bars(grid)
+        for bar in sorted(right ^ grid.right_bars):
+            yield Violation("symmetry", f"right bar {bar} is unpartnered")
+        for bar in sorted(bottom ^ grid.bottom_bars):
+            yield Violation("symmetry", f"bottom bar {bar} is unpartnered")
 
 
 def check_no_repeated_entries(grid: Grid, rules: RuleSet):
