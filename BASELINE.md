@@ -180,6 +180,29 @@ An ordinary fill is never one: 25 fills missed 4.2 letters on average, almost
 always j, q, x and z, and turning the familiarity preference off entirely only
 reached 3.5. Freedom was never the constraint -- nothing was asking for a z.
 
+### Which missing letter to chase first
+
+The bonus for supplying a missing letter was flat: every letter the grid still
+lacked pulled equally hard. That places whichever is convenient, and what is
+convenient is the common ones, so the k and the v go in early and the q and the
+j are left to a grid that has no room left for them.
+
+Weighting the bonus by how hard a letter is to place -- log of how few words in
+the vocabulary carry it, scaled to mean 1, which puts q and j at 2.4 and e at
+0.22 -- changes what is achievable rather than merely what it costs. Twelve
+seeds on one grid:
+
+    pangram   all equal          rarest first
+       x1     12/12   0.78       12/12   0.76
+       x2      7/12   0.72       12/12   0.67
+       x3      0/12    --        10/12   0.63
+
+A triple goes from impossible to routine. The familiarity it costs is the price
+of completing at all: the awkward letters have to go somewhere, and a grid that
+fails has no familiarity to report. At a single pangram the two schemes are
+level on completions and the weighting costs 0.02, which is the whole of its
+downside.
+
 `--pangram N` adds a bonus in Filler._order for each still-missing letter a
 word supplies, scaled by `hunger`, and discards a completed fill that falls
 short so the next restart tries again.

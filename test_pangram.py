@@ -164,3 +164,37 @@ def test_difficulty_rises_steeply_with_the_multiple(scored):
         return len(short_of(grid, n))
 
     assert shortfall(1) <= shortfall(4), "higher multiples must be harder"
+
+
+def test_scarce_letters_pull_harder(index):
+    """A missing Q must outrank a missing K.
+
+    Under equal weights every missing letter pulls the same, and the easy ones
+    get placed first while the grid still has room -- which is exactly the
+    freedom the hard ones needed.
+    """
+    from crossword.fill import _letter_rarity
+
+    rarity = _letter_rarity(index)
+    weight = dict(zip("abcdefghijklmnopqrstuvwxyz", rarity))
+    assert weight["q"] > weight["k"] > weight["f"] > weight["e"]
+    assert abs(sum(rarity) / 26 - 1.0) < 1e-9, "scaled to mean 1"
+
+
+def test_a_triple_pangram_comes_out(index):
+    """78 of about 160 letters dictated, which even scheme cannot manage."""
+    from crossword import library
+    from crossword.fill import Filler
+    from crossword.rules import RuleSet
+
+    pattern = library.load()[0]
+    wins = 0
+    for seed in range(4):
+        grid = pattern.grid()
+        filler = Filler(grid, index, RuleSet(), seed=seed, commonness=3.0,
+                        aim=0.85, pangram=3, node_budget=60000)
+        if filler.fill():
+            counts = collections.Counter("".join(grid.letters.values()))
+            assert all(counts[c] >= 3 for c in string.ascii_lowercase)
+            wins += 1
+    assert wins >= 2, f"only {wins} of 4 triple pangrams completed"

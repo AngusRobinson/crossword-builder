@@ -285,14 +285,19 @@ An ordinary fill is never a pangram — 25 fills missed 4.2 letters on average,
 almost always j, q, x and z — and it is not for want of freedom: disabling the
 familiarity preference entirely only reached 3.5. Nothing in the search was ever
 *asking* for a z. So words supplying a missing letter get a bonus, escalating
-with the requirement.
+with the requirement — and weighted by how hard that letter is to place, so a Q
+outranks a K. Measured over 12 seeds on one grid:
 
-| N | Result | Cost |
+| N | Result | Fill familiarity |
 |---|---|---|
-| 1 | reliable | fill familiarity 0.79 against 0.81 — near-free |
-| 2 | reliable | 0.70 — noticeable |
-| 3 | about 1 attempt in 8 | raise `--time-limit`, try several seeds |
+| 1 | 12/12 | 0.76 |
+| 2 | 12/12 | 0.67 |
+| 3 | 10/12 | 0.63 |
 | 4+ | allowed, has never succeeded | the obstruction is English, not the search |
+
+Weighting every missing letter equally instead places the easy ones first and
+spends the freedom the hard ones needed: a double then completes 7 times in 12
+and a triple never.
 
 ## How it works
 

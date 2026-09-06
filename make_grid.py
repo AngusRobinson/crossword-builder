@@ -296,6 +296,15 @@ def main() -> int:
                              ". A 15x15 perimeter is 56 cells but only 3 of "
                              "the 120 grids leave all of them white, so fixed "
                              "cells cannot express one; 34 grids leave 52")
+    parser.add_argument("--nina-exact", action="store_true",
+                        help="make the message fill the whole path, using "
+                             "every white cell on it rather than starting at "
+                             "one end and stopping where it runs out. Always "
+                             "on for a perimeter, since a circuit that stops "
+                             "three quarters of the way round is not one; "
+                             "worth asking for on a diagonal, where it is the "
+                             "difference between a message down the diagonal "
+                             "and a message occupying the whole of it")
     parser.add_argument("--long", type=int, default=0, metavar="N",
                         help="require at least N entries of 11+ letters. "
                              "Default 0. Long entries are the hardest to fill, "
@@ -354,15 +363,15 @@ def main() -> int:
             path_cells, message = read_nina_path(args.nina_path)
         except ValueError as problem:
             parser.error(str(problem))
-        # A perimeter message must close the circuit; an open path need not.
-        placer = nina_placer(path_cells, message,
-                             exact=args.nina_path.split(",")[0].strip().lower()
-                             == "perimeter")
+        # A perimeter message must close the circuit; an open path need not,
+        # unless the setter asks for it.
+        exact = (args.nina_exact
+                 or args.nina_path.split(",")[0].strip().lower() == "perimeter")
+        placer = nina_placer(path_cells, message, exact=exact)
 
     patterns = library.load(style=args.style)
     style_rules = library.rules_for(args.style)
     if placer:
-        exact = args.nina_path.split(",")[0].strip().lower() == "perimeter"
         patterns = [p for p in patterns if placer(p) is not None]
         if not patterns:
             # Say which lengths would have worked.  For a perimeter the
