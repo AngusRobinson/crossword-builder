@@ -324,6 +324,8 @@ def cover(
     aim: float = 0.85,
     pangram: int = 0,
     hunger: float = None,
+    branch_cap: int = 200,
+    node_scale: int = 400,
     preset: dict = None,
     seed: int | None = None,
 ) -> Cover:
@@ -381,7 +383,8 @@ def cover(
             # Filler completes in seconds.
             filler = Filler(
                 grid, index, rules,
-                node_budget=max(8000, 400 * len(slots)),
+                node_budget=max(8000, node_scale * len(slots)),
+                branch_cap=branch_cap, deadline=deadline,
                 commonness=commonness, aim=aim,
                 pangram=pangram, hunger=hunger,
                 seed=rng.randrange(1 << 30),
@@ -439,7 +442,7 @@ def spare(profile: dict, targets) -> int:
 
 def best_over_library(patterns, index, targets, rules=None, *, top=14,
                       time_limit: float = 45.0, quality_scan: int = 4,
-                      **kwargs):
+                      on_improve=None, **kwargs):
     """Try the most promising patterns in a library, return the best cover.
 
     Patterns are tried by bound first, then by spare capacity.  Once no
@@ -453,6 +456,12 @@ def best_over_library(patterns, index, targets, rules=None, *, top=14,
     Set quality_scan to 0 to stop at the first pattern achieving best
     coverage, which is faster and was the behaviour before fill quality was
     measured at all.
+
+    `on_improve(elapsed, cover)` is called whenever the best result changes.
+    Because `time_limit` does nothing here but stop the loop, a long run passes
+    through exactly the states a short one would, so recording those moments
+    gives the result at every smaller budget from a single run -- exactly,
+    rather than as an estimate.
     """
     rules = rules or RuleSet()
     scored = sorted(
@@ -485,6 +494,8 @@ def best_over_library(patterns, index, targets, rules=None, *, top=14,
         if (got.ok, got.n, got.quality) > (best.ok, best.n, best.quality):
             best = got
             best.pattern = pattern
+            if on_improve is not None:
+                on_improve(time.time() - (deadline - time_limit), best)
     # cover() knows only its own pattern's bound.  Score against the best
     # bound the library offers, or a pattern that happened to be easy would
     # flatter the result.

@@ -84,6 +84,7 @@ class Filler:
         pangram: int = 0,
         hunger: float = None,
         rarity_first: bool = True,
+        deadline: float | None = None,
         seed: int | None = None,
     ):
         self.grid = grid
@@ -131,6 +132,12 @@ class Filler:
         # familiarity rank 0.81 with no requirement, 0.79 for a pangram, 0.70
         # for a double.
         self.hunger = hunger if hunger is not None else 3.0 * max(1, pangram)
+        # A wall-clock stop, checked every so many nodes.  The node budget is
+        # not a time budget: cost per node varies by two orders of magnitude
+        # with the grid, so a fill of a 74-entry American grid can run for a
+        # minute inside a search that was given twenty seconds.  Callers that
+        # care about the clock pass this; the rest are unaffected.
+        self.deadline = deadline
         # Whether all missing letters pull equally, or the scarce ones pull
         # harder.  A grid has most freedom while it is empty, so the letters
         # hardest to place are the ones worth spending that freedom on:
@@ -292,6 +299,9 @@ class Filler:
         self.stats.nodes += 1
         if self.stats.nodes > self.node_budget:
             raise _BudgetExceeded()
+        if self.deadline is not None and not self.stats.nodes % 512:
+            if time.time() > self.deadline:
+                raise _BudgetExceeded()
 
         best = None
         best_mask = 0
