@@ -562,9 +562,17 @@ squares in the literature rely on:
     common words only          none           none            none
     proper nouns allowed       none           none            none
 
-That is not a proof that none exists. The search takes at most 200 candidates
-at any node, so it explores a slice of the space rather than all of it, and a
-run that finds nothing has not shown there was nothing to find.
+Widening the search at each node does not help either. At a fixed budget of
+25 tries of 200,000 nodes, raising the cap on candidates per node from 200 to
+5,000 spends the same nodes and finds the same nothing:
+
+    candidates per node    200    1,000    5,000
+    result                none     none     none
+
+So the shape of the search is not what is missing, at these budgets. None of
+this proves no 8x8 square exists in this dictionary -- a run that finds nothing
+has not shown there was nothing to find -- only that it is not within easy
+reach of this method.
 
 ## How much the size of the theme list matters
 
