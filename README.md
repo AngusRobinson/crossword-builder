@@ -259,6 +259,31 @@ white cells with every entry running the whole width. So `--out` writes
 `<name>.html`: the grid drawn with its bars, the two clue lists, and the
 enumerations. It is a page to work from rather than a file to import.
 
+## Word squares
+
+A sideline, but the machinery is mostly already here.
+
+```bash
+python3 word_square.py 7               # ordinary: rows and columns read alike
+python3 word_square.py 6 --kind double # double: rows and columns differ
+```
+
+|  | |
+|---|---|
+| **ordinary** | `PASTERS / ATTABOY / STIRRUP / TARTISH / EBRIATE / ROUSTER / SYPHERS` |
+| **double** | `ROSIER / EMUNGE / LENTEN / INTENT / STANCE / HANDED`, reading down `RELISH OMENTA SUNTAN INTEND EGENCE RENTED` |
+
+A double square is a barred grid with no bars — every across run is the full
+width, every down run the full height — so the ordinary filler makes one with
+nothing added. Sizes up to 6 come out in under a minute; 7 has not been found.
+
+An ordinary square cannot be posed that way at all. It needs
+`grid[r][c] == grid[c][r]`, a constraint between two *cells*, where everything
+the filler knows how to say is a constraint between a cell and a word. So it
+has its own solver in `crossword/square.py` — which is the same search in
+miniature, over *n* words instead of thirty, each one placed against the
+letters the others have already fixed. Sizes up to 7 are quick.
+
 ## Ninas
 
 A nina is a message hidden in the grid, read somewhere the solver would not
