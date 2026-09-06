@@ -42,6 +42,7 @@ rather than letting it pass.
 
 ## Contents
 
+- [Notebooks](#notebooks)
 - [Getting started](#getting-started)
 - [The settings](#the-settings)
 - [American grids](#american-grids)
@@ -53,6 +54,16 @@ rather than letting it pass.
 - [Measuring changes](#measuring-changes)
 - [Rebuilding the data files](#rebuilding-the-data-files)
 - [Design notes](#design-notes)
+
+## Notebooks
+
+`notebooks/` walks through how the builder works, with the outputs stored so
+they read without being run.
+
+| | |
+|---|---|
+| [1. Building a grid](notebooks/01-building-a-grid.ipynb) | one puzzle end to end: dictionary, index, grid library, rules, seating, fill, export |
+| [2. The fill search](notebooks/02-the-fill-search.ipynb) | forward checking, which entry to expand, choosing words by familiarity, and what failure looks like |
 
 ## Getting started
 
