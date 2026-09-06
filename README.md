@@ -333,7 +333,23 @@ An ordinary square cannot be posed that way at all. It needs
 the filler knows how to say is a constraint between a cell and a word. So it
 has its own solver in `crossword/square.py` — which is the same search in
 miniature, over *n* words instead of thirty, each one placed against the
-letters the others have already fixed. Sizes up to 7 are quick.
+letters the others have already fixed.
+
+Sizes up to 7 are quick. An 8x8 takes about 230 million nodes, three and a half
+hours, and comes out of ordinary dictionary words:
+
+```
+C I T E S S E S      python3 word_square.py 8 --tries 3000 I S O T H E R E          --effort 200000 --report 200
+T O X A E M I A
+E T A E R I O S
+S H E R W A N I
+S E M I A R I D
+E R I O N I T E
+S E A S I D E S
+```
+
+Different `--seed` values explore disjoint searches, so running several at once
+genuinely parallelises the hunt.
 
 ## Ninas
 

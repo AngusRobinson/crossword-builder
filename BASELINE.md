@@ -554,13 +554,28 @@ placed, pruning when any has nothing left and taking the one with least freedom
 next -- is worth two orders of magnitude at 6x6 and the difference between
 finding a 7x7 and not.
 
-Sizes 3 to 7 come out in seconds. Eight has not, across six budget shapes and
-about 36 million nodes, with and without the capitalised entries the larger
-squares in the literature rely on:
+Sizes 3 to 7 come out in seconds. Eight takes about 230 million nodes, which
+is three and a half hours:
 
-    8x8                    20,000 x 200   200,000 x 40   2,000,000 x 6
-    common words only          none           none            none
-    proper nouns allowed       none           none            none
+    C I T E S S E S      1,149 tries of 200,000 nodes
+    I S O T H E R E      229,685,776 nodes, 11,459 seconds
+    T O X A E M I A
+    E T A E R I O S      no proper nouns, no phrases: all eight
+    S H E R W A N I      are ordinary UKACD entries
+    S E M I A R I D
+    E R I O N I T E
+    S E A S I D E S
+
+Earlier runs at 36 million nodes found nothing, which was not evidence of
+much: the answer sits six times further out than that.
+
+Three runs launched at seeds 1, 2 and 3 to search in parallel all returned this
+same square, within a couple of minutes of each other, at tries 1149, 1148 and
+1147. That is not luck, it is a bug: the seed for an attempt was `seed +
+attempt`, so consecutive base seeds overlap in all but a try or two and all
+three reached absolute seed 1149. Parallel runs did the same work three times.
+The stride is now a large prime, so different base seeds explore disjoint
+streams.
 
 Widening the search at each node does not help either. At a fixed budget of
 25 tries of 200,000 nodes, raising the cap on candidates per node from 200 to

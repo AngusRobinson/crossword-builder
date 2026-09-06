@@ -57,3 +57,27 @@ def test_the_budget_is_honoured(plain):
 def test_a_size_with_no_words_is_not_a_crash(plain):
     rows, nodes = search(40, plain, node_budget=100)
     assert rows is None and nodes == 0
+
+
+def test_parallel_runs_do_not_repeat_each_other():
+    """Different --seed must mean a different search, not the same one shifted.
+
+    With `seed + attempt`, base seeds 1, 2 and 3 overlap in all but a couple of
+    tries. Three eight-by-eight searches launched that way spent three and a
+    half hours each and returned the same square, all three reaching it at
+    absolute seed 1149.
+    """
+    from crossword.square import stream
+
+    runs = [{stream(base, a) for a in range(2000)} for base in (1, 2, 3)]
+    assert not runs[0] & runs[1]
+    assert not runs[1] & runs[2]
+    assert not runs[0] & runs[2]
+
+
+def test_a_known_eight_by_eight_is_a_square():
+    """Found after 229,685,776 nodes, which is what an 8x8 costs."""
+    rows = ["citesses", "isothere", "toxaemia", "etaerios",
+            "sherwani", "semiarid", "erionite", "seasides"]
+    assert is_square(rows)
+    assert len(set(rows)) == 8

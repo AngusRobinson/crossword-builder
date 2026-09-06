@@ -511,7 +511,9 @@ def main() -> int:
     # default and the fifth try onwards is wasted time.
     got, spread = None, []
     for step in range(args.tries):
-        attempt = once(args.seed + step)
+        # Strided, so that two runs launched with different --seed explore
+        # different searches rather than overlapping in all but one try.
+        attempt = once(args.seed * 1_000_003 + step)
         spread.append(attempt.n if attempt.ok else None)
         if got is None or (attempt.ok, attempt.n, attempt.quality) > (
                 got.ok, got.n, got.quality):

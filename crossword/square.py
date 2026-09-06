@@ -30,6 +30,22 @@ import math
 import random
 
 
+# Far more than any plausible number of tries, so two runs started from
+# different `seed` values explore disjoint streams.
+STRIDE = 1_000_003
+
+
+def stream(seed: int, attempt: int) -> int:
+    """The seed for one attempt of a run.
+
+    Not `seed + attempt`, which was the whole point of the bug this replaces:
+    consecutive base seeds then overlap almost completely, and three runs
+    started at 1, 2 and 3 to search in parallel instead did the same work three
+    times over, finding the same square at absolute seeds 1149, 1149 and 1149.
+    """
+    return seed * STRIDE + attempt
+
+
 class Budget(Exception):
     """Raised to unwind when a search has spent its nodes."""
 
@@ -126,7 +142,7 @@ def find(size, index, *, tries=60, node_budget=8000, seed=0, on_try=None,
     """
     total = 0
     for attempt in range(tries):
-        rows, nodes = search(size, index, seed=seed + attempt,
+        rows, nodes = search(size, index, seed=stream(seed, attempt),
                              node_budget=node_budget, **kwargs)
         total += nodes
         if rows:
