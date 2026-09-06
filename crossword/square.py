@@ -117,8 +117,13 @@ def search(size, index, *, seed=0, node_budget=20000, commonness=0.0,
     return None, spent[0]
 
 
-def find(size, index, *, tries=60, node_budget=8000, seed=0, **kwargs):
-    """Restart until a square comes out.  Returns (rows, tries, nodes)."""
+def find(size, index, *, tries=60, node_budget=8000, seed=0, on_try=None,
+         **kwargs):
+    """Restart until a square comes out.  Returns (rows, tries, nodes).
+
+    `on_try(attempt, nodes_so_far)` is called after each failed attempt, which
+    is how a long search says it is still going.
+    """
     total = 0
     for attempt in range(tries):
         rows, nodes = search(size, index, seed=seed + attempt,
@@ -126,6 +131,8 @@ def find(size, index, *, tries=60, node_budget=8000, seed=0, **kwargs):
         total += nodes
         if rows:
             return rows, attempt + 1, total
+        if on_try is not None:
+            on_try(attempt + 1, total)
     return None, tries, total
 
 

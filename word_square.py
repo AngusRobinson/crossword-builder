@@ -84,6 +84,13 @@ def main() -> int:
                              "ones, which at these sizes often means no square "
                              "at all")
     parser.add_argument("--aim", type=float, default=0.85)
+    parser.add_argument("--branch-cap", type=int, default=200,
+                        help="how many candidate words to consider at each "
+                             "step (default 200). Raising it did not help at "
+                             "8x8, but it costs little to try")
+    parser.add_argument("--report", type=int, default=0, metavar="N",
+                        help="print progress to stderr every N tries, so a "
+                             "long search shows it is still going")
     parser.add_argument("--proper", action="store_true",
                         help="allow capitalised entries, which is how the "
                              "larger squares in the literature are built")
@@ -100,10 +107,20 @@ def main() -> int:
     index = Index(entries)
 
     began = time.time()
+
+    def report(attempt, nodes):
+        if args.report and attempt % args.report == 0:
+            rate = nodes / max(1e-9, time.time() - began)
+            print(f"  {attempt:,} tries, {nodes:,} nodes, "
+                  f"{time.time() - began:.0f}s ({rate:,.0f} nodes/s)",
+                  file=sys.stderr, flush=True)
+
     if args.kind == "ordinary":
         rows, tries, nodes = find(args.size, index, tries=args.tries,
                                   node_budget=args.effort, seed=args.seed,
-                                  commonness=args.commonness, aim=args.aim)
+                                  commonness=args.commonness, aim=args.aim,
+                                  branch_cap=args.branch_cap,
+                                  on_try=report if args.report else None)
     else:
         rows, nodes, tries = None, 0, 0
         for step in range(args.tries):
