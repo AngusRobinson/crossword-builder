@@ -67,6 +67,17 @@ EFFORT = {
 }
 
 
+# Informational output goes through this rather than straight to print, so
+# --quiet can silence it. Errors keep using print(..., file=sys.stderr): a
+# quiet run still has to say why it failed.
+_QUIET = False
+
+
+def say(*args, **kwargs):
+    if not _QUIET:
+        print(*args, **kwargs)
+
+
 def _perimeter(size):
     return ([(0, c) for c in range(size)]
             + [(r, size - 1) for r in range(1, size)]
@@ -296,6 +307,15 @@ def main() -> int:
                              ". A 15x15 perimeter is 56 cells but only 3 of "
                              "the 120 grids leave all of them white, so fixed "
                              "cells cannot express one; 34 grids leave 52")
+    parser.add_argument("--quiet", "-q", action="store_true",
+                        help="print nothing but errors. The grid is still "
+                             "written by --out, so this is the mode for "
+                             "scripting: run it, then read the file")
+    parser.add_argument("--blank", action="store_true",
+                        help="write the puzzle without its answers. Applies to "
+                             "the HTML page a barred grid is written to; the "
+                             "ipuz and Exolve files always carry the solution, "
+                             "because that is what the format is for")
     parser.add_argument("--nina-exact", action="store_true",
                         help="make the message fill the whole path, using "
                              "every white cell on it rather than starting at "
@@ -325,6 +345,8 @@ def main() -> int:
     parser.add_argument("--solution", action="store_true",
                         help="also print the grid as plain text")
     args = parser.parse_args()
+    global _QUIET
+    _QUIET = args.quiet
 
     targets, dropped, spelling = read_targets(args)
     for word, why in dropped:
@@ -334,8 +356,8 @@ def main() -> int:
         # and the fill-quality settings all give the grid something to be
         # without a single target in it.  Everything downstream already copes
         # -- an empty target list simply seats nothing and fills the grid.
-        print("no target words: filling a grid on its own merits",
-              file=sys.stderr)
+        say("no target words: filling a grid on its own merits",
+            file=sys.stderr)
 
     if args.pangram < 0:
         parser.error("--pangram cannot be negative")
@@ -423,10 +445,10 @@ def main() -> int:
                             min_score=args.min_score, max_uses=args.max_uses)
     if len(kept) < 5000:
         parser.error(f"those limits leave only {len(kept)} fill words")
-    print(f"fill dictionary: {len(kept)} words "
-          f"(floor {args.min_score}"
-          + (f", ceiling {args.max_uses}" if args.max_uses is not None else "")
-          + ")", file=sys.stderr)
+    say(f"fill dictionary: {len(kept)} words "
+        f"(floor {args.min_score}"
+        + (f", ceiling {args.max_uses}" if args.max_uses is not None else "")
+        + ")", file=sys.stderr)
     index = Index(kept, scores)
 
     began = time.time()
@@ -487,9 +509,9 @@ def main() -> int:
               file=sys.stderr)
         return 1
 
-    print()
-    print(got.grid.pretty(block="█"))
-    print()
+    say()
+    say(got.grid.pretty(block="█"))
+    say()
 
     placed = set(got.placed)
     where = {}
@@ -500,20 +522,20 @@ def main() -> int:
 
     if args.tries > 1 and targets:
         shown = ", ".join("-" if n is None else str(n) for n in spread)
-        print(f"{args.tries} tries placed [{shown}] -- keeping the best")
+        say(f"{args.tries} tries placed [{shown}] -- keeping the best")
     if targets:
-        print(f"placed {got.n} of {len(targets)} targets "
+        say(f"placed {got.n} of {len(targets)} targets "
               f"({got.score:.0%} of the {got.ceiling} that could fit this "
               f"library) in {elapsed:.0f}s")
     else:
-        print(f"filled in {elapsed:.0f}s")
+        say(f"filled in {elapsed:.0f}s")
     for word in sorted(placed):
-        print(f"   {word:18} {where.get(word, '')}")
+        say(f"   {word:18} {where.get(word, '')}")
     missed = [w for w in targets if w not in placed]
     if missed:
-        print(f"could not place: {', '.join(sorted(missed))}")
+        say(f"could not place: {', '.join(sorted(missed))}")
     if got.pattern is not None:
-        print(f"grid: library pattern {got.pattern.source} "
+        say(f"grid: library pattern {got.pattern.source} "
               f"(used by {got.pattern.uses} published puzzles)")
 
     # How ordinary the words we chose ourselves are.  Targets are excluded:
@@ -531,7 +553,7 @@ def main() -> int:
         if bucket and bucket.quantile and word_id is not None:
             ranks.append(bucket.quantile[word_id])
     typical = sum(ranks) / len(ranks) if ranks else 0.0
-    print(f"fill: {len(fill)} words, familiarity rank {typical:.2f} "
+    say(f"fill: {len(fill)} words, familiarity rank {typical:.2f} "
           f"(published answers average 0.86), "
           f"{len(unknown)} unknown to both sources"
           # Truncated, and it has to say so: "7 unknown" beside a list of six
@@ -545,7 +567,7 @@ def main() -> int:
         import string as _s
         short = [c for c in _s.ascii_lowercase if seen[c] < args.pangram]
         word = {1: "pangram", 2: "double pangram", 3: "triple pangram"}[args.pangram]
-        print(f"{word}: " + ("achieved" if not short
+        say(f"{word}: " + ("achieved" if not short
                              else "NOT achieved, short of " + "".join(short)))
 
     if placer:
@@ -553,18 +575,18 @@ def main() -> int:
         if landed is None:
             # The winning grid came from the library list, which was filtered,
             # so this should not happen; say so rather than printing nothing.
-            print("nina path: could not be placed -- this is a bug")
+            say("nina path: could not be placed -- this is a bug")
         else:
             held = all(got.grid.letters.get(c) == ch for c, ch in landed.items())
             reading = "".join(got.grid.letters.get(c, "?") for c in path_cells
                               if c in landed)
-            print(f"nina path: {reading.upper()} "
+            say(f"nina path: {reading.upper()} "
                   + ("(held)" if held else "NOT HELD -- this is a bug"))
 
     if nina:
         shown = "".join(sorted(f"{got.grid.letters.get(c, '?')}" for c in nina))
         held = all(got.grid.letters.get(c) == ch for c, ch in nina.items())
-        print(f"nina: {len(nina)} cells fixed, "
+        say(f"nina: {len(nina)} cells fixed, "
               + ("all held" if held else "NOT HELD -- this is a bug"))
 
     # Entries the nina fixed outright are never checked against the
@@ -589,12 +611,12 @@ def main() -> int:
         touched = len({id(s) for s in got.grid.slots(3)
                        for c in fixed if c in s.cells})
         if not exposed:
-            print(f"WARNING: this is not hidden -- the cells are exactly "
+            say(f"WARNING: this is not hidden -- the cells are exactly "
                   f"{len(whole)} whole entries "
                   f"({', '.join(got.grid.pattern(s).upper() for s in whole)}), "
                   f"so reading them just reads those answers")
         else:
-            print(f"hidden: spans {touched} entries, "
+            say(f"hidden: spans {touched} entries, "
                   f"{len(exposed)} of {len(fixed)} letters not readable as a "
                   f"whole entry")
 
@@ -607,13 +629,13 @@ def main() -> int:
             if bucket is None or bucket.by_word.get(word) is None:
                 nonsense.append(word)
         if nonsense:
-            print(f"WARNING: {len(nonsense)} entries are fixed entirely by the "
+            say(f"WARNING: {len(nonsense)} entries are fixed entirely by the "
                   f"nina and are not words: {', '.join(sorted(nonsense))}")
-            print("         a message has to break into real words at the "
+            say("         a message has to break into real words at the "
                   "entry boundaries")
 
     problems = validate(got.grid, style_rules)
-    print("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")
+    say("rules:", "clean" if not problems else f"{len(problems)} VIOLATIONS")
 
     if args.out and args.style == "barred":
         # Neither puzzle format here can place a bar, and a barred grid written
@@ -624,8 +646,8 @@ def main() -> int:
         export.write_html(got.grid, args.out + ".html", title=args.title,
                           setter=args.setter, surfaces=surfaces,
                           min_length=style_rules.min_entry_length,
-                          solution=True)
-        print(f"wrote {args.out}.html "
+                          solution=not args.blank)
+        say(f"wrote {args.out}.html "
               f"(no ipuz or Exolve: neither format can place a bar)")
     elif args.out:
         # The setter's own spelling wins over the dictionary's: they typed
@@ -636,16 +658,16 @@ def main() -> int:
                           author=args.setter, surfaces=surfaces)
         export.write_exolve(got.grid, args.out + ".html", title=args.title,
                             setter=args.setter, surfaces=surfaces)
-        print(f"wrote {args.out}.ipuz and {args.out}.html")
+        say(f"wrote {args.out}.ipuz and {args.out}.html")
     if args.solution:
-        print()
+        say()
         # `render` is the blocked-grid form and has nowhere to put a bar, so a
         # barred solution printed through it reads as twelve-letter rows that
         # are not words.  The compact `pretty` keeps the separators.
         if args.style == "barred":
-            print(got.grid.pretty(gap="", upper=False))
+            say(got.grid.pretty(gap="", upper=False))
         else:
-            print(got.grid.render())
+            say(got.grid.render())
     return 0
 
 

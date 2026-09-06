@@ -1,11 +1,16 @@
 # Crossword Builder
 
-Builds British cryptic crossword grids around a list of words you want in them.
+Builds crossword grids: British cryptic, American, or the barred 12x12 of a
+Mephisto or an Azed.
 
-Give it a theme — the answers you have already decided on — and it finds a grid
-those words fit into, fills the rest, and writes a puzzle file you can take
-into [Exet](https://exet.app) to write clues. It can also hide a message in the
-grid, insist on a pangram, and tune how obscure the fill is allowed to be.
+Give it a theme — answers you have already decided on — and it finds a grid
+those words fit into, fills the rest from a dictionary, and writes a puzzle
+file you can take into [Exet](https://exet.app) to write clues. A theme is
+optional: with no words at all it simply fills a grid on its own merits, which
+is a perfectly ordinary way to start a puzzle.
+
+It can also hide a message in the grid, insist on a pangram, choose how obscure
+the fill is allowed to be, and print nothing at all if you are scripting it.
 
 ```
 $ python3 make_grid.py --file birds.txt --out out/birds --title "Dawn Chorus"
@@ -91,11 +96,16 @@ are folded away, and the original spelling is kept for the enumeration, so
 No words at all is a valid request — a nina, a pangram or the quality settings
 give a grid something to be on their own.
 
-Write the puzzle out with `--out BASE`, which produces `BASE.ipuz` (Exet imports
-it) and `BASE.html` (a self-contained [Exolve](https://exolve.app) page that
-opens in a browser). Neither carries clues, because this project does not write
-them; both leave the clue slots empty with the answers and enumerations
-attached, which is the state a setter wants to start from.
+Write the puzzle out with `--out BASE`. For British and American grids that
+produces `BASE.ipuz` (Exet imports it) and `BASE.html` (a self-contained
+[Exolve](https://exolve.app) page that opens in a browser). Neither carries
+clues, because this project does not write them; both leave the clue slots
+empty with the answers and enumerations attached, which is the state a setter
+wants to start from.
+
+A barred grid gets `BASE.html` alone, a printable page rather than a puzzle
+file — neither format can place a bar. Add `--blank` for the grid without its
+answers.
 
 ## The settings
 
@@ -114,6 +124,9 @@ attached, which is the state a setter wants to start from.
 | `--no-tailor` | off | Skip breeding grids to fit; about a third of the time, slightly worse |
 | `--nina`, `--nina-path` | — | Hide a message; see below |
 | `--pangram N` | 0 | Require every letter of the alphabet N times |
+| `--nina-exact` | off | Make the message fill its whole path, not just the start of it. Always on for a perimeter |
+| `--blank` | off | Write the HTML page without the answers |
+| `--quiet`, `-q` | off | Print nothing but errors, for scripting |
 
 **`--tries` is doing more work than any other setting.** The same list run
 twice gives different answers, sometimes by a lot: over 12 dense lists at 8
@@ -148,8 +161,8 @@ grid, where it is often the difference between some unknown words and none.
 
 ## American grids
 
-`--style us` swaps the rule set and the library. British grids leave about half
-the letters unchecked; American ones check every letter, and everything else
+`--style us` swaps the rule set and the library. British grids check about half
+the letters of each entry; American ones check every one, and everything else
 follows from that — 34 blocks against 69, and 74 entries against 28.
 
 ```bash
@@ -214,7 +227,7 @@ two of its four letters uncrossed. The two directions are not inconsistent;
 they are what two different corpora actually do.
 
 ```bash
-python3 build_barred_library.py --want 60
+python3 build_barred_library.py --want 200
 ```
 
 **Themed barred grids are weak, as themed American ones are.** A fifteen-word
