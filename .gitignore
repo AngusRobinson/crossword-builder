@@ -36,3 +36,6 @@ out/
 
 # Third-party puzzle corpora: large, and not ours to redistribute.
 *.zip
+
+# Notebook checkpoints.
+.ipynb_checkpoints/
