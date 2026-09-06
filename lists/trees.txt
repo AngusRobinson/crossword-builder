@@ -30,6 +30,8 @@ catalpa
 cedar
 cherry
 chestnut
+chinaberry
+cinchona
 cinnamon
 citron
 coconut
@@ -40,6 +42,7 @@ cypress
 damson
 deodar
 dogwood
+douglas
 ebony
 elder
 elm
@@ -66,6 +69,7 @@ jacaranda
 jack-fruit
 juniper
 kapok
+katsura
 kauri
 laburnum
 larch
@@ -73,6 +77,7 @@ laurel
 lemon
 lime
 linden
+liquidambar
 locust
 logwood
 macadamia
@@ -130,3 +135,4 @@ whitebeam
 willow
 witch-hazel
 yew
+ylang

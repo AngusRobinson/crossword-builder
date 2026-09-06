@@ -1,31 +1,50 @@
 accentor
 adjutant
 albatross
+alpineswift
 amazon
+anhinga
 ani
 ant-bird
+apostlebird
 aquatic
+aracari
 arctic tern
+arcticskua
 argus
+atlanticpuffin
 auk
 auklet
 avadavat
 avocet
 babbler
+baillon
+barbaryfalcon
 barbet
 barn owl
 barnacle-goose
+barredwarbler
+barwitted
 bateleur
+beangoose
 bee-eater
 bee-eaters
 bell-bird
+bewickswan
 bittern
 black grouse
 blackbird
 blackbirds
 blackcap
 blackcaps
+blackguillemot
 blackheaded
+blackkite
+blacknecked
+blackstork
+blacktailed
+blacktern
+blackwinged
 bluebird
 bluethroat
 bluetit
@@ -45,6 +64,7 @@ bush-tit
 bustard
 butcher-bird
 buzzard
+canadagoose
 canary
 canvas-back
 capercaillie
@@ -53,11 +73,13 @@ cardinal
 carrion-crow
 cassowary
 catbird
+cattleegret
 chaffinch
 chats
 chickadee
 chicken
 chiff-chaff
+chiffchaffs
 chough
 choughs
 chukar
@@ -66,6 +88,11 @@ coal-tit
 cockatiel
 cockatoo
 collared dove
+commongull
+commonpheasant
+commonsandpiper
+commonscoter
+commontern
 condor
 coot
 cormorant
@@ -76,14 +103,17 @@ crake
 crane
 creeper
 crested tit
+crestedlark
 crossbill
 crossbills
 crow
 cuckoo
 curlew
+curlewsandpiper
 currawong
 dabchick
 darter
+dartford
 dipper
 diver
 dodo
@@ -97,6 +127,7 @@ dunnock
 eagle
 eagle owl
 egret
+egyptiangoose
 eider
 emu
 falcon
@@ -120,6 +151,8 @@ gannet
 garden warbler
 garganey
 garganeys
+glaucousgull
+glossyibis
 godwit
 goldcrest
 golden eagle
@@ -127,6 +160,8 @@ golden oriole
 golden pheasant
 golden plover
 golden-eye
+goldencrest
+goldeneyes
 goldfinch
 goldfinches
 goosander
@@ -136,13 +171,23 @@ goshawk
 grackle
 grasshopper
 great tit
+greatbustard
+greategret
+greaterblack
+greatskua
+greatsnipe
+greatspotted
 grebe
 green woodpecker
 greenfinch
 greenfinches
+greensandpiper
 greenshank
 greenshanks
 greylag
+greypartridge
+greyplover
+greywagtail
 grosbeak
 grouse
 guillemot
@@ -157,9 +202,11 @@ hawfinches
 hawk
 hazel grouse
 hen-harrier
+hentonvine
 heron
 herring-gull
 hobby
+hobbyfalcon
 honey-buzzard
 honey-eater
 honey-guide
@@ -171,6 +218,7 @@ hornbill
 house martin
 house sparrow
 ibis
+icelandgull
 icterine
 jabiru
 jacamar
@@ -182,6 +230,7 @@ jaeger
 jay
 jays
 junco
+kagu
 kakapo
 kea
 kestrel
@@ -194,16 +243,30 @@ kittiwake
 kiwi
 knot
 kookaburra
+ladyamherst
 lammergeier
 lanner falcon
+lapland
 lapwing
 lark
+lesserblack
+lesserspotted
 linnet
 linnets
 little auk
 little grebe
 little owl
+littlebustard
+littlecrake
+littleegret
+littlegull
+littleringed
+littlestint
+littletern
 long-tailed tit
+longspur
+longtailedduck
+longtailedskua
 loon
 lorikeet
 lory
@@ -229,10 +292,14 @@ merganser
 merlin
 mistle thrush
 mockingbird
+montagu
 moorhen
 motmot
+mousebird
 murre
 murrelet
+mutedswan
+mutehen
 mynah
 night-heron
 nightingale
@@ -252,20 +319,25 @@ oven-bird
 owl
 ox-pecker
 oyster-catcher
+oystercatch
 parakeet
 parrot
+parrotbill
 partridge
 peacock
 peafowl
 pelican
 penguin
 peregrine
+peregrinefalcon
 petrel
 phalarope
 pheasant
 phoebe
 pied wagtail
+piedflycatcher
 pigeon
+pinkfooted
 pintail
 pintails
 pipit
@@ -273,12 +345,15 @@ pitta
 plover
 pochard
 pochards
+pomarine
 poorwill
 potoo
 pratincole
 ptarmigan
 puffin
 pukeko
+purpleheron
+purplesandpiper
 quail
 quelea
 quetzal
@@ -286,11 +361,14 @@ rail
 raven
 ravens
 razor-bill
+razorbills
 red grouse
 red-head
 red-legged
 red-shank
 red-start
+redbreasted
+redkite
 redpoll
 redpolls
 redwing
@@ -299,6 +377,7 @@ reed-bunting
 reed-warbler
 reeve
 rhea
+richardpipit
 ring ouzel
 ring ouzels
 ringed plover
@@ -315,13 +394,17 @@ roseate
 rosella
 rough-legged
 ruddy duck
+ruddyshelduck
 ruff
 sage-grouse
+sakerfalcon
 sand-grouse
 sand-martin
 sanderling
 sandpiper
+sandwichtern
 sapsucker
+savi
 scaup
 scaups
 scoter
@@ -334,6 +417,8 @@ shag
 shearwater
 shelduck
 shoe-bill
+shorelark
+shorteared
 shoveler
 shovelers
 shrike
@@ -357,6 +442,8 @@ sparrow
 sparrow-hawk
 spoonbill
 spoonbills
+spottedcrake
+spottedredshank
 squacco
 starling
 starlings
@@ -367,6 +454,7 @@ stone-curlew
 stonechat
 stonechats
 stork
+storkbill
 sun bittern
 sun-bird
 swallow
@@ -377,7 +465,9 @@ swifts
 tanager
 tattler
 tawny owl
+tawnypipit
 teal
+temminck
 tern
 thrasher
 thrush
@@ -390,8 +480,11 @@ towhee
 tragopan
 tree sparrow
 tree-creeper
+treecreepers
+treepipit
 trogon
 tropicbird
+tuftedduck
 turaco
 turkey
 turnstone
@@ -406,9 +499,11 @@ verdin
 vireo
 vulture
 wagtail
+wallcreeper
 warbler
 water rail
 water-hen
+waterpipit
 wax-bill
 waxwing
 weaver
@@ -418,7 +513,9 @@ whinchat
 whinchats
 white-fronted
 white-tailed
+whitestork
 whitethroat
+whitewagtail
 whooper
 whooper swan
 widgeon
@@ -428,6 +525,7 @@ wild duck
 willet
 willow-warbler
 willow-wren
+willowtit
 wood-chat
 wood-lark
 wood-pigeon
@@ -436,8 +534,12 @@ wood-warbler
 wood-wren
 woodcock
 woodcocks
+woodlarks
 woodpecker
 wren
 wryneck
 wrynecks
 yellow-hammer
+yellowhammers
+yellowlegs
+yellowwagtail

@@ -193,3 +193,31 @@ def test_the_hard_benchmark_tier_is_well_formed():
         # Not capped on lengths: the difficulty is entirely in the crossings.
         assert item["library_ceiling"] == item["size"]
         assert all(w.isalpha() and w.islower() for w in item["words"])
+
+
+def test_breeding_is_skipped_when_it_cannot_raise_the_bound(index):
+    """Breeding exists to raise the ceiling, not to fill better.
+
+    When some library grid already reaches the most any grid could hold, there
+    is nothing left to raise, and since the two arms share a clock, breeding
+    anyway costs the library search 60% of its time for nothing.
+    """
+    from crossword import library, mutate
+
+    patterns = library.load()
+
+    # A long list of every length saturates the bound: some published grid
+    # already seats as many as any grid could, so there is nothing to raise.
+    varied = [w.strip().lower() for w in open("lists/birds.txt")]
+    varied = [w.replace(" ", "").replace("-", "") for w in varied if w]
+    assert len(varied) > 200
+    assert not mutate.breeding_can_help(patterns, varied)
+
+    # Twenty words of one length do not. A grid has only so many five-letter
+    # entries, and breeding can make one that has more.
+    fives = sorted({w for w in varied if len(w) == 5})[:20]
+    assert len(fives) == 20
+    assert mutate.breeding_can_help(patterns, fives)
+
+    # And an empty list has nothing to breed towards.
+    assert not mutate.breeding_can_help(patterns, [])

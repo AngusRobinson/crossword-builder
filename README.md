@@ -88,15 +88,19 @@ committed as data files.
 python3 make_grid.py kestrel curlew avocet bittern redwing
 ```
 
-Four themed lists are included to try it with, each filtered so every entry is
-one the dictionary actually holds:
+Four themed lists are included to try it with:
 
 | | |
 |---|---|
-| [`lists/birds.txt`](lists/birds.txt) | 443 birds |
-| [`lists/trees.txt`](lists/trees.txt) | 132 trees |
-| [`lists/elements.txt`](lists/elements.txt) | 107 chemical elements |
-| [`lists/instruments.txt`](lists/instruments.txt) | 77 musical instruments |
+| [`lists/birds.txt`](lists/birds.txt) | 545 birds |
+| [`lists/trees.txt`](lists/trees.txt) | 138 trees |
+| [`lists/elements.txt`](lists/elements.txt) | 113 chemical elements |
+| [`lists/instruments.txt`](lists/instruments.txt) | 80 musical instruments |
+
+**A target does not have to be in the dictionary.** The builder seats the word
+you gave it and fills around it, so specialist vocabulary the dictionary has
+never heard of works exactly as well — about a hundred of those bird names are
+not in UKACD. Only the *fill* comes from the dictionary.
 
 Words can be arguments, a file (`--file words.txt`, one per line), or piped in.
 Quote multi-word answers: `"twelfth night"`. Case, spaces, hyphens and accents
@@ -146,7 +150,7 @@ list of 30 — but it will not give you a grid of birds.
 | `--long N` | 0 | Require at least N entries of 11+ letters |
 | `--patterns N` | 14 | How many library grids to consider |
 | `--style S` | british | `british`, `us` or `barred`; see below |
-| `--no-tailor` | off | Skip breeding grids to fit; about a third of the time, slightly worse |
+| `--no-tailor` | off | Skip breeding grids to fit; about a third of the time, slightly worse. Breeding is skipped anyway when it provably cannot help |
 | `--nina`, `--nina-path` | — | Hide a message; see below |
 | `--pangram N` | 0 | Require every letter of the alphabet N times |
 | `--nina-exact` | off | Make the message fill its whole path, not just the start of it. Always on for a perimeter |
@@ -272,8 +276,22 @@ enumerations. It is a page to work from rather than a file to import.
 
 ## Other grid sizes
 
-Barred grids are not tied to 12x12. Build a library at any size, odd or even,
-and point the builder at it:
+Jumbo British grids come with the project, extracted from the corpus the same
+way the 15x15 library was:
+
+```bash
+python3 make_grid.py --library crossword/grids-21.txt --solution
+```
+
+`crossword/grids-21.txt` holds 28 patterns from published 21x21 Guardian
+cryptics and `crossword/grids-23.txt` holds 5 at 23x23. They are thin — the
+corpus has 8,348 puzzles at 15x15 and 37 above it — but they are real
+geometry, and a 21x21 fills in about a second. The dictionary is loaded to
+whatever length the library needs, so a jumbo's nineteen-letter entries are
+available where a 15x15 run stops at fifteen.
+
+Barred grids are not tied to 12x12 either. Build a library at any size, odd or
+even, and point the builder at it:
 
 ```bash
 python3 build_barred_library.py --size 13 --want 40 --out grids-13.txt

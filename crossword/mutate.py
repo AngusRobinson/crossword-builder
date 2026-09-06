@@ -323,6 +323,36 @@ def tailor_by_fill(seeds, targets, index, rules: RuleSet = None, *,
     return [p for _s, p in grown]
 
 
+def breeding_can_help(patterns, targets, min_length: int = 3) -> bool:
+    """Could a bred grid seat more of this list than the library already can?
+
+    Breeding exists to raise the *bound* -- to build a grid whose entry lengths
+    suit a list better than any published one does.  Sometimes there is no
+    bound left to raise, and then breeding can only spend the clock.
+
+    That matters because the two arms share a budget: breeding takes 60% of it,
+    so a run that gains nothing is strictly worse than not breeding at all.
+    Measured on a 443-word list, 17.0 words seated against 18.3 -- and 18.3 is
+    exactly what the library alone manages on 40% of the clock, which is what
+    it was being left with.
+
+    No grid can seat more targets than it has entries, and a bred grid is
+    capped at MAX_ENTRIES, which is below the largest grid in the library. So
+    the most any grid could hold is a number this can compute in advance, and
+    when some library grid already reaches it there is nothing to gain.
+    """
+    from .coverage import ceiling
+
+    if not patterns or not targets:
+        return False
+    room = max(max((len(p.grid().slots(min_length)) for p in patterns),
+                   default=0), MAX_ENTRIES)
+    reachable = min(len(targets), room)
+    best_bound = max((ceiling(p.profile(min_length), targets)
+                      for p in patterns), default=0)
+    return best_bound < reachable
+
+
 def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
                         fill_rules: RuleSet = None, seeds: int = 4,
                         beam: int = 3, steps: int = 3, width: int = 6,
@@ -345,6 +375,12 @@ def best_with_tailoring(patterns, index, targets, rules: RuleSet = None, *,
     rules = rules or RuleSet()
     fill_rules = fill_rules or rules
     started = time.time()
+
+    if targets and not breeding_can_help(patterns, targets,
+                                        fill_rules.min_entry_length):
+        return best_over_library(patterns, index, targets, fill_rules,
+                                 time_limit=time_limit, preset=preset,
+                                 seed=seed, **kwargs)
 
     plain = best_over_library(patterns, index, targets, fill_rules,
                               time_limit=time_limit * (1 - share),

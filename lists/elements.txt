@@ -21,14 +21,17 @@ cerium
 chlorine
 chromium
 cobalt
+copernicium
 copper
 curium
+darmstadtium
 dubnium
 dysprosium
 einsteinium
 erbium
 europium
 fermium
+flerovium
 fluorine
 francium
 gadolinium
@@ -36,6 +39,7 @@ gallium
 germanium
 gold
 hafnium
+hassium
 helium
 holmium
 hydrogen
@@ -48,6 +52,7 @@ lanthanum
 lawrencium
 lead
 lithium
+livermorium
 lutetium
 magnesium
 manganese
@@ -77,6 +82,7 @@ radium
 radon
 rhenium
 rhodium
+roentgenium
 rubidium
 ruthenium
 samarium

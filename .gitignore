@@ -32,6 +32,8 @@ out/
 *.txt
 !lists/*.txt
 !crossword/grids.txt
+!crossword/grids-21.txt
+!crossword/grids-23.txt
 !crossword/grids-us.txt
 !crossword/grids-barred.txt
 !crossword/frequency.txt

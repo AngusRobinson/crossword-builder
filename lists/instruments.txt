@@ -43,10 +43,12 @@ lyre
 mandolin
 maracas
 marimba
+mellotron
 melodeon
 oboe
 ocarina
 organ
+panpipes
 piano
 piccolo
 psaltery
@@ -62,6 +64,7 @@ spinet
 synthesiser
 tabla
 tambourine
+theremin
 timpani
 triangle
 trombone

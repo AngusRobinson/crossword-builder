@@ -212,7 +212,7 @@ def read_targets(args) -> list:
         folded = _fold(item)
         if not folded:
             continue
-        if len(folded) < 3 or len(folded) > 15:
+        if len(folded) < 3 or len(folded) > args.max_target:
             dropped.append((item.strip(), f"{len(folded)} letters after folding"))
         elif folded not in targets:
             targets.append(folded)
@@ -353,6 +353,12 @@ def main() -> int:
     global _QUIET
     _QUIET = args.quiet
 
+    # Targets may be as long as the biggest grid on offer, which is only 15
+    # for the standard libraries but 21 for a 23x23 jumbo.
+    args.max_target = 15
+    if args.library:
+        args.max_target = max(15, library.load(args.library,
+                                               style=args.style)[0].size - 2)
     targets, dropped, spelling = read_targets(args)
     for word, why in dropped:
         print(f"skipped {word!r}: {why}", file=sys.stderr)
@@ -443,7 +449,12 @@ def main() -> int:
                          f"try a smaller number")
         print(f"grids with {args.long}+ long entries: {len(patterns)} of 120",
               file=sys.stderr)
-    entries = load(WORDLIST, strict=False)
+    # The dictionary has to reach the longest entry any grid in the library
+    # offers. A 15x15 never needs more than 15, but a 21x21 jumbo has
+    # nineteen-letter entries and a 23x23 has twenty-one.
+    longest = max((s.length for p in patterns for s in
+                   p.grid().slots(style_rules.min_entry_length)), default=15)
+    entries = load(WORDLIST, strict=False, max_length=max(15, longest))
     counts = frequency.load()
     scores = frequency.load_scores()
     kept = frequency.select(entries, scores, counts,
