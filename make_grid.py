@@ -307,6 +307,11 @@ def main() -> int:
                              ". A 15x15 perimeter is 56 cells but only 3 of "
                              "the 120 grids leave all of them white, so fixed "
                              "cells cannot express one; 34 grids leave 52")
+    parser.add_argument("--library", metavar="PATH",
+                        help="read grid patterns from this file instead of "
+                             "the one the style ships with. This is how a "
+                             "non-standard size is used: build_barred_library.py "
+                             "--size N writes one, and any size works")
     parser.add_argument("--quiet", "-q", action="store_true",
                         help="print nothing but errors. The grid is still "
                              "written by --out, so this is the mode for "
@@ -391,7 +396,7 @@ def main() -> int:
                  or args.nina_path.split(",")[0].strip().lower() == "perimeter")
         placer = nina_placer(path_cells, message, exact=exact)
 
-    patterns = library.load(style=args.style)
+    patterns = library.load(args.library, style=args.style)
     style_rules = library.rules_for(args.style)
     if placer:
         patterns = [p for p in patterns if placer(p) is not None]
@@ -533,7 +538,12 @@ def main() -> int:
         say(f"   {word:18} {where.get(word, '')}")
     missed = [w for w in targets if w not in placed]
     if missed:
-        say(f"could not place: {', '.join(sorted(missed))}")
+        # A long theme list leaves a long remainder, and printing four hundred
+        # words buries everything above it. Naming a dozen makes the point.
+        shown = sorted(missed)[:12]
+        tail = f", and {len(missed) - len(shown)} more" if len(missed) > 12 else ""
+        say(f"could not place {len(missed)} of {len(targets)}: "
+            f"{', '.join(shown)}{tail}")
     if got.pattern is not None:
         say(f"grid: library pattern {got.pattern.source} "
               f"(used by {got.pattern.uses} published puzzles)")

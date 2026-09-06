@@ -350,3 +350,26 @@ def test_shipped_library_is_all_legal_barred_grids():
         assert right == grid.right_bars and bottom == grid.bottom_bars
         assert validate(grid, rules) == []
         assert 144 - len(grid.checked_cells(4)) >= 44
+
+
+@pytest.mark.parametrize("size", [10, 11, 13, 15])
+def test_other_sizes_generate_and_stay_symmetric(size):
+    """Barred grids are not tied to 12x12.
+
+    An odd-sided grid has a middle row and a middle column that are their own
+    rotational image, so each must read the same in both directions. Without
+    that they cannot be mirrored at all.
+    """
+    rules = RuleSet(**BARRED_RULES)
+    rng = random.Random(3)
+    made = 0
+    for _ in range(300):
+        grid = pattern(size, rng=rng)
+        if grid is None:
+            continue
+        right, bottom = mirror_bars(grid)
+        assert right == grid.right_bars and bottom == grid.bottom_bars
+        assert grid.size == size
+        if not validate(grid, rules):
+            made += 1
+    assert made > 0, f"no legal {size}x{size} pattern in 300 draws"

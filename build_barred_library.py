@@ -43,7 +43,11 @@ def main() -> None:
     # at, and patterns that tight fill about half the time; at the real shape
     # they fill essentially always, so the floor is worth far more than any
     # amount of patience below it.
-    parser.add_argument("--min-unchecked", type=int, default=44)
+    parser.add_argument("--min-unchecked", type=int, default=None,
+                        metavar="N",
+                        help="floor on uncrossed cells (default: 30%% of the "
+                             "grid, which is where the published 12x12s sit -- "
+                             "a Mephisto leaves 48 of 144 and an Azed 54)")
     # Generation is free next to a fill attempt -- 15,000 draws take six
     # seconds -- so this is tuned for how many patterns come out at the floor
     # above, not for how few draws are wasted.  Once every entry has to stay
@@ -60,6 +64,10 @@ def main() -> None:
     parser.add_argument("--out", default=BARRED_PATH)
     args = parser.parse_args()
 
+    if args.min_unchecked is None:
+        # Where the published grids are, as a proportion rather than a count,
+        # so it means the same thing at any size.
+        args.min_unchecked = round(0.30 * args.size ** 2)
     rules = rules_for("barred")
     index = Index(load(args.words))
     rng = random.Random(args.seed)

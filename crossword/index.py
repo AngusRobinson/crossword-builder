@@ -114,7 +114,17 @@ class LengthIndex:
         for position, char in enumerate(pattern):
             if char == WILDCARD:
                 continue
-            mask &= self.masks[position][char]
+            try:
+                mask &= self.masks[position][char]
+            except KeyError:
+                # A caller has passed a pattern that was never folded -- a
+                # hyphen or an apostrophe from a surface form, most likely.
+                # Say so here rather than surfacing a KeyError from a dict of
+                # single letters several frames down.
+                raise ValueError(
+                    f"pattern {pattern!r} contains {char!r}; patterns hold "
+                    f"a-z and '.' only, so fold the word first"
+                ) from None
             if not mask:
                 return 0
         return mask

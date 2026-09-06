@@ -203,10 +203,21 @@ def pattern(
 
     row_weights, column_weights = bias(decay), bias(column_decay)
     half = size // 2
+    # An odd-sided grid has a middle row and a middle column that are their own
+    # rotational image, so each must read the same in both directions.
+    odd = size % 2
+    selfsame = [c for c in choices if c == tuple(reversed(c))]
+    if odd and not selfsame:
+        return None
+    selfsame_weights = [w for c, w in zip(choices, column_weights)
+                        if c == tuple(reversed(c))]
 
     # Rows first, and freely: nothing constrains them until columns exist.
     rows = [rng.choices(choices, row_weights)[0] for _ in range(half)]
-    rows += [tuple(reversed(rows[size - 1 - r])) for r in range(half, size)]
+    if odd:
+        rows.append(rng.choices(selfsame, [w for c, w in zip(choices, row_weights)
+                                           if c == tuple(reversed(c))])[0])
+    rows += [tuple(reversed(rows[size - 1 - r])) for r in range(half + odd, size)]
     across = [run_lengths(comp, size) for comp in rows]
 
     columns: list[tuple[int, ...] | None] = [None] * size
@@ -296,8 +307,26 @@ def pattern(
         ]
         return sorted(range(len(choices)), key=lambda i: -keys[i])
 
+    def place_middle() -> bool:
+        """The lone self-mirrored column of an odd-sided grid."""
+        for comp in rng.sample(selfsame, len(selfsame)):
+            if not column_ok(half, comp):
+                continue
+            columns[half] = comp
+            if not charge(half, comp, +1):
+                charge(half, comp, -1)
+                columns[half] = None
+                continue
+            if pair_ok(half - 1, half) and pair_ok(half, half + 1):
+                return True
+            charge(half, comp, -1)
+            columns[half] = None
+        return False
+
     def place(col: int, budget: list[int]) -> bool:
         if col == half:
+            if odd:
+                return place_middle()
             # The middle pair is the one adjacency symmetry does not give free.
             return pair_ok(half - 1, half)
         for index in weighted_order():

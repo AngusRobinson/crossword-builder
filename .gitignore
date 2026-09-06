@@ -27,7 +27,10 @@ out/
 .claude/settings.json
 
 # Working word lists are the setter's own material, not project data.
+# lists/ is the exception: those are demonstration themes, written for the
+# repository rather than for a puzzle.
 *.txt
+!lists/*.txt
 !crossword/grids.txt
 !crossword/grids-us.txt
 !crossword/grids-barred.txt

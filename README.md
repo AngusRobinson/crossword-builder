@@ -88,6 +88,16 @@ committed as data files.
 python3 make_grid.py kestrel curlew avocet bittern redwing
 ```
 
+Four themed lists are included to try it with, each filtered so every entry is
+one the dictionary actually holds:
+
+| | |
+|---|---|
+| [`lists/birds.txt`](lists/birds.txt) | 443 birds |
+| [`lists/trees.txt`](lists/trees.txt) | 132 trees |
+| [`lists/elements.txt`](lists/elements.txt) | 107 chemical elements |
+| [`lists/instruments.txt`](lists/instruments.txt) | 77 musical instruments |
+
 Words can be arguments, a file (`--file words.txt`, one per line), or piped in.
 Quote multi-word answers: `"twelfth night"`. Case, spaces, hyphens and accents
 are folded away, and the original spelling is kept for the enumeration, so
@@ -142,6 +152,7 @@ list of 30 — but it will not give you a grid of birds.
 | `--nina-exact` | off | Make the message fill its whole path, not just the start of it. Always on for a perimeter |
 | `--blank` | off | Write the HTML page without the answers |
 | `--quiet`, `-q` | off | Print nothing but errors, for scripting |
+| `--library PATH` | — | Read grid patterns from this file instead of the style's own |
 
 **`--tries` is doing more work than any other setting.** The same list run
 twice gives different answers, sometimes by a lot: over 12 dense lists at 8
@@ -258,6 +269,28 @@ well-formed file describing a completely different puzzle — a full square of
 white cells with every entry running the whole width. So `--out` writes
 `<name>.html`: the grid drawn with its bars, the two clue lists, and the
 enumerations. It is a page to work from rather than a file to import.
+
+## Other grid sizes
+
+Barred grids are not tied to 12x12. Build a library at any size, odd or even,
+and point the builder at it:
+
+```bash
+python3 build_barred_library.py --size 13 --want 40 --out grids-13.txt
+python3 make_grid.py --style barred --library grids-13.txt --solution
+```
+
+The density floor scales with the grid, so it means the same thing at every
+size: 30% of cells uncrossed, which is where the published 12x12s sit — a
+Mephisto leaves 48 of its 144 and an Azed 54.
+
+Blocked grids are a different matter. British and American styles take their
+patterns from libraries of published puzzles, and those are 15x15 because the
+puzzles are. There is a size-parameterised generator in `crossword/generate.py`
+that makes blocked patterns from scratch, but it is not wired to `make_grid.py`
+and it slows sharply above 9x9 — a 9x9 comes out in a couple of seconds, an
+11x11 not at all within a small budget. So non-standard blocked sizes are
+possible in principle and not available in practice.
 
 ## Word squares
 

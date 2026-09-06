@@ -1,0 +1,443 @@
+accentor
+adjutant
+albatross
+amazon
+ani
+ant-bird
+aquatic
+arctic tern
+argus
+auk
+auklet
+avadavat
+avocet
+babbler
+barbet
+barn owl
+barnacle-goose
+bateleur
+bee-eater
+bee-eaters
+bell-bird
+bittern
+black grouse
+blackbird
+blackbirds
+blackcap
+blackcaps
+blackheaded
+bluebird
+bluethroat
+bluetit
+bob-white
+bobolink
+booby
+brambling
+brant
+brent goose
+brolga
+bufflehead
+bulbul
+bullfinch
+bullfinches
+bunting
+bush-tit
+bustard
+butcher-bird
+buzzard
+canary
+canvas-back
+capercaillie
+caracara
+cardinal
+carrion-crow
+cassowary
+catbird
+chaffinch
+chats
+chickadee
+chicken
+chiff-chaff
+chough
+choughs
+chukar
+cirl bunting
+coal-tit
+cockatiel
+cockatoo
+collared dove
+condor
+coot
+cormorant
+corn bunting
+corncrake
+cowbird
+crake
+crane
+creeper
+crested tit
+crossbill
+crossbills
+crow
+cuckoo
+curlew
+currawong
+dabchick
+darter
+dipper
+diver
+dodo
+dotterel
+dove
+dowitcher
+drongo
+duck
+dunlin
+dunnock
+eagle
+eagle owl
+egret
+eider
+emu
+falcon
+fantail
+fieldfare
+fieldfares
+finch
+firecrest
+firecrests
+flamingo
+flicker
+flycatcher
+francolin
+frigate bird
+frogmouth
+fulmar
+gadwall
+gadwalls
+gallinule
+gannet
+garden warbler
+garganey
+garganeys
+godwit
+goldcrest
+golden eagle
+golden oriole
+golden pheasant
+golden plover
+golden-eye
+goldfinch
+goldfinches
+goosander
+goosanders
+goose
+goshawk
+grackle
+grasshopper
+great tit
+grebe
+green woodpecker
+greenfinch
+greenfinches
+greenshank
+greenshanks
+greylag
+grosbeak
+grouse
+guillemot
+guinea hen
+guinea-fowl
+gull
+gyrfalcon
+hammerkop
+harrier
+hawfinch
+hawfinches
+hawk
+hazel grouse
+hen-harrier
+heron
+herring-gull
+hobby
+honey-buzzard
+honey-eater
+honey-guide
+honeycreeper
+hooded crow
+hoopoe
+hoopoes
+hornbill
+house martin
+house sparrow
+ibis
+icterine
+jabiru
+jacamar
+jacana
+jack-snipe
+jackdaw
+jackdaws
+jaeger
+jay
+jays
+junco
+kakapo
+kea
+kestrel
+killdeer
+king-bird
+kingfisher
+kinglet
+kite
+kittiwake
+kiwi
+knot
+kookaburra
+lammergeier
+lanner falcon
+lapwing
+lark
+linnet
+linnets
+little auk
+little grebe
+little owl
+long-tailed tit
+loon
+lorikeet
+lory
+lovebird
+lyre-bird
+macaw
+magpie
+magpies
+mallard
+mallee
+manakin
+mandarin
+mandarin duck
+marsh harrier
+marsh tit
+marsh tits
+martin
+meadow pipit
+meadow-lark
+mediterranean
+melodious
+merganser
+merlin
+mistle thrush
+mockingbird
+moorhen
+motmot
+murre
+murrelet
+mynah
+night-heron
+nightingale
+nightjar
+noddy
+nutcracker
+nutcrackers
+nuthatch
+nuthatches
+oil-bird
+oriole
+ortolan
+osprey
+ostrich
+ouzel
+oven-bird
+owl
+ox-pecker
+oyster-catcher
+parakeet
+parrot
+partridge
+peacock
+peafowl
+pelican
+penguin
+peregrine
+petrel
+phalarope
+pheasant
+phoebe
+pied wagtail
+pigeon
+pintail
+pintails
+pipit
+pitta
+plover
+pochard
+pochards
+poorwill
+potoo
+pratincole
+ptarmigan
+puffin
+pukeko
+quail
+quelea
+quetzal
+rail
+raven
+ravens
+razor-bill
+red grouse
+red-head
+red-legged
+red-shank
+red-start
+redpoll
+redpolls
+redwing
+redwings
+reed-bunting
+reed-warbler
+reeve
+rhea
+ring ouzel
+ring ouzels
+ringed plover
+road-runner
+robin
+rock
+rock dove
+rock-pipit
+roller
+rollers
+rook
+rooks
+roseate
+rosella
+rough-legged
+ruddy duck
+ruff
+sage-grouse
+sand-grouse
+sand-martin
+sanderling
+sandpiper
+sapsucker
+scaup
+scaups
+scoter
+screamer
+scrub-bird
+sedge-warbler
+seriema
+serin
+shag
+shearwater
+shelduck
+shoe-bill
+shoveler
+shovelers
+shrike
+siskin
+siskins
+skimmer
+skua
+skylark
+skylarks
+smew
+smews
+snipe
+snow-bunting
+snow-finch
+snowy owl
+solitaire
+song-thrush
+song-thrushes
+sora
+sparrow
+sparrow-hawk
+spoonbill
+spoonbills
+squacco
+starling
+starlings
+stilt
+stint
+stock-dove
+stone-curlew
+stonechat
+stonechats
+stork
+sun bittern
+sun-bird
+swallow
+swan
+swift
+swiftlet
+swifts
+tanager
+tattler
+tawny owl
+teal
+tern
+thrasher
+thrush
+tinamou
+tit
+titmouse
+toucan
+touraco
+towhee
+tragopan
+tree sparrow
+tree-creeper
+trogon
+tropicbird
+turaco
+turkey
+turnstone
+turtle-dove
+twite
+twites
+tyrant
+umbrella-bird
+veery
+velvet-scoter
+verdin
+vireo
+vulture
+wagtail
+warbler
+water rail
+water-hen
+wax-bill
+waxwing
+weaver
+wheatear
+whimbrel
+whinchat
+whinchats
+white-fronted
+white-tailed
+whitethroat
+whooper
+whooper swan
+widgeon
+wigeon
+wigeons
+wild duck
+willet
+willow-warbler
+willow-wren
+wood-chat
+wood-lark
+wood-pigeon
+wood-sandpiper
+wood-warbler
+wood-wren
+woodcock
+woodcocks
+woodpecker
+wren
+wryneck
+wrynecks
+yellow-hammer
