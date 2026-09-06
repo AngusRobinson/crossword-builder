@@ -465,3 +465,48 @@ says so and writes nothing; `--solution` prints the grid with its bars drawn.
 Themed barred grids are weak, as themed American ones are. A fifteen-word
 vegetable list seated 5, against 13 that could fit the library's entry lengths
 at all, with the fill at 0.63 familiarity against a published 0.86.
+
+## Word squares
+
+A double word square -- rows and columns all words, all different -- is a
+barred grid with no bars, so the filler needs nothing added. Four by four and
+five by five come out in well under a second, six by six in about forty.
+
+Phrases have to be excluded. UKACD normalises punctuation away, so "it'll"
+arrives as ITLL and "ro-ros" as ROROS, and the first 4x4 produced had ITLL down
+its third column. A crossword hides that problem, because such entries are rare
+enough to catch by eye; a word square does not, because a third of the answers
+are columns nobody chose.
+
+Restarts work here, which is worth recording because they did nothing at all
+for barred grids. The search is heavily tailed: the try that succeeds does so
+in a few thousand nodes and the ones that do not never will.
+
+    6x6      tries   budget each   time to a square
+             6             200,000            209 s
+            60               8,000             39 s
+
+Seven by seven was not found, and not for want of restarting. The same three
+million nodes, split four ways:
+
+    budget per try   tries   result   seconds
+           600,000       5   nothing      306
+           120,000      25   nothing      312
+            30,000     100   nothing      330
+             5,000     600   nothing      342
+
+Flat across a 120-fold change in granularity, and flat in time as well, so
+there is no tail to catch and no lucky start to find. Vocabulary is not the
+constraint either: there are more seven-letter words than six-letter ones,
+23,778 against 16,726.
+
+That leaves the search itself, and the suspect is the one identified for barred
+grids and never acted on -- backtracking is chronological, so a conflict
+teaches it nothing and it rediscovers the same dead end indefinitely. Fourteen
+mutually crossing entries is where that costs most. Conflict-directed
+backjumping is the obvious next thing to try, and it would be the first change
+to the search rather than to what is handed to it.
+
+The ordinary symmetric word square is a different problem: it needs
+grid[r][c] == grid[c][r], a relation between two cells, where every constraint
+in this project is between a cell and a word.
