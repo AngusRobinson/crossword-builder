@@ -192,6 +192,56 @@ def test_azed_fills(azed, index):
     assert len(azed.letters) == 144
 
 
+def test_no_published_entry_is_more_than_a_third_unchecked(mephisto, azed):
+    """The rule that binds, and the reason the bound rounds up here.
+
+    Both grids sit exactly on this line, and rounding down instead would admit
+    a four-letter light with two of its letters uncrossed -- which neither of
+    them prints, and which is barely an answer.
+    """
+    for grid in (mephisto, azed):
+        checked = grid.checked_cells(4)
+        worst = max(
+            (slot.length - sum(1 for c in slot.cells if c in checked)) / slot.length
+            for slot in grid.slots(4)
+        )
+        assert worst == pytest.approx(1 / 3, abs=0.01)
+
+
+def test_rounding_direction_is_a_property_of_the_style():
+    """British grids round down and barred ones round up, and both are corpus
+    findings rather than readings of the phrase "half the letters checked".
+
+    A Guardian 15x15 really does print UCUCUCUCU; a Mephisto really does not
+    print a four-letter light with two unches.  The two conclusions are about
+    two different corpora, so the rounding travels with the rule set.
+    """
+    from crossword.grid import Grid
+    from crossword.library import rules_for
+    from crossword.rules import check_checked_fraction
+
+    assert rules_for("british").checked_fraction_rounds_up is False
+    assert rules_for("barred").checked_fraction_rounds_up is True
+
+    # Four by four, barred beneath two cells of the top row.  Those two columns
+    # are then a single cell over a run of three, neither of which is an entry,
+    # so every across entry is four letters with only two of them crossed --
+    # the case the two roundings disagree about.
+    grid = Grid(size=4)
+    grid.bottom_bars.update({(0, 0), (0, 2)})
+    top = next(s for s in grid.slots(4) if (s.row, s.col) == (0, 0)
+               and s.direction == "across")
+    checked = grid.checked_cells(4)
+    assert sum(1 for c in top.cells if c in checked) == 2
+
+    lenient = RuleSet(min_entry_length=4, min_checked_fraction=2 / 3)
+    strict = RuleSet(min_entry_length=4, min_checked_fraction=2 / 3,
+                     checked_fraction_rounds_up=True)
+    assert list(check_checked_fraction(grid, lenient)) == []
+    complaints = list(check_checked_fraction(grid, strict))
+    assert [v.rule for v in complaints] == ["checked_fraction"] * 4
+
+
 def test_compositions_are_runs_or_single_cells():
     """Nothing between a single cell and a whole entry is representable.
 

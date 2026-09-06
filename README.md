@@ -192,6 +192,13 @@ unchecked cells, and the share of entries that are only four letters, which
 real setters use sparingly (8%) and an unweighted sampler produces constantly
 (36%).
 
+They also obey the rule that matters most to a solver: **no entry is more than
+a third unchecked.** Both published grids sit exactly on that line, and it is
+why the barred rule set rounds its checked-fraction bound *up* where the
+British one rounds down — rounding down lets a four-letter answer through with
+two of its four letters uncrossed. The two directions are not inconsistent;
+they are what two different corpora actually do.
+
 ```bash
 python3 build_barred_library.py --want 60
 ```

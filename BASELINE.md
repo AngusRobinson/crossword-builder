@@ -409,9 +409,38 @@ moving the share only from 36% to 31% while collapsing the yield.
     Mephisto and Azed        36.0          6.60       48, 54             8.3%
 
 That is fitted to the published shape, not to fill success, so the fill test
-remains an independent check on it -- and it costs something: the hit rate
-falls from essentially every pattern to about four in five, because the
-entries are genuinely longer. The library is 200 patterns.
+remains an independent check on it -- and it costs something, because the
+entries are genuinely longer.
+
+### The constraint that actually binds
+
+Neither published grid lets any entry go more than a third uncrossed. Both top
+out at exactly 0.33, on a nine and on a six. The rule as written allowed 0.5,
+because `min_checked_fraction` rounds down and floor(4 x 2/3) is 2 -- so a
+four-letter light passed with two of its letters unchecked, which is barely an
+answer. It was not a theoretical hole: 123 of the 200 patterns in the previous
+library contained such an entry, and 199 of them had one below two thirds.
+
+The bound has to round *up* here, which is the exact opposite of the finding
+for British grids recorded above, and both are right. They are conclusions
+about two different corpora: a Guardian 15x15 really does print UCUCUCUCU, and
+rounding up rejected 34% of them; a Mephisto really does not print a
+four-letter light with two unches. So the rounding travels with the rule set
+rather than with the arithmetic. Rounded up at two thirds, the requirement
+reproduces every entry in both published grids exactly.
+
+Enforcing it is not a matter of filtering afterwards. Applied as a filter to
+the generator as it stood, four thousand draws produced nothing at all: a
+pattern that scatters its single cells satisfies "every entry within a third"
+essentially never, and both published grids sit exactly on the line, which
+means almost every one of their entries is at its allowance. The constraint
+has to be carried through the column search instead -- a down entry's unches
+are settled by the rows the moment its column is chosen, and an across entry's
+are counted as the columns arrive, with the branch cut as soon as one entry is
+over. Yield is then about 24 patterns per 15,000 draws, which costs six
+seconds of generation and is irrelevant beside the fill attempts.
+
+The library is 200 patterns.
 
 Which way the two directions are biased also matters, and not in the obvious
 direction. Rows are drawn towards few runs, because a Mephisto row usually

@@ -39,6 +39,14 @@ class RuleSet:
     # American-style grids. Cap = floor(length * fraction) + slack.
     max_checked_fraction: float | None = None
     max_checked_slack: int = 1
+    # Which way `min_checked_fraction` rounds, and it is genuinely a property
+    # of the style rather than of the arithmetic.  British blocked grids round
+    # down -- rounding up rejects a third of published Guardian puzzles, as the
+    # note on check_checked_fraction records at length.  Barred grids round up:
+    # neither of the two published ones has any entry more than a third
+    # unchecked, and rounding down would admit a four-letter light with two
+    # unches in it, which is barely an answer at all.
+    checked_fraction_rounds_up: bool = False
     # Real grids alternate exactly: every entry in the sampled Guardian puzzle
     # is CUCU... or UCUC..., never two checked or two unchecked in a row. The
     # fraction rules cannot express this — floor(L/2) admits UCU at length 3,
@@ -100,8 +108,8 @@ def check_unchecked_runs(grid: Grid, rules: RuleSet):
 def check_checked_fraction(grid: Grid, rules: RuleSet):
     """Rule 4: at least half the letters of every entry are checked.
 
-    The bound rounds *down*, and getting that wrong was this project's most
-    expensive mistake.  It was written as a ceiling on the reading that "half
+    The bound rounds *down* by default, and getting that wrong was this
+    project's most expensive mistake.  It was written as a ceiling on the reading that "half
     the letters checked" must round up, and the docstring cited UCUCUCUCU as
     the pattern the ceiling existed to reject.  But UCUCUCUCU is the commonest
     nine-letter entry in British cryptics.  Measured against 400 published
@@ -119,11 +127,17 @@ def check_checked_fraction(grid: Grid, rules: RuleSet):
 
     See test_corpus.py, which re-derives this against the corpus rather than
     trusting the number written here.
+
+    Barred grids round the other way; `checked_fraction_rounds_up` says why.
+    The two conclusions do not conflict, because they are conclusions about
+    two different corpora: a Guardian 15x15 really does print UCUCUCUCU, and a
+    Mephisto really does not print a four-letter light with two unches.
     """
     checked = grid.checked_cells(rules.min_entry_length)
+    round_off = math.ceil if rules.checked_fraction_rounds_up else math.floor
     for slot in grid.slots(rules.min_entry_length):
         count = sum(1 for cell in slot.cells if cell in checked)
-        needed = math.floor(slot.length * rules.min_checked_fraction)
+        needed = round_off(slot.length * rules.min_checked_fraction)
         if count < needed:
             yield Violation(
                 "checked_fraction",

@@ -44,11 +44,12 @@ def main() -> None:
     # they fill essentially always, so the floor is worth far more than any
     # amount of patience below it.
     parser.add_argument("--min-unchecked", type=int, default=44)
-    # Generation is free next to a fill attempt, so this is tuned for how many
-    # patterns come out at the floor above rather than for how few draws are
-    # wasted.  Per 3,000 draws, 1.15 yields 95 patterns with 44 or more cells
-    # unchecked; 1.0 yields 83 and 1.5 yields 39.
-    parser.add_argument("--openness", type=float, default=1.15)
+    # Generation is free next to a fill attempt -- 15,000 draws take six
+    # seconds -- so this is tuned for how many patterns come out at the floor
+    # above, not for how few draws are wasted.  Once every entry has to stay
+    # within a third unchecked, that yield is about 24 per 15,000, and pushing
+    # openness higher only makes it rarer without making the grids denser.
+    parser.add_argument("--openness", type=float, default=1.3)
     # Four-letter entries are legal -- an Azed has six -- but they are a
     # garnish, not the fabric: 8% of published entries against 36% of what an
     # unweighted sampler produces.  Penalising them is what brings the entry

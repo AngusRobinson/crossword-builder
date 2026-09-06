@@ -33,10 +33,14 @@ from .grid import Grid
 # and the rule as written called each of them a run too short to be a light and
 # then reported the cells around it as isolated.  A published puzzle failing a
 # rule condemns the rule.
+# No entry in either published grid is more than a third unchecked -- both
+# top out at exactly 0.33 -- and the bound has to round up to say so, or a
+# four-letter light passes with two of its letters uncrossed.
 BARRED_RULES = dict(
     min_entry_length=4,
     max_consecutive_unchecked=1,
-    min_checked_fraction=0.6,
+    min_checked_fraction=2 / 3,
+    checked_fraction_rounds_up=True,
     forbid_run_length_two=True,
 )
 
@@ -142,6 +146,7 @@ def pattern(
     column_decay: float = 1.0,
     openness: float = 1.0,
     short_bias: float = 1.0,
+    checked_fraction: float = 2 / 3,
     rng: random.Random | None = None,
     attempts: int = 400,
 ) -> Grid | None:
@@ -169,11 +174,24 @@ def pattern(
     took the yield of legal grids from two per cent to zero.  So the rows are
     sampled and the columns are then *searched*, left to right, against them.
 
-    Nothing here checks the fraction of each across entry that ends up checked,
-    because that depends on every column at once.  Callers validate.
+    The checked fraction is carried through the search rather than left to the
+    caller, because it is the constraint that actually binds.  Neither
+    published grid lets any entry go more than a third uncrossed, and a
+    generator that scatters its single cells freely satisfies that essentially
+    never: with the bound applied afterwards as a filter, four thousand draws
+    produced nothing at all.  A down entry's unches are fixed by the rows
+    alone, so they are checked as each column is chosen; an across entry's
+    depend on every column it spans, so they are counted as the columns arrive
+    and the branch is cut as soon as one entry is over its allowance.
     """
     rng = rng or random.Random()
     choices = compositions(size, min_entry)
+    # How many letters of an entry may go uncrossed.  Both published grids sit
+    # exactly on this line: no entry of either is more than a third unchecked.
+    allowance = {
+        length: length - math.ceil(length * checked_fraction)
+        for length in range(1, size + 1)
+    }
 
     def bias(rate: float) -> list:
         return [
@@ -193,6 +211,11 @@ def pattern(
 
     columns: list[tuple[int, ...] | None] = [None] * size
 
+    # Unches so far in each across entry, keyed by the cell it starts at.  A
+    # column contributes to every across entry it passes through, and the
+    # entries fill up as the columns are assigned.
+    spent: dict = {}
+
     def column_ok(col: int, comp: tuple[int, ...]) -> bool:
         down = run_lengths(comp, size)
         previous_unchecked = False
@@ -208,6 +231,44 @@ def pattern(
                 previous_unchecked = unchecked
             else:
                 previous_unchecked = False
+        # A down entry's unches are settled here and now: the column fixes its
+        # extent and the rows fix which of its cells are single.
+        start = 0
+        for part in comp:
+            if part > 1:
+                unches = sum(1 for r in range(start, start + part)
+                             if across[r][col] == 1)
+                if unches > allowance[part]:
+                    return False
+            start += part
+        return True
+
+    def across_entry(row: int, col: int):
+        """The cell an across entry starts at, and its length, or None."""
+        if across[row][col] == 1:
+            return None
+        col -= 1
+        while col >= 0 and across[row][col] == across[row][col + 1]:
+            col -= 1
+        return (row, col + 1), across[row][col + 1]
+
+    def charge(col: int, comp: tuple[int, ...], sign: int) -> bool:
+        """Add or remove this column's unches from the across entries it meets.
+
+        Returns False when a charge pushes an entry past its allowance, and it
+        is the caller's business to undo the whole column in that case.
+        """
+        down = run_lengths(comp, size)
+        for row in range(size):
+            if down[row] != 1:
+                continue                          # crossed, so not an unch
+            found = across_entry(row, col)
+            if found is None:
+                continue                          # in no across entry either
+            head, length = found
+            spent[head] = spent.get(head, 0) + sign
+            if sign > 0 and spent[head] > allowance[length]:
+                return False
         return True
 
     def pair_ok(left: int, right: int) -> bool:
@@ -244,16 +305,26 @@ def pattern(
                 return False
             budget[0] -= 1
             comp = choices[index]
-            if not column_ok(col, comp):
+            mirrored = tuple(reversed(comp))
+            if not (column_ok(col, comp) and column_ok(size - 1 - col, mirrored)):
                 continue
             columns[col] = comp
-            columns[size - 1 - col] = tuple(reversed(comp))
-            if col and not pair_ok(col - 1, col):
+            columns[size - 1 - col] = mirrored
+
+            def undo():
+                charge(col, comp, -1)
+                charge(size - 1 - col, mirrored, -1)
                 columns[col] = columns[size - 1 - col] = None
+
+            if not charge(col, comp, +1) or not charge(size - 1 - col, mirrored, +1):
+                undo()
+                continue
+            if col and not pair_ok(col - 1, col):
+                undo()
                 continue
             if place(col + 1, budget):
                 return True
-            columns[col] = columns[size - 1 - col] = None
+            undo()
         return False
 
     if not place(0, [attempts]):
