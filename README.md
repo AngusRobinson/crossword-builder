@@ -89,6 +89,19 @@ grids — it takes them from half filling to five in six, because a grid that
 checks every cell leans on the short entries and UKACD has a third as many
 three-letter words. It stops at fifteen letters, so it cannot fill a jumbo.
 
+Build a familiarity table to go with any dictionary you add:
+
+```bash
+python3 tools/build_frequency.py --dictionary wiktionary.txt
+```
+
+That writes `wiktionary-scores.txt`, which `--dictionary` then finds by name.
+It matters more than it looks. `--min-score` is an absolute cut, so reading
+UKACD's numbers against another list's words silently discards everything the
+table has never met: the committed table covers 105,373 words, which is 35% of
+Wiktionary's five-letter entries, so without its own table a familiarity
+ranking over Wiktionary mostly measures whether a word is in UKACD.
+
 Nothing else is required. The grid library and the word-familiarity tables are
 committed as data files.
 
