@@ -113,8 +113,8 @@ The layout, since there are two projects here rather than one:
     tests/       the test suite; `python3 -m pytest` from the root
     experiment/  the parameter study, its design and its results
 
-with `make_grid.py`, `word_square.py` and `sator.py` at the root as the three
-things you actually run.
+with `make_grid.py`, `word_square.py`, `sator.py` and `palindrome.py` at
+the root as the things you actually run.
 
 ```bash
 python3 make_grid.py kestrel curlew avocet bittern redwing

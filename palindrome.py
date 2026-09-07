@@ -1,0 +1,128 @@
+"""Crosswords that read the same upside down.
+
+Not the pattern -- that is already symmetric by convention -- but the letters:
+grid[r][c] == grid[n-1-r][n-1-c], so turning the diagram through half a turn
+gives the diagram back.
+
+    python3 palindrome.py
+    python3 palindrome.py --style british --proper
+    python3 palindrome.py --tries 8 --effort 400000
+
+Entries pair off under the turn and each pair holds a word and its reverse, so
+every free entry needs its reverse to be a word too, and that is what decides
+everything. Wiktionary holds 1.1 million entries and 3,469 reversible ones,
+and they run out with length: 395 usable pairs at three letters, 172 at six,
+36 at seven, 7 at eight, 1 at nine, and none at all at ten.
+
+Which is why the style matters more than the effort. A British 15x15 wants two
+ten-letter entries and so cannot be filled at any budget; an American one
+leans on threes to sixes, and 396 of the 2,500 grids in that library clear
+their own vocabulary requirement before the search begins. This tries those
+grids in order of how much slack they leave at their scarcest length.
+
+Distinctness is the other lever, and a sharp one. A palindrome placed in a
+paired entry writes itself into both halves, so the same answer appears twice;
+forbidding that is right for a puzzle and expensive for the search. Over all
+396 grids and four seeds it found nothing, and most grids were *proved*
+unfillable in a hundred nodes rather than running out of budget. Allow the
+repeat, or allow proper nouns, and it comes out in seconds.
+"""
+
+import argparse
+import collections
+import sys
+import time
+
+from crossword import frequency, library
+from crossword.index import Index
+from crossword.words import load
+from squares.rotational import pair_slots, reversible, solve, is_rotational
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--style", choices=("us", "british"), default="us",
+                        help="us by default: a British 15x15 needs ten-letter "
+                             "reversible words, of which there are none")
+    parser.add_argument("--dictionary", default="wiktionary.txt")
+    parser.add_argument("--scores", default=None)
+    parser.add_argument("--proper", action="store_true",
+                        help="allow capitalised entries, which roughly doubles "
+                             "the reversible stock")
+    parser.add_argument("--repeats", action="store_true",
+                        help="let a palindrome fill both halves of a pair, so "
+                             "one answer appears twice")
+    parser.add_argument("--grids", type=int, default=400,
+                        help="how many candidate grids to try")
+    parser.add_argument("--tries", type=int, default=4, help="seeds per grid")
+    parser.add_argument("--effort", type=int, default=60_000,
+                        help="node budget per attempt")
+    parser.add_argument("--quiet", "-q", action="store_true")
+    args = parser.parse_args()
+
+    def say(*text):
+        if not args.quiet:
+            print(*text, file=sys.stderr, flush=True)
+
+    entries = load(args.dictionary, strict=False, max_length=23,
+                   allow_proper=args.proper)
+    usable = reversible(entries)
+    if not usable:
+        parser.error("no reversible words in that dictionary")
+    import os
+    scores_path = args.scores
+    if scores_path is None:
+        beside = os.path.splitext(args.dictionary)[0] + "-scores.txt"
+        scores_path = beside if os.path.exists(beside) else None
+    scores = (frequency.load_scores(scores_path) if scores_path
+              else frequency.load_scores())
+    index = Index(usable, scores)
+    stock = collections.Counter(len(entry.text) for entry in usable)
+    say(f"{len(entries):,} entries, {len(usable):,} of them reversible")
+
+    # A grid whose scarcest length has no stock cannot be filled, and saying so
+    # here costs nothing where finding it out by search costs a budget.
+    ranked = []
+    for pattern in library.load(None, style=args.style):
+        grid = pattern.grid()
+        pairs, singles, orphans = pair_slots(grid)
+        if orphans:
+            continue
+        need = collections.Counter(a.length for a, _ in pairs)
+        need += collections.Counter(s.length for s in singles)
+        if any(need[L] * 2 > stock.get(L, 0) for L in need):
+            continue
+        ranked.append((min(stock.get(L, 0) / (2 * need[L]) for L in need),
+                       pattern))
+    ranked.sort(key=lambda row: -row[0])
+    say(f"{len(ranked):,} grids clear their own vocabulary requirement")
+    if not ranked:
+        print(f"No {args.style} grid can be filled from this dictionary: "
+              f"every one wants a length the reversible stock does not reach.",
+              file=sys.stderr)
+        return 1
+
+    began = time.time()
+    attempts = 0
+    for seed in range(args.tries):
+        for slack, pattern in ranked[:args.grids]:
+            grid = pattern.grid()
+            attempts += 1
+            placed, nodes = solve(grid, index, seed=seed,
+                                  node_budget=args.effort,
+                                  distinct=not args.repeats)
+            if placed:
+                assert is_rotational(grid), "not symmetric under a half-turn"
+                say(f"found on attempt {attempts} in {time.time()-began:.0f}s "
+                    f"({nodes:,} nodes, slack x{slack:.1f})")
+                print(grid.render())
+                return 0
+    print(f"nothing in {attempts} attempts and {time.time()-began:.0f}s. "
+          f"Try --proper, or --repeats, or a larger --effort.", file=sys.stderr)
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

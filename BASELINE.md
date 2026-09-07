@@ -780,3 +780,55 @@ American grids have hit throughout -- 74 fully checked entries, and every
 search parameter here tuned on 28-entry British ones. The 30-second limit is
 part of that: it is not evidence that a longer run would fail, only that this
 one does.
+
+## Crosswords that read the same upside down
+
+Not the pattern, which is symmetric by convention already, but the letters:
+`grid[r][c] == grid[n-1-r][n-1-c]`. Entries pair off under the turn and each
+pair holds a word and its reverse, so every free entry needs its reverse to be
+a word as well.
+
+That is the whole difficulty, and it is a vocabulary difficulty before it is a
+search one. Wiktionary holds 1,137,086 entries and 3,469 reversible ones, and
+they thin out fast with length:
+
+    letters      3    4    5    6   7   8  9  10
+    usable pairs 395  547  409  172  36  7  1   0
+
+A British 15x15 wants two ten-letter entries, so no British grid can be filled
+at any effort. An American one leans on threes to sixes: 396 of the 2,500
+grids in that library clear their own vocabulary requirement before a search
+starts, and the roomiest leaves a factor of seven at its scarcest length.
+
+The first complete one, from `python3 palindrome.py --repeats`:
+
+    S N A M █ S S E S █ █ E S S E      DESSERTS / STRESSED
+    A I T U █ P A C S █ S N O A K      LIVE / EVIL
+    A D A T █ O D A S █ I R O R I      GUNS / SNUG
+    S A M A R O I D █ T R O P E D      DEPORT / TROPED
+    █ █ █ G U N S █ L A A B █ █ █
+    S A L E T S █ D E S S E R T S      78 entries, all in the dictionary
+    T R A N S █ L I V E █ R E E T      60 of them scored, median 1.80
+    O R C █ █ R E X E R █ █ C R O
+    T E E R █ E V I L █ S N A R T
+    S T R E S S E D █ S T E L A S
+    █ █ █ B A A L █ S N U G █ █ █
+    D E P O R T █ D I O R A M A S
+    I R O R I █ S A D O █ T A D A
+    K A O N S █ S C A P █ U T I A
+    E S S E █ █ S E S S █ M A N S
+
+Distinctness is the sharp lever. A palindrome placed in a *paired* entry
+writes itself into both halves, so one answer appears twice -- ESSE and IRORI
+each do, above. Forbidding it is right for a puzzle and expensive for the
+search:
+
+    common words, repeats allowed     found on attempt 25
+    common words, all entries distinct   nothing in 1,584 attempts
+    proper nouns, all entries distinct   found on attempt 2
+
+and the middle row is not a matter of effort. Over the top thirty grids at
+400,000 nodes each, the median attempt died after **110** nodes and only one
+of a hundred and twenty reached its budget: the grids are being proved
+unfillable, not abandoned. Doubling the stock with proper nouns finds one in
+five seconds, and it is markedly worse to read -- NAGRAD, SAREPOL, KAMANIS.
