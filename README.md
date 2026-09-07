@@ -400,8 +400,13 @@ despite exploring fewer nodes, because its bitsets are longer and every
 intersection costs more. At 7x7 the node count falls nineteenfold and it is
 3.3 times faster.
 
-An 8x8 takes about 230 million nodes with UKACD, three and a half hours, and
-comes out of ordinary dictionary words:
+An 8x8 is where that pays spectacularly: **three and a half hours with UKACD,
+114 seconds with Wiktionary** — 177 times fewer nodes. Four of the eight words
+in the Wiktionary square do not exist in UKACD at all, which is both the
+mechanism and the cost, since two of them are a trilobite larval stage and a
+Greenlandic mineral.
+
+With UKACD it takes about 230 million nodes and comes out of ordinary words:
 
 ```
 C I T E S S E S      python3 word_square.py 8 --tries 3000 I S O T H E R E          --effort 200000 --report 200

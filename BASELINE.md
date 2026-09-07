@@ -679,6 +679,30 @@ by a factor of nineteen and the cost per node stops mattering: 3.3 times
 faster. The crossover is where the search becomes hard enough that avoiding
 dead ends is worth more than cheap arithmetic.
 
+### Eight by eight, and what the dictionary does to it
+
+    C I T E S S E S      UKACD, 229,685,776 nodes, 11,459 seconds
+    I S O T H E R E
+    T O X A E M I A      M E R A S P I S    Wiktionary, 1,297,229
+    E T A E R I O S      E Y E S A L V E    nodes, 114 seconds
+    S H E R W A N I      R E A T T A I N
+    S E M I A R I D      A S T R I N G E    177x fewer nodes
+    E R I O N I T E      S A T I N G E      100x faster
+    S E A S I D E S      S A T I N E T S
+                         P L A N E T I C
+                         I V I G T I T E
+                         S E N E S C E D
+
+Four of the eight Wiktionary words -- MERASPIS, EYESALVE, IVIGTITE, SENESCED --
+are not in UKACD at all, which is the whole mechanism: a row dies when it has
+no candidate, and those four are candidates UKACD could not offer.
+
+It is also the cost. A trilobite larval stage and a Greenlandic mineral are not
+words a solver would thank anyone for. The larger dictionary buys feasibility
+and spends familiarity, and at this size there is no choice about it -- but in
+a crossword, where the fill is meant to be readable, that trade is exactly what
+`--aim` exists to manage, and `--aim` is calibrated against UKACD.
+
 Sizes 3 to 7 come out in seconds. Eight takes about 230 million nodes with
 UKACD, which is three and a half hours:
 
