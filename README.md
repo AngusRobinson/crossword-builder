@@ -178,6 +178,27 @@ placed 20 of 20 targets (100% of the 20 that could fit this library) in 120s
 Each try gets its own `--time-limit`, so N tries takes N times as long. Set
 `--tries 1` when iterating on an idea.
 
+**Whether splitting a fixed budget is worth it depends on the style**, and the
+gain tracks how much the search varies from seed to seed. Given one minute,
+spent either as a single search or as the best of several shorter ones:
+
+| | one 60s search | best of 8 x 7.5s | seed-to-seed spread |
+|---|---|---|---|
+| British | 0.686 | 0.697 | 0.024 |
+| barred | 0.349 | 0.391 | 0.179 |
+| jumbo | 0.632 | **0.836** | 0.322 |
+| American | 0.333 | 0.333 | 0.359 |
+
+A British search is reliable — every seed lands in much the same place, so
+there is no luck to catch and one long search is as good as any split. A jumbo
+varies enormously, and splitting the budget is worth a third more coverage and
+lifts completion from 83% to 100%. American gains nothing because its failures
+are structural rather than unlucky: no seed completes a 20-word theme.
+
+So: **British, one long search. Jumbo and barred, several short ones.** With a
+minute of patience, `--tries 8 --time-limit 8` on a jumbo against `--tries 1
+--time-limit 60` on a British 15x15.
+
 `--aim` is the one to reach for next. It targets a familiarity *rank* rather
 than a maximum, because more common is not better without limit: maximising put
 43% of the fill above Zipf 4 where published answers put 17%. Real answers sit

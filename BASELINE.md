@@ -291,7 +291,36 @@ not in how long it is given.
 
 ## How many runs to keep
 
-Measured over 12 dense lists, 8 seeds each, keeping the best:
+**At a fixed total budget, this depends entirely on the style**, and the table
+below does not control for that: it gave N runs N times the clock, so it
+measures a bigger budget as much as a better strategy.
+
+Controlling for it -- one minute spent as a single search or as the best of
+several shorter ones, 24 lists, 8 seeds, read off the improvement curves so
+every split comes from the same runs:
+
+    one 60s search   x2      x3      x5      x8     seed spread
+      British         0.686   0.686   0.686   0.697       0.024
+      barred          0.374   0.379   0.383   0.391       0.179
+      jumbo           0.674   0.660   0.832   0.836       0.322
+      American        0.333   0.333   0.333   0.333       0.359
+
+    (x1: British 0.686, barred 0.349, jumbo 0.632, American 0.333)
+
+The gain from splitting tracks the seed-to-seed spread almost exactly. A
+British search is reliable, so there is no tail to catch and one long search is
+as good as any split -- which means the original measurement below, taken on
+British lists, was reading the extra clock rather than the extra tries. A jumbo
+varies hugely and splitting is worth a third more coverage, lifting completion
+from 83% to 100%.
+
+American is the exception that proves the rule: its spread is the largest of
+all and splitting buys nothing, because its failures are structural rather than
+unlucky. No seed completes a twenty-word theme, so there is no lucky one to
+find.
+
+The original measurement, over 12 dense British lists, 8 seeds each, keeping
+the best -- at N times the budget:
 
     runs kept   mean coverage   at optimum   unknown fill
             1           88.4%         2/12           4.2%
