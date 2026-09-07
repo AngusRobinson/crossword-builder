@@ -41,6 +41,41 @@ from crossword.words import load
 from squares.rotational import pair_slots, reversible, solve, is_rotational
 
 
+def show(grid, min_length):
+    """The grid, and then the entries, because a grid alone does not show them.
+
+    A barred diagram is the worst offender: the down entries are runs between
+    bars that the eye has no way to pick out of a solid square of letters. So
+    they are listed, paired with what the half-turn sends them to, which is
+    the thing worth looking at here.
+    """
+    # `pretty` for both: `render` is the canonical form that `parse` has to
+    # reverse, and it packs the letters against the blocks so that neither
+    # reads clearly.
+    print(grid.pretty(upper=True))
+    pairs, singles, _ = pair_slots(grid, min_length)
+    for direction in ("across", "down"):
+        rows = []
+        for one, other in pairs:
+            if one.direction != direction:
+                continue
+            rows.append((one, grid.pattern(one), grid.pattern(other)))
+        for slot in singles:
+            if slot.direction == direction:
+                rows.append((slot, grid.pattern(slot), None))
+        if not rows:
+            continue
+        print(f"\n{direction.title()}")
+        for slot, word, mirror in sorted(rows, key=lambda r: (r[0].row,
+                                                             r[0].col)):
+            where = f"({slot.row + 1},{slot.col + 1})"
+            if mirror is None:
+                print(f"  {where:>8}  {word.upper():<14} palindrome")
+            else:
+                print(f"  {where:>8}  {word.upper():<14} <-> "
+                      f"{mirror.upper()}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -157,8 +192,7 @@ def main() -> int:
                         f"{time.time()-began:.0f}s ({nodes:,} nodes, "
                         f"slack x{slack:.1f}); {len(set(entries))} of "
                         f"{len(entries)} answers distinct")
-                    print(grid.pretty(gap="", upper=True)
-                          if args.style == "barred" else grid.render())
+                    show(grid, min_length)
                     return 0
     print(f"nothing in {attempts} attempts and {time.time()-began:.0f}s. "
           f"Try --proper, a smaller --size, or a larger --effort.",
