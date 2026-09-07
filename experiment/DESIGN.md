@@ -102,3 +102,32 @@ Screening does not settle a value. It says where to look.
 - `share`, the split between the library and breeding arms, is not screened
   here: breeding is now skipped when it cannot help, so the split only applies
   to a subset of lists and needs its own comparison.
+
+---
+
+## Amendment, 2026-09-07: the metric ordering above is wrong
+
+Recorded here rather than edited into the text above, because the whole point
+of writing the design first is that it can be shown to have been wrong.
+
+The ordering put coverage first and completion second. `relax` shows why that
+cannot stand. It lifts the most recently seated target when a fill fails, so
+raising it seats fewer targets and completes far more often. On barred grids:
+
+    relax   targets seated   grids completed
+      0          0.661             10%
+      3          0.543             37%
+     10          0.316            100%
+
+Read by the ordering as written, `relax = 0` is best. But nine in ten of those
+runs produced no grid at all, and a grid that does not fill is not a crossword
+whatever it notionally holds. Counting seated targets in a run that failed is
+counting nothing.
+
+**Coverage is therefore scored zero unless the grid completed**, which folds
+completion into the primary metric rather than ranking it second. The remaining
+order is: effective coverage, then familiarity, then time.
+
+This changes which parameters look important. Under the old measure `relax` and
+`branch_cap` led; under the corrected one `relax` leads by more, and several
+apparent effects were runs being scored for work they had thrown away.

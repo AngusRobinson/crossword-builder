@@ -24,15 +24,26 @@ BUDGETS = (5, 10, 20, 40)
 
 
 def coverage_of(row):
-    """Targets seated as a fraction of what the best grid could hold."""
+    """Targets seated, as a fraction of what the best grid could hold.
+
+    Zero if the grid never completed. A run that seats twenty targets and then
+    fails to fill has produced nothing, and scoring it for the twenty is what
+    made `relax = 0` look best when nine of its ten runs made no crossword.
+    See the amendment in DESIGN.md.
+    """
+    if not row["ok"]:
+        return 0.0
     return row["seated"] / row["ceiling"] if row["ceiling"] else 0.0
 
 
 def at_budget(row, seconds):
-    """What this run had achieved by `seconds`, from its recorded curve."""
+    """What this run had achieved by `seconds`, from its recorded curve.
+
+    Only moments at which the grid was complete count, for the same reason.
+    """
     best = 0
-    for moment, seated, _ok, _q in row["curve"]:
-        if moment <= seconds:
+    for moment, seated, ok, _q in row["curve"]:
+        if moment <= seconds and ok:
             best = max(best, seated)
     return best / row["ceiling"] if row["ceiling"] else 0.0
 
