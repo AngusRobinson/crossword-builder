@@ -76,6 +76,28 @@ def show(grid, min_length):
                       f"{mirror.upper()}")
 
 
+def write(grid, min_length, args):
+    """The same two views the terminal gets, on disk."""
+    import io
+    import contextlib
+    from crossword import export
+
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        show(grid, min_length)
+    with open(args.out + ".txt", "w", encoding="utf-8") as handle:
+        handle.write(f"{args.title}\n")
+        if args.setter:
+            handle.write(f"{args.setter}\n")
+        handle.write("\n" + buffer.getvalue())
+
+    # ipuz and Exolve cannot place a bar, so the drawn page is the only format
+    # that works for every style this produces.
+    export.write_html(grid, args.out + ".html", title=args.title,
+                      setter=args.setter, surfaces={},
+                      min_length=min_length, solution=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -104,6 +126,17 @@ def main() -> int:
     parser.add_argument("--tries", type=int, default=4, help="seeds per grid")
     parser.add_argument("--effort", type=int, default=60_000,
                         help="node budget per attempt")
+    parser.add_argument("--min-score", type=float, default=0.0, metavar="S",
+                        help="drop words below this familiarity. The stock is "
+                             "thin enough that a floor bites hard: it is an "
+                             "absolute cut against the table beside the "
+                             "dictionary, so 1.0 is already severe")
+    parser.add_argument("--out", metavar="BASE",
+                        help="write BASE.txt (the grid and its entries) and "
+                             "BASE.html (a drawn page, which is the only "
+                             "format that can show a bar)")
+    parser.add_argument("--title", default="Palindromic")
+    parser.add_argument("--setter", default="")
     parser.add_argument("--quiet", "-q", action="store_true")
     args = parser.parse_args()
 
@@ -123,6 +156,17 @@ def main() -> int:
         scores_path = beside if os.path.exists(beside) else None
     scores = (frequency.load_scores(scores_path) if scores_path
               else frequency.load_scores())
+    if args.min_score > 0:
+        before = len(usable)
+        kept = {entry.text for entry in usable
+                if scores.get(entry.text, 0.0) >= args.min_score}
+        # A word whose reverse has just been cut is no longer usable either.
+        kept = {text for text in kept if text[::-1] in kept}
+        usable = [entry for entry in usable if entry.text in kept]
+        say(f"familiarity floor {args.min_score}: {before:,} reversible "
+            f"entries -> {len(usable):,}")
+        if not usable:
+            parser.error(f"--min-score {args.min_score} leaves nothing")
     index = Index(usable, scores)
     stock = collections.Counter(len(entry.text) for entry in usable)
     say(f"{len(entries):,} entries, {len(usable):,} of them reversible")
@@ -193,6 +237,9 @@ def main() -> int:
                         f"slack x{slack:.1f}); {len(set(entries))} of "
                         f"{len(entries)} answers distinct")
                     show(grid, min_length)
+                    if args.out:
+                        write(grid, min_length, args)
+                        say(f"wrote {args.out}.txt and {args.out}.html")
                     return 0
     print(f"nothing in {attempts} attempts and {time.time()-began:.0f}s. "
           f"Try --proper, a smaller --size, or a larger --effort.",

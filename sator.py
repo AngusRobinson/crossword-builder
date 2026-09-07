@@ -49,6 +49,12 @@ def main() -> int:
                         help="allow capitalised entries")
     parser.add_argument("--repeats", action="store_true",
                         help="keep squares that use a word twice")
+    parser.add_argument("--min-score", type=float, default=0.0, metavar="S",
+                        help="drop words below this familiarity before "
+                             "searching, rather than ranking them down "
+                             "afterwards")
+    parser.add_argument("--out", metavar="PATH",
+                        help="write the squares here as well as to the screen")
     parser.add_argument("--top", type=int, default=5)
     args = parser.parse_args()
 
@@ -66,6 +72,11 @@ def main() -> int:
     scores = (frequency.load_scores(scores_path) if scores_path
               else frequency.load_scores())
 
+    if args.min_score > 0:
+        before = len(words)
+        words = {w for w in words if scores.get(w, 0.0) >= args.min_score}
+        print(f"familiarity floor {args.min_score}: {before:,} -> "
+              f"{len(words):,} words", file=sys.stderr)
     found = deduplicate(solve(words, args.size))
     if not args.repeats:
         found = [grid for grid in found if len(set(grid)) == args.size]
@@ -79,11 +90,24 @@ def main() -> int:
         return (min(values), sum(values) / len(values))
 
     found.sort(key=rank, reverse=True)
+    lines = []
     for grid in found[:args.top]:
         weakest, mean = rank(grid)
-        print(f"\nweakest {weakest:.2f}, mean {mean:.2f}")
+        lines.append(f"\nweakest {weakest:.2f}, mean {mean:.2f}")
         for word in grid:
-            print(f"   {' '.join(word.upper())}   {scores.get(word, 0.0):.2f}")
+            lines.append(f"   {' '.join(word.upper())}   "
+                         f"{scores.get(word, 0.0):.2f}")
+    print("\n".join(lines))
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as handle:
+            handle.write(f"# {len(found):,} SATOR squares of order "
+                         f"{args.size}, exhaustive\n")
+            handle.write(f"# dictionary {args.words}"
+                         + (f", proper nouns allowed" if args.proper else "")
+                         + (f", floor {args.min_score}" if args.min_score else "")
+                         + "\n")
+            handle.write("\n".join(lines) + "\n")
+        print(f"wrote {args.out}", file=sys.stderr)
     return 0
 
 
