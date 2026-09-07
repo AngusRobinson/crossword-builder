@@ -677,7 +677,7 @@ def main() -> int:
         export.write_html(got.grid, args.out + ".html", title=args.title,
                           setter=args.setter, surfaces=surfaces,
                           min_length=style_rules.min_entry_length,
-                          solution=not args.blank)
+                          solution=not args.blank, themed=placed)
         say(f"wrote {args.out}.html "
               f"(no ipuz or Exolve: neither format can place a bar)")
     elif args.out:

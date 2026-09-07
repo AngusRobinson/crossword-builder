@@ -65,3 +65,25 @@ def test_page_is_standalone_and_carries_both_lists(index):
 
 def test_cells_of_finds_a_seated_word(blocked):
     assert cells_of(blocked, "nothinghere") == []
+
+
+def test_themed_answers_are_marked(index):
+    """A setter's aid: which of the answers were the ones asked for."""
+    from crossword.barred import parse
+    from crossword.fill import Filler
+    from crossword.library import rules_for
+    from crossword.render import cells_of
+
+    grid = parse(MEPHISTO)
+    filler = Filler(grid, index, rules=rules_for("barred"), seed=0,
+                    node_budget=60000, commonness=0.0)
+    assert filler.fill()
+    word = grid.pattern(grid.slots(4)[0])
+
+    marked = page(grid, title="t", min_length=4, solution=True, themed=[word])
+    assert marked.count("background:#fff4cc;border") == len(cells_of(grid, word, 4))
+    assert marked.count("background:#fff4cc;padding") == 1
+
+    # A blank grid marks nothing: it would say where the theme is.
+    blank = page(grid, title="t", min_length=4, solution=False, themed=[word])
+    assert "#fff4cc" not in blank

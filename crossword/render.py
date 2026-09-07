@@ -96,19 +96,25 @@ def clue_lists(grid, min_length=3):
 
 
 def page(grid, *, title="Untitled", setter="", min_length=3,
-         surfaces=None, solution=False):
+         surfaces=None, solution=False, themed=()):
     """A standalone printable page: the grid, then the two clue lists.
 
     This is the fallback for styles the puzzle formats cannot carry.  Neither
     ipuz nor Exolve is given bars by this project, and a barred grid written
     into either would describe a different puzzle; written here it is at least
     correct, and it prints.
+
+    `themed` are the answers the setter asked for.  Their cells are tinted and
+    their numbers marked in the lists, which is a setter's aid rather than a
+    solver's -- so it applies only when the answers are shown.
     """
     from .export import enumeration, spelled
 
     surfaces = surfaces or {}
-
     across, down = clue_lists(grid, min_length)
+    wanted = set(themed) if solution else set()
+    marked = [cell for word in wanted
+              for cell in cells_of(grid, word, min_length)]
 
     def listing(name, items):
         lines = [f'<h2 style="font:600 13px sans-serif;margin:14px 0 6px;'
@@ -118,9 +124,11 @@ def page(grid, *, title="Untitled", setter="", min_length=3,
         for number, answer in items:
             surface = surfaces.get(answer, answer)
             shown = escape(spelled(surface, answer).upper()) if solution else ""
+            tint = f'background:{MARK};padding:0 3px;' if answer in wanted else ""
             lines.append(
                 f'<li><span style="display:inline-block;width:2.2em;'
-                f'color:#666;">{number}</span>{shown} '
+                f'color:#666;">{number}</span>'
+                f'<span style="{tint}">{shown}</span> '
                 f'<span style="color:#666;">'
                 f'{enumeration(surface, len(answer))}</span></li>'
             )
@@ -133,7 +141,8 @@ def page(grid, *, title="Untitled", setter="", min_length=3,
         f"<title>{escape(title)}</title></head>"
         '<body style="margin:24px;background:#fff;color:#111;">'
         f'<h1 style="font:600 20px Georgia,serif;margin:0 0 2px;">{heading}</h1>'
-        + grid_html(grid, min_length=min_length, solution=solution)
+        + grid_html(grid, min_length=min_length, solution=solution,
+                    highlight=marked)
         + '<div style="display:flex;gap:36px;align-items:flex-start;">'
         + f"<div>{listing('Across', across)}</div>"
         + f"<div>{listing('Down', down)}</div>"

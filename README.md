@@ -92,7 +92,7 @@ Four themed lists are included to try it with:
 
 | | |
 |---|---|
-| [`lists/birds.txt`](lists/birds.txt) | 545 birds |
+| [`lists/birds.txt`](lists/birds.txt) | 391 birds |
 | [`lists/trees.txt`](lists/trees.txt) | 138 trees |
 | [`lists/elements.txt`](lists/elements.txt) | 113 chemical elements |
 | [`lists/instruments.txt`](lists/instruments.txt) | 80 musical instruments |

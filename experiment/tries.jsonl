@@ -147,3 +147,16 @@
 {"list": "us-08-00", "style": "us", "size": 8, "seed": 2, "ok": true, "seated": 8, "ceiling": 8, "curve": [[15.17, 6, true, -0.2146], [15.5, 8, true, -0.2953]]}
 {"list": "us-08-00", "style": "us", "size": 8, "seed": 3, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.59, 5, true, -0.2312], [1.36, 8, true, -0.2199]]}
 {"list": "us-08-00", "style": "us", "size": 8, "seed": 4, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.08, 8, true, -0.2579]]}
+{"list": "us-08-00", "style": "us", "size": 8, "seed": 5, "ok": true, "seated": 8, "ceiling": 8, "curve": [[21.03, 8, true, -0.3037]]}
+{"list": "us-08-00", "style": "us", "size": 8, "seed": 6, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.82, 8, true, -0.2424]]}
+{"list": "us-08-00", "style": "us", "size": 8, "seed": 7, "ok": true, "seated": 7, "ceiling": 8, "curve": [[60.12, 7, true, -0.2391]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.5, 8, true, -0.3171], [49.82, 8, true, -0.3071]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 1, "ok": true, "seated": 4, "ceiling": 8, "curve": [[64.31, 4, true, -0.1857]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 2, "ok": true, "seated": 8, "ceiling": 8, "curve": [[39.2, 8, true, -0.3126]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 3, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.2, 8, true, -0.2497]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 4, "ok": true, "seated": 8, "ceiling": 8, "curve": [[2.36, 8, true, -0.2347]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 5, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.52, 8, true, -0.3578]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 6, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.17, 8, true, -0.2509]]}
+{"list": "us-08-01", "style": "us", "size": 8, "seed": 7, "ok": true, "seated": 8, "ceiling": 8, "curve": [[0.16, 8, true, -0.234]]}
+{"list": "us-20-00", "style": "us", "size": 20, "seed": 0, "ok": false, "seated": 20, "ceiling": 20, "curve": [[1.74, 18, false, 0.0], [6.19, 19, false, 0.0], [37.76, 20, false, 0.0]]}
+{"list": "us-20-00", "style": "us", "size": 20, "seed": 1, "ok": false, "seated": 19, "ceiling": 20, "curve": [[27.79, 19, false, 0.0]]}
