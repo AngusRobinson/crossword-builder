@@ -45,7 +45,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--style", choices=("us", "british"), default="us",
+    parser.add_argument("--style", choices=("us", "british", "barred"),
+                        default="us",
                         help="us by default, having far more grids that "
                              "clear the vocabulary; british works too")
     parser.add_argument("--dictionary", default="wiktionary.txt")
@@ -54,8 +55,15 @@ def main() -> int:
                         help="allow capitalised entries, which roughly doubles "
                              "the reversible stock")
     parser.add_argument("--repeats", action="store_true",
-                        help="let a palindrome fill both halves of a pair, so "
-                             "one answer appears twice")
+                        help="go straight to allowing a palindrome to fill "
+                             "both halves of a pair, so one answer appears "
+                             "twice. Without it that is tried only as a "
+                             "fallback, and the result says which it used")
+    parser.add_argument("--distinct", action="store_true",
+                        help="refuse the fallback: no repeated answer, or "
+                             "nothing")
+    parser.add_argument("--size", type=int, default=12,
+                        help="barred only; the blocked libraries are 15x15")
     parser.add_argument("--grids", type=int, default=400,
                         help="how many candidate grids to try")
     parser.add_argument("--tries", type=int, default=4, help="seeds per grid")
@@ -86,10 +94,26 @@ def main() -> int:
 
     # A grid whose scarcest length has no stock cannot be filled, and saying so
     # here costs nothing where finding it out by search costs a budget.
+    min_length = 4 if args.style == "barred" else 3
+    if args.style == "barred":
+        # Barred grids are not a library but a generator, and they are much
+        # the easiest of the three here: bars can fall anywhere, so a pattern
+        # can be shaped to the vocabulary instead of the other way about.
+        import random
+        from crossword import barred
+        rng = random.Random(0)
+        candidates = []
+        while len(candidates) < args.grids * 4:
+            drawn = barred.pattern(args.size, min_entry=min_length, rng=rng)
+            if drawn is not None:
+                candidates.append(drawn)
+    else:
+        candidates = [pattern.grid()
+                      for pattern in library.load(None, style=args.style)]
+
     ranked = []
-    for pattern in library.load(None, style=args.style):
-        grid = pattern.grid()
-        pairs, singles, orphans = pair_slots(grid)
+    for grid in candidates:
+        pairs, singles, orphans = pair_slots(grid, min_length)
         if orphans:
             continue
         need = collections.Counter(a.length for a, _ in pairs)
@@ -97,7 +121,7 @@ def main() -> int:
         if any(need[L] * 2 > stock.get(L, 0) for L in need):
             continue
         ranked.append((min(stock.get(L, 0) / (2 * need[L]) for L in need),
-                       pattern))
+                       grid))
     ranked.sort(key=lambda row: -row[0])
     say(f"{len(ranked):,} grids clear their own vocabulary requirement")
     if not ranked:
@@ -106,23 +130,39 @@ def main() -> int:
               file=sys.stderr)
         return 1
 
+    # A repeated answer is a flaw, so it is not the first thing tried; but a
+    # grid with one beats no grid, so it is tried second unless forbidden.
+    passes = [False] if args.distinct else ([True] if args.repeats
+                                            else [False, True])
     began = time.time()
     attempts = 0
-    for seed in range(args.tries):
-        for slack, pattern in ranked[:args.grids]:
-            grid = pattern.grid()
-            attempts += 1
-            placed, nodes = solve(grid, index, seed=seed,
-                                  node_budget=args.effort,
-                                  distinct=not args.repeats)
-            if placed:
-                assert is_rotational(grid), "not symmetric under a half-turn"
-                say(f"found on attempt {attempts} in {time.time()-began:.0f}s "
-                    f"({nodes:,} nodes, slack x{slack:.1f})")
-                print(grid.render())
-                return 0
+    for allow_repeats in passes:
+        if allow_repeats and len(passes) > 1:
+            say(f"no grid with every answer distinct in {attempts} attempts; "
+                f"allowing one repeated answer")
+        for seed in range(args.tries):
+            for slack, blank in ranked[:args.grids]:
+                grid = blank.copy()
+                grid.letters.clear()
+                attempts += 1
+                placed, nodes = solve(grid, index, seed=seed,
+                                      node_budget=args.effort,
+                                      min_length=min_length,
+                                      distinct=not allow_repeats)
+                if placed:
+                    assert is_rotational(grid), "not symmetric under a half-turn"
+                    entries = [grid.pattern(slot)
+                               for slot in grid.slots(min_length)]
+                    say(f"found on attempt {attempts} in "
+                        f"{time.time()-began:.0f}s ({nodes:,} nodes, "
+                        f"slack x{slack:.1f}); {len(set(entries))} of "
+                        f"{len(entries)} answers distinct")
+                    print(grid.pretty(gap="", upper=True)
+                          if args.style == "barred" else grid.render())
+                    return 0
     print(f"nothing in {attempts} attempts and {time.time()-began:.0f}s. "
-          f"Try --proper, or --repeats, or a larger --effort.", file=sys.stderr)
+          f"Try --proper, a smaller --size, or a larger --effort.",
+          file=sys.stderr)
     return 1
 
 

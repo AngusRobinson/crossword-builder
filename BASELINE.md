@@ -853,3 +853,37 @@ and the middle row is not a matter of effort. Over the top thirty grids at
 of a hundred and twenty reached its budget: the grids are being proved
 unfillable, not abandoned. Doubling the stock with proper nouns finds one in
 five seconds, and it is markedly worse to read -- NAGRAD, SAREPOL, KAMANIS.
+
+### Barred grids take it much further
+
+The same solver, unchanged: a barred grid pairs its entries under the turn
+exactly as a blocked one does. What differs is that a bar may fall anywhere,
+so the pattern can be shaped to the vocabulary instead of the other way about
+-- and the vocabulary is the whole difficulty here.
+
+That turns out to matter more than any amount of search. With **every answer
+distinct**, which the blocked grids could not manage at all:
+
+    3x3 .. 10x10   instantly, first feasible pattern
+    11x11          3 seconds, 524 patterns drawn
+    12x12          176 seconds, 1,802 patterns drawn
+
+12x12 is Mephisto size. 46 entries, all in the dictionary, all 46 distinct:
+
+    S T R A T S | S L E E T S      STRATS / STARTS
+    U|E|E R E S | R E C C E|P      SLEETS / STEELS
+    S E M E M E | E V I L E R      SEMEME / EMEMES
+    S T A P E S | S A L A M I      EVILER / RELIVE
+    E|S N O R E S | N O N E T      STAPES / SEPATS
+    D E E D E R|O|S|P|T|R|S        SALAMI / IMALAS
+    S|R|T|P|S|O|R E D E E D        SNORES / SERONS
+    T E N O N|S E R O N S|E        NONET / TENON
+    I M A L A S | S E P A T S      DEEDER / REDEED
+    R E L I V E | E M E M E S
+    P|E C C E R | S E R E|E|U
+    S T E E L S | S T A R T S
+
+So the ordering is the opposite of the intuition. A barred grid looks harder
+-- two thirds of its cells are checked against one half of a blocked grid's --
+and it is far easier, because the constraint that binds is which words have
+reverses, and a barred pattern can be drawn to suit them.
