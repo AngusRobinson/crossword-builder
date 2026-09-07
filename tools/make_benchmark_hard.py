@@ -27,6 +27,14 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+# Run as `python3 tools/make_benchmark_hard.py` from the repository root: Python puts this
+# directory on sys.path, not its parent, so the root goes on explicitly.
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
+
 from crossword import coverage, library
 from crossword.words import _fold
 

@@ -26,7 +26,7 @@ every down run the full height -- so the ordinary filler makes one with nothing
 added. An ordinary square cannot be posed that way at all: it needs
 grid[r][c] == grid[c][r], a constraint between two cells, where everything the
 filler knows how to say is a constraint between a cell and a word. So it has
-its own small solver in crossword/square.py.
+its own small solver in squares/ordinary.py.
 
     python3 word_square.py 6
     python3 word_square.py 7 --kind double --tries 500
@@ -40,25 +40,10 @@ import argparse
 import sys
 import time
 
-from crossword.fill import Filler
-from crossword.grid import Grid
 from crossword.index import Index
-from crossword.rules import RuleSet
-from crossword.square import find, is_square
+from squares.double import double
+from squares.ordinary import find, is_square
 from crossword.words import load
-
-
-def double(size, index, *, seed=0, node_budget=8000, restarts=1,
-           commonness=0.0, aim=0.85):
-    """One n x n grid whose rows and columns are all words."""
-    rules = RuleSet(min_entry_length=size, min_checked_fraction=1.0,
-                    max_consecutive_unchecked=0, symmetry="none")
-    grid = Grid(size=size)
-    filler = Filler(grid, index, rules=rules, seed=seed,
-                    node_budget=node_budget, commonness=commonness, aim=aim)
-    if filler.fill(restarts=restarts):
-        return [grid.pattern(s) for s in grid.runs("across")], filler.stats.nodes
-    return None, filler.stats.nodes
 
 
 def main() -> int:

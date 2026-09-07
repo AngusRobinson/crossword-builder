@@ -7,7 +7,7 @@ so that each can be provoked in isolation.
 
 import random
 
-from build_test_grid import times_like
+from tools.build_test_grid import times_like
 from crossword.grid import Grid
 from crossword.index import Index
 from crossword.rules import RuleSet, validate
@@ -189,7 +189,7 @@ def test_index(entries):
     return index
 def test_filler(index):
     """Stage 4: the filler must produce grids that pass every rule."""
-    from build_test_grid import times_like
+    from tools.build_test_grid import times_like
     from crossword.fill import Filler
 
     seen = set()
@@ -230,7 +230,7 @@ def test_generator(index):
 
 def test_filler_respects_used_words(index):
     """A word already placed must be excluded from every later slot."""
-    from build_test_grid import times_like
+    from tools.build_test_grid import times_like
     from crossword.fill import Filler
 
     grid = times_like()

@@ -29,3 +29,15 @@ def index(entries):
     from crossword.index import Index
 
     return Index(entries)
+
+
+# Tests live in tests/ and the code they exercise lives at the repository
+# root. pytest puts this directory on sys.path, not its parent, so the root
+# goes on explicitly rather than relying on the working directory happening to
+# be right.
+import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)

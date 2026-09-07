@@ -11,6 +11,14 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+# Run as `python3 tools/build_frequency.py` from the repository root: Python puts this
+# directory on sys.path, not its parent, so the root goes on explicitly.
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
+
 from crossword import frequency
 from crossword.words import load
 

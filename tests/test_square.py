@@ -3,7 +3,7 @@
 import pytest
 
 from crossword.index import Index
-from crossword.square import find, is_square, search
+from squares.ordinary import find, is_square, search
 from crossword.words import load
 
 
@@ -67,7 +67,7 @@ def test_parallel_runs_do_not_repeat_each_other():
     half hours each and returned the same square, all three reaching it at
     absolute seed 1149.
     """
-    from crossword.square import stream
+    from squares.ordinary import stream
 
     runs = [{stream(base, a) for a in range(2000)} for base in (1, 2, 3)]
     assert not runs[0] & runs[1]

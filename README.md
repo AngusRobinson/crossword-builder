@@ -83,14 +83,25 @@ familiarity tables are keyed to UKACD's spellings.
 
 Two other dictionaries have builders, and each writes its own familiarity table
 beside itself, which `--dictionary` then picks up without being told:
-`build_wiktionary.py` for a much larger British-leaning list, and
-`build_american.py` for Spread the Wordlist. Use the American one for American
+`tools/build_wiktionary.py` for a much larger British-leaning list, and
+`tools/build_american.py` for Spread the Wordlist. Use the American one for American
 grids — it takes them from half filling to five in six, because a grid that
 checks every cell leans on the short entries and UKACD has a third as many
 three-letter words. It stops at fifteen letters, so it cannot fill a jumbo.
 
 Nothing else is required. The grid library and the word-familiarity tables are
 committed as data files.
+
+The layout, since there are two projects here rather than one:
+
+    crossword/   the crossword runtime: grids, rules, the fill search
+    squares/     word squares, which need solvers of their own
+    tools/       scripts that build data — word lists, tables, grid libraries
+    tests/       the test suite; `python3 -m pytest` from the root
+    experiment/  the parameter study, its design and its results
+
+with `make_grid.py`, `word_square.py` and `sator.py` at the root as the three
+things you actually run.
 
 ```bash
 python3 make_grid.py kestrel curlew avocet bittern redwing
@@ -266,7 +277,7 @@ of the grid, which is far looser than it looks.
 
 That number is the whole difficulty. Barred patterns are easy to generate and
 mostly impossible to fill, and the reason is almost always that they are more
-interlocked than a real one. `build_barred_library.py` therefore does not
+interlocked than a real one. `tools/build_barred_library.py` therefore does not
 trust the rules alone: it generates a pattern, validates it, and then tries to
 fill it, keeping only the ones that come out. A pattern that can be filled is
 filled in about a second; one that cannot burns the entire node budget first,
@@ -286,7 +297,7 @@ two of its four letters uncrossed. The two directions are not inconsistent;
 they are what two different corpora actually do.
 
 ```bash
-python3 build_barred_library.py --want 200
+python3 tools/build_barred_library.py --want 200
 ```
 
 **Themed barred grids are weak, as themed American ones are.** A fifteen-word
@@ -323,7 +334,7 @@ Barred grids are not tied to 12x12 either. Build a library at any size, odd or
 even, and point the builder at it:
 
 ```bash
-python3 build_barred_library.py --size 13 --want 40 --out grids-13.txt
+python3 tools/build_barred_library.py --size 13 --want 40 --out grids-13.txt
 python3 make_grid.py --style barred --library grids-13.txt --solution
 ```
 
@@ -347,10 +358,10 @@ than with all of it, and the curve has not flattened at 100% — so more
 vocabulary would keep paying, most of all for American grids where every letter
 is checked.
 
-`build_wiktionary.py` builds a larger one from a Wiktionary extract:
+`tools/build_wiktionary.py` builds a larger one from a Wiktionary extract:
 
 ```bash
-python3 build_wiktionary.py kaikki-english.jsonl --out wiktionary.txt
+python3 tools/build_wiktionary.py kaikki-english.jsonl --out wiktionary.txt
 python3 make_grid.py --dictionary wiktionary.txt --file lists/birds.txt
 ```
 
@@ -398,7 +409,7 @@ nothing added. Sizes up to 6 come out in under a minute; 7 has not been found.
 An ordinary square cannot be posed that way at all. It needs
 `grid[r][c] == grid[c][r]`, a constraint between two *cells*, where everything
 the filler knows how to say is a constraint between a cell and a word. So it
-has its own solver in `crossword/square.py` — which is the same search in
+has its own solver in `squares/ordinary.py` — which is the same search in
 miniature, over *n* words instead of thirty, each one placed against the
 letters the others have already fixed.
 
@@ -573,7 +584,7 @@ describe, and the things that were tried and rejected. Update it in the same
 commit as any change that moves it.
 
 ```bash
-python3 run_baseline.py     # about six minutes
+python3 tools/run_baseline.py     # about six minutes
 python3 -m pytest -q        # 111 tests
 ```
 
@@ -594,9 +605,9 @@ Rebuilding them needs a corpus of published Guardian crosswords as JSON — the
 "guardian-cc" collection, one file per puzzle, about 130 MB — and `wordfreq`:
 
 ```bash
-python3 build_library.py    path/to/guardian-cc-master/crosswords
-python3 build_frequency.py  path/to/guardian-cc-master/crosswords
-python3 make_benchmark.py   path/to/guardian-cc-master/crosswords
+python3 tools/build_library.py    path/to/guardian-cc-master/crosswords
+python3 tools/build_frequency.py  path/to/guardian-cc-master/crosswords
+python3 tools/make_benchmark.py   path/to/guardian-cc-master/crosswords
 ```
 
 `wordfreq` is a build-time dependency only. Nothing at run time imports it.

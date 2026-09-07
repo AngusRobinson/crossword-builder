@@ -13,6 +13,14 @@ Constraints this pattern has to satisfy, all of them discovered the hard way:
   * The two symmetric pairs therefore use columns 4/10 and 6/8, one block
     each, which is the maximum this family allows.
 """
+# Run as `python3 tools/build_test_grid.py` from the repository root: Python puts this
+# directory on sys.path, not its parent, so the root goes on explicitly.
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
+
 from crossword.grid import Grid
 
 ODD_ROW = {1, 3, 5, 7, 9, 11, 13}

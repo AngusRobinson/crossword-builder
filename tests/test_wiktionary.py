@@ -1,12 +1,19 @@
 """Building a fill dictionary from a Wiktionary extract."""
 
 import json
+import os
 import subprocess
 import sys
 
 import pytest
 
 from crossword.words import load
+
+# Anchored to the repository, not to the working directory: the bare name
+# worked only while both the test and the builder sat in the root.
+BUILDER = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "tools", "build_wiktionary.py")
 
 
 @pytest.fixture
@@ -46,7 +53,7 @@ def extract(tmp_path):
 
 def build(extract, tmp_path, *extra):
     out = tmp_path / "words.txt"
-    subprocess.run([sys.executable, "build_wiktionary.py", str(extract),
+    subprocess.run([sys.executable, BUILDER, str(extract),
                     "--out", str(out), *extra],
                    check=True, capture_output=True)
     return {e.text: e for e in load(str(out), min_length=3)}
@@ -86,7 +93,7 @@ def test_proper_nouns_are_kept_for_the_loader_to_filter(extract, tmp_path):
 
     out = tmp_path / "words.txt"
     import subprocess, sys as _sys
-    subprocess.run([_sys.executable, "build_wiktionary.py", str(extract),
+    subprocess.run([_sys.executable, BUILDER, str(extract),
                     "--out", str(out)], check=True, capture_output=True)
     plain = {e.text for e in load(str(out), min_length=3)}
     with_proper = {e.text for e in load(str(out), min_length=3,
@@ -94,7 +101,7 @@ def test_proper_nouns_are_kept_for_the_loader_to_filter(extract, tmp_path):
     assert with_proper > plain, "proper nouns are in the file, not lost"
 
     dropped = tmp_path / "cut.txt"
-    subprocess.run([_sys.executable, "build_wiktionary.py", str(extract),
+    subprocess.run([_sys.executable, BUILDER, str(extract),
                     "--out", str(dropped), "--drop-proper"],
                    check=True, capture_output=True)
     cut = {e.text for e in load(str(dropped), min_length=3, allow_proper=True)}

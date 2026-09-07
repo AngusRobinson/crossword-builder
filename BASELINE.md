@@ -4,10 +4,10 @@ The measured state of the tool, so that a regression shows up as a diff rather
 than as a half-remembered number from a commit message. Update this file in
 the same commit as any change that moves it, and say why.
 
-Reproduce with `python3 run_baseline.py` (about 6 minutes). It needs only what
+Reproduce with `python3 tools/run_baseline.py` (about 6 minutes). It needs only what
 is in the repository: `crossword/grids.txt`, `crossword/scores.txt` and
 `benchmark/lists.json`. The Guardian corpus is *not* needed — it is required
-only to rebuild those files, via `build_library.py` and `build_frequency.py`.
+only to rebuild those files, via `tools/build_library.py` and `tools/build_frequency.py`.
 
 ## Configuration these numbers describe
 
@@ -443,7 +443,7 @@ nothing, and one fill attempt is a cheap and decisive test of a pattern.
 
 ### What the library is for
 
-So barred patterns are earned rather than assumed: `build_barred_library.py`
+So barred patterns are earned rather than assumed: `tools/build_barred_library.py`
 generates one, checks it against the rules, and admits it only if a real fill
 comes out. That cost is paid once, here, so that nothing pays it at build time.
 

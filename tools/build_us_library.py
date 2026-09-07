@@ -20,6 +20,14 @@ import re
 import sys
 import zipfile
 
+# Run as `python3 tools/build_us_library.py` from the repository root: Python puts this
+# directory on sys.path, not its parent, so the root goes on explicitly.
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
+
 from crossword import library
 from crossword.grid import Grid
 from crossword.rules import RuleSet, validate
