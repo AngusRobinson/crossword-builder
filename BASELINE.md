@@ -541,13 +541,27 @@ each length, and see whether the curve is still climbing at 100%.
     most familiar        20%     40%     60%     80%    100%
     words available   45,514  91,033 136,555 182,074 227,601
       British          0.605   0.642   0.651   0.669   0.686
-      American         0.156   0.281   0.562   0.469   0.812
+      barred           0.033   0.148   0.237   0.300   0.293
+      jumbo            0.619   0.668   0.731   0.805   0.714
+      American         0.052   0.094   0.188   0.156   0.271
 
-It is still climbing, steeply for American. So more vocabulary would keep
-paying, and an earlier claim in this file that vocabulary was not the
-constraint was wrong -- it rested on counting candidates per slot at the root
-of the search, before any letters are committed, when failures happen deep in
-it where a slot has five or six letters already fixed.
+Every style gains enormously over the range as a whole. Whether the gain is
+still coming at the top differs, and the last step is the one that says what
+another dictionary would buy:
+
+    80% -> 100%    British +0.017   barred -0.006   jumbo -0.091   American +0.115
+
+British is still climbing slowly and American steeply. Barred and jumbo are
+flat or down, though at two seeds a fall of that size is not distinguishable
+from noise, and the jumbo figure moves about more than the others because a
+21x21 has few enough patterns that one awkward grid shifts the mean.
+
+So a larger dictionary is worth having, and worth most where the grid is
+hardest -- which is the opposite of an earlier claim in this file, that
+vocabulary was not the constraint. That claim rested on counting candidates per
+slot at the *root* of the search, before any letters are committed, when
+failures happen deep in it where a slot has five or six letters already fixed
+by crossings. Root counts say nothing about that.
 
 ## Word squares
 
