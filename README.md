@@ -310,6 +310,38 @@ and it slows sharply above 9x9 — a 9x9 comes out in a couple of seconds, an
 11x11 not at all within a small budget. So non-standard blocked sizes are
 possible in principle and not available in practice.
 
+## A bigger dictionary
+
+UKACD's 221,835 entries are not enough, and that is measured rather than
+assumed. Filling with only the most familiar 80% of it does measurably worse
+than with all of it, and the curve has not flattened at 100% — so more
+vocabulary would keep paying, most of all for American grids where every letter
+is checked.
+
+`build_wiktionary.py` builds a larger one from a Wiktionary extract:
+
+```bash
+python3 build_wiktionary.py kaikki-english.jsonl --out wiktionary.txt
+python3 make_grid.py --words wiktionary.txt --file lists/birds.txt
+```
+
+Take the input from [kaikki.org](https://kaikki.org), which publishes
+Wiktionary already parsed by `wiktextract` as one JSON object per line —
+scraping the site page by page would be slow, rude, and would need a wikitext
+parser. The builder streams, because the file runs to several gigabytes.
+
+Inflections are kept by default and are most of the value: a plural or a past
+tense fills a slot the headword does not. Misspellings, abbreviations, other
+languages, affixes and proper nouns are dropped.
+
+The list is not shipped here. Wiktionary is CC BY-SA, so a derived list carries
+that licence; building it locally keeps the question where it belongs, and it
+is the same reason UKACD is not in the repository either.
+
+**`--aim` is calibrated against UKACD.** Familiarity is a rank *within* each
+length, so a much larger dictionary shifts every rank and 0.85 stops meaning
+what it means here. Re-derive it before trusting the fill quality.
+
 ## Word squares
 
 A sideline, but the machinery is mostly already here.
