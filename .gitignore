@@ -42,5 +42,11 @@ out/
 # Third-party puzzle corpora: large, and not ours to redistribute.
 *.zip
 
+# Source dumps dropped in the root: kaikki-english.jsonl is three gigabytes,
+# and GitHub refuses anything over a hundred megabytes, so committing one
+# breaks every later push rather than just the one. Anchored to the root so
+# that experiment/*.jsonl -- which are results, and wanted -- still commit.
+/*.jsonl
+
 # Notebook checkpoints.
 .ipynb_checkpoints/

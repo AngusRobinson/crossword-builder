@@ -687,9 +687,8 @@ dead ends is worth more than cheap arithmetic.
     E T A E R I O S      E Y E S A L V E    nodes, 114 seconds
     S H E R W A N I      R E A T T A I N
     S E M I A R I D      A S T R I N G E    177x fewer nodes
-    E R I O N I T E      S A T I N G E      100x faster
-    S E A S I D E S      S A T I N E T S
-                         P L A N E T I C
+    E R I O N I T E      S A T I N E T S    100x faster
+    S E A S I D E S      P L A N E T I C
                          I V I G T I T E
                          S E N E S C E D
 
