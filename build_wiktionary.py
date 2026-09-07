@@ -16,7 +16,11 @@ The exact download URL is not written here because it could not be checked from
 where this was built; take it from kaikki.org's English dictionary page.
 
 **Output.** The same shape as UKACD: a header, a rule of hyphens, then one
-surface form per line. `crossword.words.load` reads it unchanged.
+surface form per line. `crossword.words.load` reads it unchanged, and that
+includes proper nouns, which are kept here with their capitals. The loader
+marks them from the capital and filters them by default, so leaving them in
+costs nothing and lets `allow_proper` mean something -- as it does for UKACD,
+which carries about twenty thousand of them.
 
 **Licence.** Wiktionary is CC BY-SA. That is why this script exists rather than
 a word list in the repository: the list you build is yours to keep locally, and
@@ -71,9 +75,13 @@ def main() -> int:
                              "inflections are most of the value: they are what "
                              "makes a plural or a past tense available to fill "
                              "a slot the headword does not fit")
-    parser.add_argument("--keep-proper", action="store_true",
-                        help="keep capitalised entries, which are otherwise "
-                             "dropped as UKACD drops them")
+    parser.add_argument("--drop-proper", action="store_true",
+                        help="leave capitalised entries out of the file "
+                             "entirely. Not the default, and rarely wanted: "
+                             "the loader already filters them, and it does it "
+                             "better -- a word appearing both capitalised and "
+                             "not is treated as ordinary, which a build-time "
+                             "cut cannot see")
     args = parser.parse_args()
 
     wanted = set(args.pos)
@@ -119,16 +127,20 @@ def main() -> int:
             for surface in surfaces:
                 if not surface:
                     continue
-                if not args.keep_proper and surface[:1].isupper():
+                if args.drop_proper and surface[:1].isupper():
                     tally["proper"] += 1
                     continue
                 text = usable(surface, args.min_length, args.max_length)
                 if text is None:
                     tally["unusable"] += 1
                     continue
-                # Keep the first spelling seen, so the enumeration a setter
-                # gets is a real one rather than a fold of several.
-                seen.setdefault(text, surface)
+                # Keep a lowercase spelling in preference to a capitalised
+                # one. `load` reads capitalisation as the mark of a proper
+                # noun, so "Kestrel" arriving before "kestrel" would make the
+                # bird a surname; it merges the two the same way.
+                if text not in seen or (seen[text][:1].isupper()
+                                        and not surface[:1].isupper()):
+                    seen[text] = surface
 
     ordered = sorted(seen.values(), key=lambda w: (FOLD.sub("", w.lower()), w))
     with open(args.out, "w", encoding="utf-8") as handle:

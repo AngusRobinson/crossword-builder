@@ -332,7 +332,13 @@ parser. The builder streams, because the file runs to several gigabytes.
 
 Inflections are kept by default and are most of the value: a plural or a past
 tense fills a slot the headword does not. Misspellings, abbreviations, other
-languages, affixes and proper nouns are dropped.
+languages and affixes are dropped.
+
+Proper nouns are kept, with their capitals, exactly as UKACD keeps its twenty
+thousand. `--proper` at fill time is what decides whether they are used, and
+the loader does that better than a build-time cut could: a word occurring both
+capitalised and not — Kestrel the surname, kestrel the bird — counts as
+ordinary fill.
 
 The list is not shipped here. Wiktionary is CC BY-SA, so a derived list carries
 that licence; building it locally keeps the question where it belongs, and it
