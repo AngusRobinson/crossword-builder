@@ -322,7 +322,7 @@ is checked.
 
 ```bash
 python3 build_wiktionary.py kaikki-english.jsonl --out wiktionary.txt
-python3 make_grid.py --words wiktionary.txt --file lists/birds.txt
+python3 make_grid.py --dictionary wiktionary.txt --file lists/birds.txt
 ```
 
 Take the input from [kaikki.org](https://kaikki.org), which publishes

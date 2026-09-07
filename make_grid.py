@@ -307,7 +307,10 @@ def main() -> int:
                              ". A 15x15 perimeter is 56 cells but only 3 of "
                              "the 120 grids leave all of them white, so fixed "
                              "cells cannot express one; 34 grids leave 52")
-    parser.add_argument("--words", metavar="PATH", default=WORDLIST,
+    # Not --words: that collides with the positional `words`, which is the
+    # list of target answers, and argparse would quietly let the dictionary
+    # path overwrite it.
+    parser.add_argument("--dictionary", metavar="PATH", default=WORDLIST,
                         help=f"the fill dictionary (default {WORDLIST}). "
                              "build_wiktionary.py makes a larger one; the "
                              "familiarity settings are calibrated for UKACD, "
@@ -459,7 +462,7 @@ def main() -> int:
     # nineteen-letter entries and a 23x23 has twenty-one.
     longest = max((s.length for p in patterns for s in
                    p.grid().slots(style_rules.min_entry_length)), default=15)
-    entries = load(args.words, strict=False, max_length=max(15, longest))
+    entries = load(args.dictionary, strict=False, max_length=max(15, longest))
     counts = frequency.load()
     scores = frequency.load_scores()
     kept = frequency.select(entries, scores, counts,

@@ -135,3 +135,5 @@
 {"list": "jumbo-60-00", "style": "jumbo", "size": 60, "seed": 6, "ok": true, "seated": 24, "ceiling": 49, "curve": [[0.48, 22, true, -0.2609], [1.68, 22, true, -0.169], [6.37, 23, true, -0.2477], [23.64, 24, true, -0.1861]]}
 {"list": "jumbo-60-00", "style": "jumbo", "size": 60, "seed": 7, "ok": true, "seated": 23, "ceiling": 49, "curve": [[1.14, 16, true, -0.1791], [7.77, 23, true, -0.158]]}
 {"list": "jumbo-60-01", "style": "jumbo", "size": 60, "seed": 0, "ok": true, "seated": 26, "ceiling": 48, "curve": [[0.4, 26, true, -0.2141]]}
+{"list": "jumbo-60-01", "style": "jumbo", "size": 60, "seed": 1, "ok": true, "seated": 24, "ceiling": 48, "curve": [[4.5, 24, true, -0.1712]]}
+{"list": "jumbo-60-01", "style": "jumbo", "size": 60, "seed": 2, "ok": true, "seated": 25, "ceiling": 48, "curve": [[0.61, 25, true, -0.1645]]}
