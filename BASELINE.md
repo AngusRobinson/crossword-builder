@@ -795,10 +795,12 @@ they thin out fast with length:
     letters      3    4    5    6   7   8  9  10
     usable pairs 395  547  409  172  36  7  1   0
 
-A British 15x15 wants two ten-letter entries, so no British grid can be filled
-at any effort. An American one leans on threes to sixes: 396 of the 2,500
-grids in that library clear their own vocabulary requirement before a search
-starts, and the roomiest leaves a factor of seven at its scarcest length.
+British entries run longer, so fewer British grids survive that table -- 13 of
+the 120 -- against 396 of the 2,500 American ones, whose threes to sixes sit
+where the stock is deepest. Fewer is not none, and the reason is worth having:
+a long entry needs no reversible partner when it is its own reverse. The
+British grid below carries DELEVELED, nine letters, drawn from a stock holding
+one reversible nine-letter pair.
 
 The first complete one, from `python3 palindrome.py --repeats`:
 
@@ -817,6 +819,25 @@ The first complete one, from `python3 palindrome.py --repeats`:
     I R O R I █ S A D O █ T A D A
     K A O N S █ S C A P █ U T I A
     E S S E █ █ S E S S █ M A N S
+
+And a British one, from `python3 palindrome.py --style british --repeats`,
+found in 103 nodes -- 28 entries, all of them words:
+
+    █ D █ S █ █ █ D █ R █ D █ D █      DESSERT / TRESSED
+    D E T H S █ D E L E V E L E D      REWARDER / REDRAWER
+    █ L █ A █ T █ S █ W █ N █ K █      SHABIHAS / SAHIBAHS
+    R E D D E R █ S H A B I H A S
+    █ V █ D █ O █ E █ R █ E █ N █      DELEVELED, REDDER and
+    R E W A R D E R █ D A R G █ █      SHADDAHS are their own
+    █ L █ H █ █ █ T █ E █ █ █ D █      reverses, which is how a
+    D E S S E R T █ T R E S S E D      nine-letter entry survives
+    █ D █ █ █ E █ T █ █ █ H █ L █      a stock with one reversible
+    █ █ G R A D █ R E D R A W E R      nine-letter pair in it
+    █ N █ E █ R █ E █ O █ D █ V █
+    S A H I B A H S █ R E D D E R      only 19 of the 28 are
+    █ K █ N █ W █ S █ T █ A █ L █      distinct, which is the cost
+    D E L E V E L E D █ S H T E D      of allowing the repeat
+    █ D █ D █ R █ D █ █ █ S █ D █
 
 Distinctness is the sharp lever. A palindrome placed in a *paired* entry
 writes itself into both halves, so one answer appears twice -- ESSE and IRORI

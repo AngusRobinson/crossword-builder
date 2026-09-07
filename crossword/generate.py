@@ -209,6 +209,17 @@ class Generator:
             )
         else:
             self.by_parity = None
+        if self.rules.max_entry_length is not None:
+            cap = self.rules.max_entry_length
+            fits = lambda row: all(L <= cap for L in self._entries_in(row))
+            self.patterns = tuple(row for row in self.patterns if fits(row))
+            if self.by_parity is not None:
+                self.by_parity = {parity: tuple(r for r in rows if fits(r))
+                                  for parity, rows in self.by_parity.items()}
+            if not self.patterns:
+                raise ValueError(
+                    f"no legal row of width {size} keeps every entry to "
+                    f"{cap} letters or fewer")
         self.max_row_blocks = max(len(p) for p in self.patterns)
         self.min_blocks = math.ceil(density[0] * size * size)
         self.max_blocks = math.floor(density[1] * size * size)
@@ -285,6 +296,10 @@ class Generator:
                 continue
             if 1 < length < self.rules.min_entry_length:
                 self.stats.note("run_length")
+                return False
+            if (self.rules.max_entry_length is not None
+                    and length > self.rules.max_entry_length):
+                self.stats.note("too_long")
                 return False
             if length < self.rules.min_entry_length:
                 continue

@@ -14,11 +14,13 @@ everything. Wiktionary holds 1.1 million entries and 3,469 reversible ones,
 and they run out with length: 395 usable pairs at three letters, 172 at six,
 36 at seven, 7 at eight, 1 at nine, and none at all at ten.
 
-Which is why the style matters more than the effort. A British 15x15 wants two
-ten-letter entries and so cannot be filled at any budget; an American one
-leans on threes to sixes, and 396 of the 2,500 grids in that library clear
-their own vocabulary requirement before the search begins. This tries those
-grids in order of how much slack they leave at their scarcest length.
+Which is why the grid matters more than the effort, and why this tries them in
+order of how much slack each leaves at its scarcest length. 396 of the 2,500
+American grids clear their own vocabulary requirement before the search
+begins, and 13 of the 120 British ones do -- fewer, because British entries
+run longer, but not none. A long entry does not need a reversible partner when
+it is its own reverse, which is how a grid carrying a nine-letter entry fills
+from a stock with no reversible nine-letter words in it: DELEVELED.
 
 Distinctness is the other lever, and a sharp one. A palindrome placed in a
 paired entry writes itself into both halves, so the same answer appears twice;
@@ -44,8 +46,8 @@ def main() -> int:
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--style", choices=("us", "british"), default="us",
-                        help="us by default: a British 15x15 needs ten-letter "
-                             "reversible words, of which there are none")
+                        help="us by default, having far more grids that "
+                             "clear the vocabulary; british works too")
     parser.add_argument("--dictionary", default="wiktionary.txt")
     parser.add_argument("--scores", default=None)
     parser.add_argument("--proper", action="store_true",

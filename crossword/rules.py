@@ -57,6 +57,14 @@ class RuleSet:
     # is common and UCU is not.
     min_checked: int = 2
     forbid_run_length_two: bool = True
+    # No published style forbids a long entry -- a British 15x15 is usually
+    # the better for one or two -- so this is None by default and is a
+    # constraint the caller imposes, not one the tradition does. It exists
+    # because a shape can be wanted for reasons outside the style: a grid
+    # whose fill must survive a half-turn needs every entry to be a word whose
+    # reverse is also a word, and there are no reversible ten-letter words at
+    # all, so the length has to be capped before the search starts.
+    max_entry_length: int | None = None
     symmetry: str = "rotational180"
 
 
@@ -70,6 +78,12 @@ def check_run_lengths(grid: Grid, rules: RuleSet):
         return
     for direction in (ACROSS, "down"):
         for run in grid.runs(direction):
+            if (rules.max_entry_length is not None
+                    and run.length > rules.max_entry_length):
+                yield Violation(
+                    "run_length",
+                    f"{_describe(run)} is longer than the "
+                    f"{rules.max_entry_length} allowed")
             if 1 < run.length < rules.min_entry_length:
                 yield Violation(
                     "run_length",
