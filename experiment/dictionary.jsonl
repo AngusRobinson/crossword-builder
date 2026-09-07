@@ -1,0 +1,96 @@
+{"list": "british-08-04", "style": "british", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1282, "elapsed": 0.22}
+{"list": "british-08-04", "style": "british", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1453, "elapsed": 0.11}
+{"list": "british-08-05", "style": "british", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1026, "elapsed": 2.3}
+{"list": "british-08-05", "style": "british", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1322, "elapsed": 0.11}
+{"list": "british-08-06", "style": "british", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1462, "elapsed": 3.18}
+{"list": "british-08-06", "style": "british", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1359, "elapsed": 0.15}
+{"list": "british-08-07", "style": "british", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 7, "ceiling": 8, "quality": -0.1057, "elapsed": 1.1}
+{"list": "british-08-07", "style": "british", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1332, "elapsed": 0.19}
+{"list": "british-20-04", "style": "british", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 12, "ceiling": 19, "quality": -0.2166, "elapsed": 6.13}
+{"list": "british-20-04", "style": "british", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 12, "ceiling": 19, "quality": -0.1188, "elapsed": 3.64}
+{"list": "british-20-05", "style": "british", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 12, "ceiling": 20, "quality": -0.2229, "elapsed": 14.67}
+{"list": "british-20-05", "style": "british", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 12, "ceiling": 20, "quality": -0.1485, "elapsed": 1.97}
+{"list": "british-20-06", "style": "british", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 12, "ceiling": 19, "quality": -0.1461, "elapsed": 4.06}
+{"list": "british-20-06", "style": "british", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 13, "ceiling": 19, "quality": -0.2561, "elapsed": 2.22}
+{"list": "british-20-07", "style": "british", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 13, "ceiling": 18, "quality": -0.2903, "elapsed": 10.35}
+{"list": "british-20-07", "style": "british", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 13, "ceiling": 18, "quality": -0.1752, "elapsed": 1.92}
+{"list": "british-60-04", "style": "british", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 15, "ceiling": 30, "quality": -0.2736, "elapsed": 7.55}
+{"list": "british-60-04", "style": "british", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 15, "ceiling": 30, "quality": -0.2486, "elapsed": 4.59}
+{"list": "british-60-05", "style": "british", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 16, "ceiling": 33, "quality": -0.1682, "elapsed": 4.0}
+{"list": "british-60-05", "style": "british", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 17, "ceiling": 33, "quality": -0.2634, "elapsed": 3.63}
+{"list": "british-60-06", "style": "british", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 14, "ceiling": 32, "quality": -0.2055, "elapsed": 33.12}
+{"list": "british-60-06", "style": "british", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 14, "ceiling": 32, "quality": -0.1405, "elapsed": 4.71}
+{"list": "british-60-07", "style": "british", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 13, "ceiling": 30, "quality": -0.2379, "elapsed": 5.82}
+{"list": "british-60-07", "style": "british", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 14, "ceiling": 30, "quality": -0.2202, "elapsed": 4.08}
+{"list": "barred-08-04", "style": "barred", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 7, "ceiling": 8, "quality": -0.1756, "elapsed": 46.97}
+{"list": "barred-08-04", "style": "barred", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2313, "elapsed": 4.75}
+{"list": "barred-08-05", "style": "barred", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.3191, "elapsed": 47.17}
+{"list": "barred-08-05", "style": "barred", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.279, "elapsed": 0.72}
+{"list": "barred-08-06", "style": "barred", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 5, "ceiling": 8, "quality": -0.1875, "elapsed": 46.05}
+{"list": "barred-08-06", "style": "barred", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2669, "elapsed": 47.21}
+{"list": "barred-08-07", "style": "barred", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 7, "ceiling": 8, "quality": -0.3013, "elapsed": 46.64}
+{"list": "barred-08-07", "style": "barred", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2542, "elapsed": 13.03}
+{"list": "barred-20-04", "style": "barred", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 1, "ceiling": 20, "quality": -0.2897, "elapsed": 46.37}
+{"list": "barred-20-04", "style": "barred", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 6, "ceiling": 20, "quality": -0.2604, "elapsed": 45.34}
+{"list": "barred-20-05", "style": "barred", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 6, "ceiling": 20, "quality": -0.3363, "elapsed": 45.57}
+{"list": "barred-20-05", "style": "barred", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 10, "ceiling": 20, "quality": -0.3623, "elapsed": 45.93}
+{"list": "barred-20-06", "style": "barred", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 6, "ceiling": 20, "quality": -0.3104, "elapsed": 46.31}
+{"list": "barred-20-06", "style": "barred", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 10, "ceiling": 20, "quality": -0.267, "elapsed": 46.43}
+{"list": "barred-20-07", "style": "barred", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 3, "ceiling": 19, "quality": -0.2659, "elapsed": 47.34}
+{"list": "barred-20-07", "style": "barred", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 7, "ceiling": 19, "quality": -0.3002, "elapsed": 45.32}
+{"list": "barred-60-04", "style": "barred", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 7, "ceiling": 41, "quality": -0.2545, "elapsed": 45.95}
+{"list": "barred-60-04", "style": "barred", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 12, "ceiling": 41, "quality": -0.2976, "elapsed": 45.3}
+{"list": "barred-60-05", "style": "barred", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 5, "ceiling": 42, "quality": -0.1995, "elapsed": 45.75}
+{"list": "barred-60-05", "style": "barred", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 11, "ceiling": 42, "quality": -0.3273, "elapsed": 45.63}
+{"list": "barred-60-06", "style": "barred", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 42, "quality": -0.311, "elapsed": 45.96}
+{"list": "barred-60-06", "style": "barred", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 11, "ceiling": 42, "quality": -0.2295, "elapsed": 45.15}
+{"list": "barred-60-07", "style": "barred", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 39, "quality": -0.1902, "elapsed": 45.53}
+{"list": "barred-60-07", "style": "barred", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 11, "ceiling": 39, "quality": -0.3634, "elapsed": 45.25}
+{"list": "jumbo-08-04", "style": "jumbo", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1033, "elapsed": 0.27}
+{"list": "jumbo-08-04", "style": "jumbo", "size": 8, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-08-05", "style": "jumbo", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1135, "elapsed": 0.31}
+{"list": "jumbo-08-05", "style": "jumbo", "size": 8, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-08-06", "style": "jumbo", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.0965, "elapsed": 0.22}
+{"list": "jumbo-08-06", "style": "jumbo", "size": 8, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-08-07", "style": "jumbo", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.1313, "elapsed": 0.28}
+{"list": "jumbo-08-07", "style": "jumbo", "size": 8, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-20-04", "style": "jumbo", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 19, "ceiling": 20, "quality": -0.1828, "elapsed": 23.22}
+{"list": "jumbo-20-04", "style": "jumbo", "size": 20, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-20-05", "style": "jumbo", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 15, "ceiling": 19, "quality": -0.2576, "elapsed": 45.11}
+{"list": "jumbo-20-05", "style": "jumbo", "size": 20, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-20-06", "style": "jumbo", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 17, "ceiling": 20, "quality": -0.1492, "elapsed": 47.89}
+{"list": "jumbo-20-06", "style": "jumbo", "size": 20, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-20-07", "style": "jumbo", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 12, "ceiling": 20, "quality": -0.2099, "elapsed": 48.02}
+{"list": "jumbo-20-07", "style": "jumbo", "size": 20, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-60-04", "style": "jumbo", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 24, "ceiling": 50, "quality": -0.1599, "elapsed": 45.51}
+{"list": "jumbo-60-04", "style": "jumbo", "size": 60, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-60-05", "style": "jumbo", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 29, "ceiling": 48, "quality": -0.2157, "elapsed": 45.46}
+{"list": "jumbo-60-05", "style": "jumbo", "size": 60, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-60-06", "style": "jumbo", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 25, "ceiling": 53, "quality": -0.182, "elapsed": 45.35}
+{"list": "jumbo-60-06", "style": "jumbo", "size": 60, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "jumbo-60-07", "style": "jumbo", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 20, "ceiling": 53, "quality": -0.1222, "elapsed": 46.16}
+{"list": "jumbo-60-07", "style": "jumbo", "size": 60, "dictionary": "american", "seed": 0, "ok": null, "unserved": [16, 17, 18, 19, 20, 21]}
+{"list": "us-08-04", "style": "us", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 5, "ceiling": 8, "quality": -0.2525, "elapsed": 48.92}
+{"list": "us-08-04", "style": "us", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2515, "elapsed": 2.05}
+{"list": "us-08-05", "style": "us", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.3223, "elapsed": 50.59}
+{"list": "us-08-05", "style": "us", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2236, "elapsed": 23.06}
+{"list": "us-08-06", "style": "us", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 0, "ceiling": 8, "quality": -0.2371, "elapsed": 47.7}
+{"list": "us-08-06", "style": "us", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2298, "elapsed": 1.97}
+{"list": "us-08-07", "style": "us", "size": 8, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2393, "elapsed": 46.51}
+{"list": "us-08-07", "style": "us", "size": 8, "dictionary": "american", "seed": 0, "ok": true, "seated": 8, "ceiling": 8, "quality": -0.2406, "elapsed": 1.36}
+{"list": "us-20-04", "style": "us", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 12, "ceiling": 20, "quality": -0.2977, "elapsed": 51.74}
+{"list": "us-20-04", "style": "us", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 18, "ceiling": 20, "quality": -0.2941, "elapsed": 46.48}
+{"list": "us-20-05", "style": "us", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": true, "seated": 11, "ceiling": 20, "quality": -0.268, "elapsed": 46.19}
+{"list": "us-20-05", "style": "us", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 19, "ceiling": 20, "quality": -0.295, "elapsed": 49.65}
+{"list": "us-20-06", "style": "us", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": false, "seated": 20, "ceiling": 20, "quality": 0.0, "elapsed": 48.26}
+{"list": "us-20-06", "style": "us", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 19, "ceiling": 20, "quality": -0.3865, "elapsed": 50.16}
+{"list": "us-20-07", "style": "us", "size": 20, "dictionary": "ukacd", "seed": 0, "ok": false, "seated": 20, "ceiling": 20, "quality": 0.0, "elapsed": 47.74}
+{"list": "us-20-07", "style": "us", "size": 20, "dictionary": "american", "seed": 0, "ok": true, "seated": 15, "ceiling": 20, "quality": -0.3397, "elapsed": 45.99}
+{"list": "us-60-04", "style": "us", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": false, "seated": 19, "ceiling": 59, "quality": 0.0, "elapsed": 47.3}
+{"list": "us-60-04", "style": "us", "size": 60, "dictionary": "american", "seed": 0, "ok": false, "seated": 23, "ceiling": 59, "quality": 0.0, "elapsed": 47.84}
+{"list": "us-60-05", "style": "us", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": false, "seated": 22, "ceiling": 59, "quality": 0.0, "elapsed": 48.19}
+{"list": "us-60-05", "style": "us", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 13, "ceiling": 59, "quality": -0.3286, "elapsed": 48.78}
+{"list": "us-60-06", "style": "us", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": false, "seated": 19, "ceiling": 59, "quality": 0.0, "elapsed": 46.06}
+{"list": "us-60-06", "style": "us", "size": 60, "dictionary": "american", "seed": 0, "ok": false, "seated": 23, "ceiling": 59, "quality": 0.0, "elapsed": 47.97}
+{"list": "us-60-07", "style": "us", "size": 60, "dictionary": "ukacd", "seed": 0, "ok": false, "seated": 24, "ceiling": 60, "quality": 0.0, "elapsed": 46.49}
+{"list": "us-60-07", "style": "us", "size": 60, "dictionary": "american", "seed": 0, "ok": true, "seated": 15, "ceiling": 60, "quality": -0.3067, "elapsed": 48.93}

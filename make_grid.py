@@ -15,6 +15,7 @@ not place.  Exit status is 1 if no grid could be built at all.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 import time
@@ -315,6 +316,14 @@ def main() -> int:
                              "build_wiktionary.py makes a larger one; the "
                              "familiarity settings are calibrated for UKACD, "
                              "so --aim may want re-deriving for another")
+    parser.add_argument("--scores", metavar="PATH", default=None,
+                        help="the familiarity table for --dictionary. "
+                             "Defaults to the one beside the dictionary if "
+                             "there is one -- american.txt pairs with "
+                             "american-scores.txt -- and otherwise to the "
+                             "UKACD table. --min-score and --aim read this, "
+                             "so a dictionary scored on a different scale "
+                             "wants its own")
     parser.add_argument("--library", metavar="PATH",
                         help="read grid patterns from this file instead of "
                              "the one the style ships with. This is how a "
@@ -464,7 +473,17 @@ def main() -> int:
                    p.grid().slots(style_rules.min_entry_length)), default=15)
     entries = load(args.dictionary, strict=False, max_length=max(15, longest))
     counts = frequency.load()
-    scores = frequency.load_scores()
+    # A dictionary and its familiarity table have to agree: --min-score is an
+    # absolute cut, and reading UKACD's numbers against another list's words
+    # silently drops everything the table has never heard of.
+    scores_path = args.scores
+    if scores_path is None:
+        beside = os.path.splitext(args.dictionary)[0] + "-scores.txt"
+        scores_path = beside if os.path.exists(beside) else None
+    scores = (frequency.load_scores(scores_path) if scores_path
+              else frequency.load_scores())
+    if scores_path:
+        say(f"familiarity: {scores_path}", file=sys.stderr)
     kept = frequency.select(entries, scores, counts,
                             min_score=args.min_score, max_uses=args.max_uses)
     if len(kept) < 5000:

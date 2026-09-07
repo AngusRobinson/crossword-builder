@@ -81,6 +81,14 @@ Beresford, 3-clause BSD and so redistributable provided its notice travels with
 it. Put it at `crossword/UKACD.txt`. Any similar list will work, though the
 familiarity tables are keyed to UKACD's spellings.
 
+Two other dictionaries have builders, and each writes its own familiarity table
+beside itself, which `--dictionary` then picks up without being told:
+`build_wiktionary.py` for a much larger British-leaning list, and
+`build_american.py` for Spread the Wordlist. Use the American one for American
+grids — it takes them from half filling to five in six, because a grid that
+checks every cell leans on the short entries and UKACD has a third as many
+three-letter words. It stops at fifteen letters, so it cannot fill a jumbo.
+
 Nothing else is required. The grid library and the word-familiarity tables are
 committed as data files.
 
