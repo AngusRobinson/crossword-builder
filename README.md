@@ -394,8 +394,14 @@ has its own solver in `crossword/square.py` — which is the same search in
 miniature, over *n* words instead of thirty, each one placed against the
 letters the others have already fixed.
 
-Sizes up to 7 are quick. An 8x8 takes about 230 million nodes, three and a half
-hours, and comes out of ordinary dictionary words:
+Sizes up to 7 are quick. A larger dictionary is worth having only once the
+search is hard: at 5x5 and 6x6, Wiktionary is three times *slower* than UKACD
+despite exploring fewer nodes, because its bitsets are longer and every
+intersection costs more. At 7x7 the node count falls nineteenfold and it is
+3.3 times faster.
+
+An 8x8 takes about 230 million nodes with UKACD, three and a half hours, and
+comes out of ordinary dictionary words:
 
 ```
 C I T E S S E S      python3 word_square.py 8 --tries 3000 I S O T H E R E          --effort 200000 --report 200

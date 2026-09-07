@@ -657,8 +657,30 @@ placed, pruning when any has nothing left and taking the one with least freedom
 next -- is worth two orders of magnitude at 6x6 and the difference between
 finding a 7x7 and not.
 
-Sizes 3 to 7 come out in seconds. Eight takes about 230 million nodes, which
-is three and a half hours:
+### What a larger dictionary is worth here
+
+Wiktionary against UKACD, ten disjoint seeds at each size, all twenty found:
+
+    size   words UKACD -> Wiktionary   nodes            seconds
+      3     1,096 ->  1,957                3 ->     3   0.00 -> 0.00
+      4     4,501 ->  8,310                6 ->     4   0.00 -> 0.01
+      5     9,837 -> 21,009               17 ->    10   0.01 -> 0.03
+      6    16,726 -> 40,055              176 ->   128   0.03 -> 0.10
+      7    23,778 -> 64,308           45,276 -> 2,344   1.15 -> 0.35
+
+More vocabulary always cuts the nodes, because a node dies when a row has no
+candidate and more words mean fewer such rows. But it costs time per node: the
+bitsets are three times longer, so every intersection is dearer, and building
+the index takes five seconds against one.
+
+Below 7x7 the search is too easy for that to pay, and the bigger dictionary is
+three times *slower* despite doing less work. At 7x7 the node count collapses
+by a factor of nineteen and the cost per node stops mattering: 3.3 times
+faster. The crossover is where the search becomes hard enough that avoiding
+dead ends is worth more than cheap arithmetic.
+
+Sizes 3 to 7 come out in seconds. Eight takes about 230 million nodes with
+UKACD, which is three and a half hours:
 
     C I T E S S E S      1,149 tries of 200,000 nodes
     I S O T H E R E      229,685,776 nodes, 11,459 seconds
