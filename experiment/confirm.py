@@ -39,6 +39,9 @@ def main():
     parser.add_argument("--seeds", type=int, default=3)
     parser.add_argument("--seconds", type=float, default=20.0)
     parser.add_argument("--split", default="tune", choices=("tune", "hold"))
+    parser.add_argument("--styles", nargs="+", default=None,
+                        help="only these styles, so an interrupted run can be "
+                             "finished without repeating what it did")
     parser.add_argument("--out", default="experiment/confirm.jsonl")
     args = parser.parse_args()
 
@@ -55,6 +58,8 @@ def main():
                 lists.append(entry)
     else:
         lists = every
+    if args.styles:
+        lists = [l for l in lists if l["style"] in args.styles]
     print(f"{len(lists)} lists, {args.seeds} seeds, values {args.values}",
           file=sys.stderr)
 

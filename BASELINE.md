@@ -489,6 +489,66 @@ Themed barred grids are weak, as themed American ones are. A fifteen-word
 vegetable list seated 5, against 13 that could fit the library's entry lengths
 at all, with the fill at 0.63 familiarity against a published 0.86.
 
+## What the parameter study found
+
+Ten constants, 1,680 screening runs over 70 configurations and four styles,
+then a paired comparison on lists screening never saw, then the held-out half.
+The design and its priors are in `experiment/DESIGN.md`, written first.
+
+**One constant of the ten was badly set.** `relax` decides how many seated
+targets may be lifted, one at a time, when the fill fails. It was 3. Held out:
+
+    relax 3 -> 10        coverage        completed
+      British         0.673 -> 0.682    97% -> 100%
+      barred          0.276 -> 0.367    50% ->  94%
+      jumbo           0.759 -> 0.777    94% -> 100%
+      American        0.142 -> 0.222    17% ->  36%
+
+It costs nothing anywhere and rescues two styles, so the default is now 10.
+
+**The pre-registered metric was wrong, and `relax` is what exposed it.** The
+ordering put coverage first and completion second. But lifting fewer targets
+seats more of them while completing far less often -- at `relax 0`, barred
+grids seated 0.661 of the ceiling and produced a finished grid one time in ten.
+Scored by the ordering as written, that wins. Counting targets seated in a run
+that never filled is counting nothing, so coverage is now zero unless the grid
+completed.
+
+**Nothing else moved much, and that is mostly the clock.** At a fixed time
+budget most of these constants are zero-sum: `attempts`, `top`, `budget` and
+`node_scale` all spend the same seconds differently. The ones that showed an
+effect are the ones that *waste* time rather than trade it -- `attempts` is
+better at 1 than at any larger value, at every budget from 2 to 20 seconds, and
+the gap narrows rather than crossing.
+
+**A prior of mine was refuted outright.** `budget` and `node_scale` were
+expected to be mis-scaled for American grids, which carry 74 entries against a
+British 28. They are not, and neither is anything else: American completion
+sits at 29-33% for every value of all ten parameters, because the failure is a
+cliff rather than a gradient.
+
+    American, completed    8 words: 97%    20 words: 0%    60 words: 0%
+
+Twenty fixed words among 74 fully checked entries appears to be structurally
+unfillable, which no constant is going to fix.
+
+## Vocabulary has not saturated
+
+Whether a larger dictionary would help was settled by taking words away from
+the end a larger one would add them at: fill using only the most familiar X% of
+each length, and see whether the curve is still climbing at 100%.
+
+    most familiar        20%     40%     60%     80%    100%
+    words available   45,514  91,033 136,555 182,074 227,601
+      British          0.605   0.642   0.651   0.669   0.686
+      American         0.156   0.281   0.562   0.469   0.812
+
+It is still climbing, steeply for American. So more vocabulary would keep
+paying, and an earlier claim in this file that vocabulary was not the
+constraint was wrong -- it rested on counting candidates per slot at the root
+of the search, before any letters are committed, when failures happen deep in
+it where a slot has five or six letters already fixed.
+
 ## Word squares
 
 A double word square -- rows and columns all words, all different -- is a

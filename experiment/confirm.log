@@ -2,3 +2,32 @@
   british-08-02
   british-08-03
   british-20-02
+  british-20-03
+  british-60-02
+  british-60-03
+  barred-08-02
+  barred-08-03
+  barred-20-02
+  barred-20-03
+  barred-60-02
+  barred-60-03
+  jumbo-08-02
+  jumbo-08-03
+  jumbo-20-02
+  jumbo-20-03
+  jumbo-60-02
+  jumbo-60-03
+  us-08-02
+  us-08-03
+  us-20-02
+  us-20-03
+  us-60-02
+  us-60-03
+
+relax, tune lists, paired on list and seed
+
+style                    3.0              10.0
+british        0.725    100%     0.721    100%
+barred         0.262     44%     0.339     89%
+jumbo          0.737     94%     0.777    100%
+us             0.035      6%     0.083     22%

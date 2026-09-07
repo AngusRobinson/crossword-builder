@@ -1,0 +1,57 @@
+48 lists, 3 seeds, values [3.0, 10.0]
+  british-08-04
+  british-08-05
+  british-08-06
+  british-08-07
+  british-20-04
+  british-20-05
+  british-20-06
+  british-20-07
+  british-60-04
+  british-60-05
+  british-60-06
+  british-60-07
+  barred-08-04
+  barred-08-05
+  barred-08-06
+  barred-08-07
+  barred-20-04
+  barred-20-05
+  barred-20-06
+  barred-20-07
+  barred-60-04
+  barred-60-05
+  barred-60-06
+  barred-60-07
+  jumbo-08-04
+  jumbo-08-05
+  jumbo-08-06
+  jumbo-08-07
+  jumbo-20-04
+  jumbo-20-05
+  jumbo-20-06
+  jumbo-20-07
+  jumbo-60-04
+  jumbo-60-05
+  jumbo-60-06
+  jumbo-60-07
+  us-08-04
+  us-08-05
+  us-08-06
+  us-08-07
+  us-20-04
+  us-20-05
+  us-20-06
+  us-20-07
+  us-60-04
+  us-60-05
+  us-60-06
+  us-60-07
+
+relax, hold lists, paired on list and seed
+
+style                    3.0              10.0
+british        0.673     97%     0.682    100%
+barred         0.276     50%     0.367     94%
+jumbo          0.759     94%     0.777    100%
+us             0.142     17%     0.222     36%

@@ -317,7 +317,19 @@ def cover(
     *,
     attempts: int = 2,
     fill_restarts: int = 3,
-    relax: int = 3,
+    # How many seated targets may be lifted, one at a time, when the fill
+    # fails.  Measured over 1,680 screening runs and confirmed on lists never
+    # used to tune, this was the one constant of ten that was badly set:
+    #
+    #     held out, relax 3 -> 10      coverage        completed
+    #       British                 0.673 -> 0.682    97% -> 100%
+    #       barred                  0.276 -> 0.367    50% ->  94%
+    #       jumbo                   0.759 -> 0.777    94% -> 100%
+    #       American                0.142 -> 0.222    17% ->  36%
+    #
+    # It never costs anything and rescues two styles, because a grid holding
+    # nine targets and completing beats one holding ten that does not fill.
+    relax: int = 10,
     budget: int = 1500,
     deadline: float | None = None,
     commonness: float = 3.0,
