@@ -67,7 +67,7 @@ def load(
     max_length: int = 15,
     allow_proper: bool = False,
     allow_phrases: bool = True,
-    encoding: str = "latin-1",
+    encoding: str | None = None,
     strict: bool = True,
 ) -> list[Entry]:
     """Read a word list and return normalised entries, sorted by text.
@@ -84,8 +84,21 @@ def load(
     merged: dict[str, Entry] = {}
     damaged: list[str] = []
 
-    with open(path, encoding=encoding) as handle:
-        lines = [line.strip() for line in handle]
+    # UKACD is latin-1 and is not valid UTF-8; everything the build scripts
+    # write is UTF-8. A fixed default is therefore wrong for one of them, and
+    # wrong quietly: reading UTF-8 as latin-1 does not raise, it mangles, so
+    # "açai" arrived as five letters spelling AAAAI and entered the dictionary
+    # as a word. Try the stricter encoding first and fall back.
+    if encoding is not None:
+        with open(path, encoding=encoding) as handle:
+            lines = [line.strip() for line in handle]
+    else:
+        try:
+            with open(path, encoding="utf-8") as handle:
+                lines = [line.strip() for line in handle]
+        except UnicodeDecodeError:
+            with open(path, encoding="latin-1") as handle:
+                lines = [line.strip() for line in handle]
 
     # UKACD prefixes a BSD licence, terminated by a rule of hyphens.  This
     # cannot be left to the alphabetic filter: folding strips punctuation and

@@ -45,10 +45,16 @@ def test_reversible_keeps_only_words_whose_reverse_is_one():
 def test_a_small_grid_fills_and_reads_the_same_upside_down(size):
     entries = load(WIKTIONARY, strict=False, min_length=size, max_length=size)
     index = Index(reversible(entries))
-    grid = Grid(size=size)
-    placed, _ = solve(grid, index, seed=0, node_budget=200_000,
-                      min_length=size)
-    assert placed, f"no {size}x{size} found"
+    # Several seeds, as `palindrome.py --tries` does. One seed makes the test
+    # a statement about that seed: a change to the dictionary that moved a
+    # single word failed this at size 5 while 5x5 squares were still plentiful.
+    for seed in range(8):
+        grid = Grid(size=size)
+        placed, _ = solve(grid, index, seed=seed, node_budget=200_000,
+                          min_length=size)
+        if placed:
+            break
+    assert placed, f"no {size}x{size} found in eight seeds"
     assert is_rotational(grid)
     words = {entry.text for entry in entries}
     for row in range(size):
