@@ -893,36 +893,41 @@ reverses, and a barred pattern can be drawn to suit them.
 A square that is symmetric and unchanged by a half-turn has, read row by row,
 a text that is itself a letter-palindrome. So a SATOR square that means
 anything is a palindromic sentence of exactly n^2 letters whose columns happen
-to be its rows -- which is why the results fill with DID, OYO, WAS ... SAW.
+to be its rows -- which is why the results fill with HERE ... WERE, WAS ...
+SAW, and RE HE RE HE RE.
 
-Two searches, both over `english-names.txt` with a familiarity floor of 3.0.
-Rows may break into several words, which is what puts back the short words
-English is mostly made of; the dictionaries hold nothing under three letters,
-so A and IT are listed in `squares/segmented.py` rather than built.
+`tools/search_palindromic_text.py` fills cells in reading order, carrying the
+partial text as a set of pending word-prefixes, so a branch dies the moment
+its letters cannot continue any word. `--rows` additionally requires a word to
+end where a row does; without it a word may straddle the boundary.
 
-**Rows segment independently.** 123,535 squares at 5x5, 824 at 4x4. Nothing
-reads as a sentence. The best is
+Exhaustive results, over the 1,628 words scoring 4.0 or better, each square
+required to contain two words of four letters or more:
 
-    T I D E      "TIDE, I DID. DID I EDIT?"
-    I D I D
-    D I D I
-    E D I T
+    4x4  rows kept whole        13,264 grids      no sentence
+    4x4  words may cross rows   31,786 grids      no sentence
+    5x5  rows kept whole       575,845 grids      no sentence
+    5x5  words may cross rows  899,964 grids      no sentence
 
-**Words may cross a row boundary.** Exhaustive at 4x4: 31,786 grids segment,
-of 26^6 possible. The best is
+The best of them, and the best of everything tried:
 
     H E T I      "HE TIED IT -- TIDE IT, EH?"
     E D I T
     T I D E
     I T E H
 
-which the stricter search cannot reach, HETI and ITEH being no words. At 5x5
-the space is 26^9 and the search found 5.3 million segmenting grids in
-twenty-five minutes without finishing, so its silence is not evidence.
+which the row-by-row search cannot reach, HETI and ITEH being no words. At
+5x5 the best is RE HERE WERE HE RE HE RE WE RE HER, which is not a sentence.
 
-The limit is now the grading, not the search. It scores part-of-speech
-bigrams, and a string of two-letter words maximises those while saying
-nothing: BE WE RE HE RE WE RE WE RE HERE WEB outscores HE TIED IT. Penalising
-short words instead buries HE TIED IT, English sentences being largely short
-words, and there is no setting between the two. Anything better wants a real
-language model rather than a rule.
+**What these negatives do and do not cover.** They are exhaustive over a
+vocabulary of 1,628 words. At a floor of 3.0 the vocabulary is 15,026 and both
+5x5 searches run for half an hour without finishing, so nothing is claimed
+there. A sentence using a word outside the most familiar 1,628 has not been
+ruled out.
+
+The grading is the limit rather than the search, and is recorded as unreliable
+rather than trusted. It scores part-of-speech bigrams, which a run of
+two-letter words maximises while saying nothing -- an earlier version ranked
+BE WE RE HE RE WE RE WE RE HERE WEB above HE TIED IT. Requiring words of four
+letters or more is a filter that score cannot subvert, which is why it is a
+filter and not a term in the score. Anything better wants a language model.

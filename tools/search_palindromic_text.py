@@ -25,6 +25,7 @@ run that stops early has seen only grids beginning with the first few letters.
 
     python3 tools/search_palindromic_text.py 4 3.0
     python3 tools/search_palindromic_text.py 5 3.0 1500
+    python3 tools/search_palindromic_text.py 5 3.0 1500 --rows
 
 **The grading is the weak part, and it is the limit now rather than the
 search.** It scores part-of-speech bigrams, which a string of two-letter words
@@ -41,6 +42,16 @@ from squares.segmented import vocabulary
 
 size, floor = int(sys.argv[1]), float(sys.argv[2])
 budget = float(sys.argv[3]) if len(sys.argv) > 3 else 1800
+# --rows requires a word to end where a row does, which is exactly the
+# row-by-row search: no word may straddle a row boundary.
+rows_only = "--rows" in sys.argv
+# Keeping the best 300 by the bigram score keeps 300 strings of two-letter
+# words, which is what that score likes. Demanding real words instead is a
+# filter the score cannot subvert.
+CONTENT = 2
+for a in sys.argv:
+    if a.startswith("--content="):
+        CONTENT = int(a.split("=", 1)[1])
 scores = frequency.load_scores("english-names-scores.txt")
 raw = json.load(open("out/posall.json"))
 entries = load("english-names.txt", min_length=3, max_length=size + 2,
@@ -71,6 +82,8 @@ PAIR = {("det","noun"):3,("det","adj"):3,("adj","noun"):3,("noun","verb"):3,
         ("prep","pron"):2,("adv","verb"):2,("conj","pron"):2,("conj","det"):2,
         ("noun","prep"):2,("pron","prep"):1,("noun","conj"):1,("noun","noun"):1}
 def grade(seq):
+    if sum(1 for w in seq if len(w) >= 4) < CONTENT:
+        return None
     tags = [cls(w) for w in seq]
     s = sum(PAIR.get(p, -1) for p in zip(tags, tags[1:]))
     if "verb" in tags: s += 4
@@ -111,7 +124,11 @@ def step(pos, states):
         if "" in states:
             seen += 1
             rows = ["".join(r) for r in grid]
-            top = max((grade(s), s) for s in readings("".join(rows)))
+            graded = [(grade(s), s) for s in readings("".join(rows))]
+            graded = [g for g in graded if g[0] is not None]
+            if not graded:
+                return
+            top = max(graded)
             if len(best) < 300: heapq.heappush(best, (top[0], top[1], rows))
             elif top[0] > best[0][0]: heapq.heapreplace(best, (top[0], top[1], rows))
         return
@@ -125,6 +142,8 @@ def step(pos, states):
                 nxt.add(t)
                 if t in vocab: nxt.add("")
         if not nxt: continue
+        if rows_only and c == n - 1 and "" not in nxt:
+            continue                       # a row must end on a word boundary
         cells = () if fixed is not None else orbits[(r, c)]
         for (i, j) in cells: grid[i][j] = ch
         step(pos + 1, nxt)
@@ -132,7 +151,8 @@ def step(pos, states):
 
 step(0, {""})
 elapsed = time.time() - began
-print(f"{seen:,} grids segmented, kept best {len(best)} "
+print(f"{'rows kept whole' if rows_only else 'words may cross rows'}: "
+      f"{seen:,} grids segmented, kept best {len(best)} "
       f"[{elapsed:.0f}s{' -- TIMED OUT' if elapsed > budget else ', exhaustive'}]",
       flush=True)
 for v, seq, rows in sorted(best, reverse=True)[:24]:
