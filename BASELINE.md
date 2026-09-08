@@ -887,3 +887,42 @@ So the ordering is the opposite of the intuition. A barred grid looks harder
 -- two thirds of its cells are checked against one half of a blocked grid's --
 and it is far easier, because the constraint that binds is which words have
 reverses, and a barred pattern can be drawn to suit them.
+
+### A square that says something
+
+A square that is symmetric and unchanged by a half-turn has, read row by row,
+a text that is itself a letter-palindrome. So a SATOR square that means
+anything is a palindromic sentence of exactly n^2 letters whose columns happen
+to be its rows -- which is why the results fill with DID, OYO, WAS ... SAW.
+
+Two searches, both over `english-names.txt` with a familiarity floor of 3.0.
+Rows may break into several words, which is what puts back the short words
+English is mostly made of; the dictionaries hold nothing under three letters,
+so A and IT are listed in `squares/segmented.py` rather than built.
+
+**Rows segment independently.** 123,535 squares at 5x5, 824 at 4x4. Nothing
+reads as a sentence. The best is
+
+    T I D E      "TIDE, I DID. DID I EDIT?"
+    I D I D
+    D I D I
+    E D I T
+
+**Words may cross a row boundary.** Exhaustive at 4x4: 31,786 grids segment,
+of 26^6 possible. The best is
+
+    H E T I      "HE TIED IT -- TIDE IT, EH?"
+    E D I T
+    T I D E
+    I T E H
+
+which the stricter search cannot reach, HETI and ITEH being no words. At 5x5
+the space is 26^9 and the search found 5.3 million segmenting grids in
+twenty-five minutes without finishing, so its silence is not evidence.
+
+The limit is now the grading, not the search. It scores part-of-speech
+bigrams, and a string of two-letter words maximises those while saying
+nothing: BE WE RE HE RE WE RE WE RE HERE WEB outscores HE TIED IT. Penalising
+short words instead buries HE TIED IT, English sentences being largely short
+words, and there is no setting between the two. Anything better wants a real
+language model rather than a rule.
