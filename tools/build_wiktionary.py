@@ -70,6 +70,14 @@ def main() -> int:
     parser.add_argument("--max-length", type=int, default=21)
     parser.add_argument("--lang", default="en", help="language code to keep")
     parser.add_argument("--pos", nargs="+", default=list(DEFAULT_POS))
+    parser.add_argument("--lemmas-only", action="store_true",
+                        help="drop entries that are nothing but an inflection "
+                             "of another word. Wiktionary gives every "
+                             "inflected form its own page, so for a language "
+                             "with much inflection this is most of the "
+                             "dictionary: Latin falls from 832,309 headwords "
+                             "to a fraction of that, and what is left is the "
+                             "words rather than their endings")
     parser.add_argument("--no-forms", action="store_true",
                         help="headwords only, without inflections. The "
                              "inflections are most of the value: they are what "
@@ -113,6 +121,16 @@ def main() -> int:
             if senses and all(SKIP_TAGS & set(sense.get("tags") or ())
                               for sense in senses):
                 tally["skipped sense"] += 1
+                continue
+            # An entry every sense of which is "an inflection of X" is not a
+            # word in its own right. `--no-forms` does not catch these: it
+            # drops the forms *listed under* a headword, while these are
+            # headwords themselves.
+            if args.lemmas_only and senses and all(
+                    "form-of" in (sense.get("tags") or ())
+                    or sense.get("form_of")
+                    for sense in senses):
+                tally["inflection"] += 1
                 continue
 
             surfaces = [entry.get("word") or ""]
