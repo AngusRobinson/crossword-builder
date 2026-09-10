@@ -49,9 +49,13 @@ rows_only = "--rows" in sys.argv
 # words, which is what that score likes. Demanding real words instead is a
 # filter the score cannot subvert.
 CONTENT = 2
+SAVE = None
 for a in sys.argv:
     if a.startswith("--content="):
         CONTENT = int(a.split("=", 1)[1])
+    if a.startswith("--save="):
+        SAVE = a.split("=", 1)[1]
+ALL = []
 scores = frequency.load_scores("english-names-scores.txt")
 raw = json.load(open("out/posall.json"))
 entries = load("english-names.txt", min_length=3, max_length=size + 2,
@@ -146,6 +150,8 @@ def step(pos, states):
             graded = [g for g in graded if g[0] is not None]
             if not graded:
                 return
+            if SAVE is not None:
+                ALL.append(list(rows))
             top = max(graded)
             if len(best) < 300: heapq.heappush(best, (top[0], top[1], rows))
             elif top[0] > best[0][0]: heapq.heapreplace(best, (top[0], top[1], rows))
@@ -176,6 +182,9 @@ def step(pos, states):
 
 step(0, {""})
 elapsed = time.time() - began
+if SAVE is not None:
+    json.dump(ALL, open(SAVE, "w"))
+    print(f"wrote {len(ALL):,} candidates to {SAVE}", flush=True)
 if TRUNCATED[0]:
     print(f"WARNING: {TRUNCATED[0]:,} texts had more readings than the limit "
           f"and were graded on a subset", flush=True)

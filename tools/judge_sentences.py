@@ -25,6 +25,13 @@ it was never asked whether a string is a sentence. XQZ VBN PLK MNB scores
 0.998 for the same reason -- unfamiliar words read as nouns, and a run of
 nouns is fine.
 
+Nor does adding GPT-2 fix it by itself, though it was worth trying: it removes
+what acceptability waves through in one direction and adds its own in the
+other. Both models reward repetition, and a palindromic square repeats by
+construction, so the score carries a variety term -- distinct words over total
+-- that neither model supplies. Without it the best of nine hundred thousand
+5x5 squares was I OH CHOI, OH CHOI OH CHOI OH CHOI.
+
 So this ranks but does not decide, which is what every ranking here has come
 to. Use it with --content to force real words in, take the shortlist, and read
 it. A judge that separated a sentence from a noun phrase would want a model
@@ -74,6 +81,16 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("grids", help="JSON list of squares, as rows")
     parser.add_argument("--model", default="JeremiahZ/roberta-base-cola")
+    parser.add_argument("--no-gpt2", action="store_true",
+                        help="skip the second model. Its job is to catch what "
+                             "CoLA waves through: a repetitive run of short "
+                             "words scores 1.000 on acceptability and badly "
+                             "on how much context helps predict it")
+    parser.add_argument("--per-family", type=int, default=2,
+                        help="squares sharing their outer rows differ only in "
+                             "the middle and read alike; 98%% of them have a "
+                             "twin, so a shortlist ranked purely by score is "
+                             "one idea repeated. This caps each family")
     parser.add_argument("--floor", type=float, default=4.0)
     parser.add_argument("--dictionary", default="english-names.txt")
     parser.add_argument("--batch", type=int, default=64)
@@ -115,7 +132,48 @@ def main() -> int:
     print(f"{len(keep):,} of {len(grids):,} squares split into words",
           file=sys.stderr, flush=True)
 
+    # Squares sharing their first and last row are near-duplicates. Keeping a
+    # couple of each stops one prolific family filling the shortlist.
+    if args.per_family:
+        import collections
+        seen = collections.Counter()
+        kept_rows, kept_texts = [], []
+        for rows, text in zip(keep, texts):
+            family = (rows[0], rows[-1])
+            if seen[family] >= args.per_family:
+                continue
+            seen[family] += 1
+            kept_rows.append(rows)
+            kept_texts.append(text)
+        print(f"{len(kept_rows):,} after keeping {args.per_family} per family "
+              f"({len(seen):,} families)", file=sys.stderr, flush=True)
+        keep, texts = kept_rows, kept_texts
+
     torch, tokeniser, model = load_model(args.model)
+    gpt = None
+    if not args.no_gpt2:
+        from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+        gpt_tok = GPT2TokenizerFast.from_pretrained("gpt2")
+        gpt_model = GPT2LMHeadModel.from_pretrained("gpt2")
+        gpt_model.eval()
+
+        def gpt(text):
+            """How much the context helps over word frequency alone.
+
+            Low for a repetitive run of short words, which is exactly what
+            acceptability alone cannot see.
+            """
+            ids = gpt_tok(text, return_tensors="pt").input_ids
+            if ids.shape[1] < 2:
+                return 0.0
+            with torch.no_grad():
+                logits = gpt_model(ids).logits[0, :-1]
+                target = ids[0, 1:]
+                given = torch.log_softmax(logits, -1)[
+                    torch.arange(len(target)), target]
+                alone = torch.log_softmax(
+                    gpt_model(ids[:, :1]).logits[0, -1], -1)[target]
+            return (given - alone).mean().item()
 
     def judge(strings):
         out = []
@@ -141,16 +199,32 @@ def main() -> int:
     best = []
     for i in short:
         variants = [dress(texts[i], w) for w in placements(texts[i])]
-        top = max(zip(judge(variants), variants))
-        best.append((top[0], top[1], keep[i]))
+        accept = judge(variants)
+        pick = max(range(len(variants)), key=lambda k: accept[k])
+        text, probability = variants[pick], accept[pick]
+        lift = gpt(text) if gpt else 1.0
+        # Both models reward repetition, and a palindromic square is
+        # repetitive by construction. Acceptability sees a noun phrase and
+        # says yes; the lift is *highest* for a repeated run, context being
+        # most helpful exactly where the text repeats -- I OH CHOI OH CHOI OH
+        # CHOI scored 5.61, the best in a field of nine hundred thousand.
+        # Distinct words over total is the term neither model supplies.
+        plain = [w.strip(",.?!").lower() for w in text.split()]
+        variety = len(set(plain)) / len(plain)
+        best.append((probability * variety * variety, probability, variety,
+                     lift, text, keep[i]))
     best.sort(reverse=True)
 
     if args.out:
-        json.dump([{"probability": p, "text": t, "rows": r}
-                   for p, t, r in best], open(args.out, "w"), indent=1)
+        json.dump([{"score": s, "acceptability": p, "variety": v, "lift": l,
+                    "text": t, "rows": r} for s, p, v, l, t, r in best],
+                  open(args.out, "w"), indent=1)
         print(f"wrote {args.out}", file=sys.stderr)
-    for p, text, rows in best[:args.top]:
-        print(f"  {p:.3f}  {text:<44} [{'/'.join(x.upper() for x in rows)}]")
+    print(f"{'score':>6} {'ok':>6} {'var':>5} {'lift':>6}  text")
+    for score, probability, variety, lift, text, rows in best[:args.top]:
+        print(f"{score:>6.2f} {probability:>6.3f} {variety:>5.2f} "
+              f"{lift:>6.2f}  {text:<40} "
+              f"[{'/'.join(x.upper() for x in rows)}]")
     return 0
 
 
