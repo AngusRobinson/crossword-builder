@@ -910,76 +910,53 @@ partial text as a set of pending word-prefixes, so a branch dies the moment
 its letters cannot continue any word. `--rows` additionally requires a word to
 end where a row does; without it a word may straddle the boundary.
 
-Exhaustive results, over the 1,628 words scoring 4.0 or better, each square
-required to contain two words of four letters or more:
+Exhaustive, over the 1,628 words scoring 4.0 or better, each square required
+to contain two words of four letters or more:
 
     4x4  rows kept whole         1,219 grids
     4x4  words may cross rows   31,786 grids
     5x5  rows kept whole       110,118 grids
     5x5  words may cross rows  899,964 grids
 
-Those counts are exhaustive enumerations and nothing more. No convincing
-sentence was found among the candidates reviewed, which is a weaker statement
-and the one the evidence supports: what reaches a reader is decided by a
-content filter, a family cap and a score, and each of those can discard
-something good before anyone sees it.
+Reversibility, which constrains the word-square searches above, does not
+constrain these: the text is a palindrome, so it is one string with one set of
+readings, and a word's mirrored letters may fall inside another word or across
+a boundary.
 
-The highest-scoring is a 4x4. Two candidates read alike to a person and the
-grammar model separates them, 1.000 against 0.000 -- which is a score, not a
-verdict: the same model returns 1.000 for HALL A, HALL A, HALL AH.
-
-    T I D E      "Tide, I did. Did I edit?"        1.000
-    I D I D
-    D I D I      H E T I  "He tied it, tide it, eh."   0.000
-    E D I T      E D I T
-                 T I D E
-                 I T E H
-
-The row-by-row counts are an order of magnitude smaller than first reported.
-`--rows` had been written as a check that a word *could* end at the boundary
-while the states carrying an unfinished one were kept, so a word straddled the
-row anyway: EWERE, which is no word, was reported as a row. What that run
-measured was the crossing search with an extra filter.
-
-### A larger vocabulary buys candidates, and better ones, not a sentence
-
-At a floor of 3.5 -- 5,387 words against 1,628 -- the field is 3,027,635 grids
-and 399,534 carry two real words, twenty times the pool for three times the
-dictionary. Quality rises with it. The best now read
+A larger vocabulary buys candidates, and better ones. At a floor of 3.5 --
+5,387 words against 1,628 -- the field is 3,027,635 grids and 399,534 carry
+two real words, twenty times the pool for three times the dictionary. The best
+read
 
     Lo lemon, noel non, leon no me lol.
     Ma re pa, never, ever even a per am.
     Net, an era mata, batam arena ten.
-    Hit a final at a natal an, i fatih.
 
-where at 4.0 the best was LAL A A LAL. LEMON, NEVER, ARENA, HIT and FINAL are
-real words doing real work; what they will not do is cohere. The difficulty
-has moved rather than gone -- it is no longer that there is nothing to build a
-sentence from, and not yet established what it is instead. The symmetry forces
-repetition, nine free letters filling twenty-five cells, and AMAMA, LARAL and
-HAHAH patterns run through every result: a claim about the grid rather than
-the dictionary, and one that can be measured.
+where at 4.0 the best was LAL A A LAL. LEMON, NEVER and ARENA are real words
+doing real work; what they will not do is cohere. The symmetry forces
+repetition -- nine free letters filling twenty-five cells -- and AMAMA, LARAL
+and HAHAH patterns run through every result.
 
-### Ranking, and what it is worth
+### Why the ranking was abandoned
 
-`tools/judge_sentences.py` scores acceptability with a model trained on the
-question, searches comma placements because they decide the answer -- JAMES
-WATCH GREEN WATER SLYLY scores 0.001 and JAMES, WATCH GREEN WATER SLYLY scores
-1.000 -- and multiplies by a variety term.
+The counts above are enumerations. Deciding which of a million candidates a
+reader ever sees is a separate problem, and the attempt to solve it with a
+grammatical-acceptability model failed on measurement rather than on taste.
 
-The variety term is not a refinement. Both models reward repetition:
-acceptability reads a run of nouns and says yes, and GPT-2's context lift is
-*highest* where a text repeats, context being most helpful exactly there. On
-the 5x5 field the two together put I OH CHOI, OH CHOI OH CHOI OH CHOI first of
-nine hundred thousand. Distinct words over total is what neither supplies.
+The model was asked for the probability that a string is acceptable English,
+over several segmentations and several comma placements, because punctuation
+decides the answer: JAMES WATCH GREEN WATER SLYLY scores 0.001 and JAMES,
+WATCH GREEN WATER SLYLY scores 1.000. On a ranked field of 301 candidates it
+returned **exactly 1.000 for 287 of them**. Acceptability measures
+well-formedness, a bare noun phrase is well-formed, and so HALL A, HALL A,
+HALL AH scores full marks. A tie across 95% of the field is not a ranking, and
+whatever broke the ties was doing the work that the score appeared to do.
 
-Even so it ranks and does not decide: acceptability returns 1.000 for HALL A,
-HALL A, HALL AH, CoLA marking well-formedness and a bare noun phrase being
-well-formed. Twelve hand-picked cases had suggested otherwise, which says more
-about the cases than the model.
+Twelve hand-picked cases had suggested the model discriminated. They were
+hand-picked; the field is not.
 
-**What the negatives cover.** Exhaustive over 1,628 words and over 5,387; the
-15,026-word vocabulary has not been searched to the end. Reversibility, which
-constrains the word-square searches above, does not constrain these: the text
-is a palindrome, so it is one string with one set of readings, and a word's
-mirrored letters may fall inside another word or across a boundary.
+This closes the line at the enumerations. No convincing sentence was found
+among the candidates reviewed -- a weaker claim than exhaustion, and the one
+the evidence supports, since a content filter, a family cap and a score each
+stand between the field and a reader. The 15,026-word vocabulary has not been
+searched to the end.

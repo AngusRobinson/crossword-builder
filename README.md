@@ -52,6 +52,11 @@ rather than letting it pass.
 - [The settings](#the-settings)
 - [American grids](#american-grids)
 - [Barred grids](#barred-grids)
+- [Other grid sizes](#other-grid-sizes)
+- [A bigger dictionary](#a-bigger-dictionary)
+- [Word squares](#word-squares)
+- [Squares that read four ways](#squares-that-read-four-ways)
+- [Crosswords that read upside down](#crosswords-that-read-upside-down)
 - [Ninas](#ninas)
 - [Pangrams](#pangrams)
 - [How it works](#how-it-works)
@@ -81,10 +86,14 @@ Beresford, 3-clause BSD and so redistributable provided its notice travels with
 it. Put it at `crossword/UKACD.txt`. Any similar list will work, though the
 familiarity tables are keyed to UKACD's spellings.
 
-Two other dictionaries have builders, and each writes its own familiarity table
-beside itself, which `--dictionary` then picks up without being told:
-`tools/build_wiktionary.py` for a much larger British-leaning list, and
-`tools/build_american.py` for Spread the Wordlist. Use the American one for American
+Four other dictionaries have builders, and each writes its own familiarity
+table beside itself, which `--dictionary` then picks up without being told:
+`tools/build_wiktionary.py` for a much larger British-leaning list,
+`tools/build_american.py` for Spread the Wordlist, `tools/build_names.py` for
+people and places, and `tools/merge_dictionaries.py` to put all of them into
+one. **None of the built lists are committed** — they run to tens of megabytes
+and carry their sources' licences, so every one of them has to be built
+locally before `--dictionary` can be pointed at it. Use the American one for American
 grids — it takes them from half filling to five in six, because a grid that
 checks every cell leans on the short entries and UKACD has a third as many
 three-letter words. It stops at fifteen letters, so it cannot fill a jumbo.
@@ -453,6 +462,57 @@ S E A S I D E S
 Different `--seed` values explore disjoint searches, so running several at once
 genuinely parallelises the hunt.
 
+## Squares that read four ways
+
+A SATOR square is symmetric *and* unchanged by a half-turn, so it reads the
+same across, down, backwards and upwards — the property of the Pompeii square
+that names it.
+
+```bash
+python3 sator.py 5 --words everything.txt --proper
+python3 sator.py 6 --words everything.txt --proper --out results/sator6.txt
+```
+
+The two constraints together are severe: they leave 9 free cells in a 5x5 and
+12 in a 6x6, and the search is exhaustive rather than sampled, so an empty
+result is a proof and not a failure to find one.
+
+**Six is the ceiling.** Over a merged dictionary of 1,840,703 entries there are
+161 squares of order 6 with distinct rows, and *none* of order 7 or 8. The
+fifteen that order 7 admits when a word may repeat are degenerate — `OOOOOOO`,
+and `XXXXXXXX` eight times over at order 8. `results/sator6-all.txt` has all
+161; the best of them carries ELEVEN at 5.04 familiarity with nothing below
+2.23.
+
+## Crosswords that read upside down
+
+The same idea over a whole grid: not the pattern, which is symmetric by
+convention already, but the letters, so that `grid[r][c] == grid[n-1-r][n-1-c]`
+and turning the diagram through a half-turn gives the diagram back.
+
+```bash
+python3 palindrome.py --repeats
+python3 palindrome.py --style british --repeats
+python3 palindrome.py --style barred
+```
+
+Entries pair off under the turn and each pair holds a word and its reverse, so
+this is a vocabulary problem before it is a search one. Wiktionary's 1,137,086
+entries yield 3,469 reversible ones, thinning fast with length — 395 usable
+pairs at three letters, 36 at seven, one at nine. Only 13 of the 120 British
+patterns survive that table, against 396 of 2,500 American ones, whose short
+entries sit where the stock is deepest.
+
+Both styles fill at 15x15, and a barred 12x12 goes further: 46 distinct
+entries, no repeats. The trick that makes the long British entries possible is
+that a word needs no reversible partner when it is its own reverse — DELEVELED,
+nine letters, from a stock holding exactly one reversible nine-letter pair.
+
+`squares/rotational.py` does the work, and the merge that makes it cheap is
+that `reverse(w)` fits a slot's partner exactly when `w` fits that partner's
+pattern reversed — so a pair of slots collapses into one pattern and one
+lookup, rather than a constraint the filler has no way to express.
+
 ## Ninas
 
 A nina is a message hidden in the grid, read somewhere the solver would not
@@ -651,3 +711,10 @@ occupy.
 **Negative results are kept.** `mutate.tailor` breeds on the length profile and
 is measurably worse than doing nothing. It is retained, tested and off, with the
 reason recorded, because a specific negative result is worth not rediscovering.
+
+## Licence
+
+The code is MIT; see [LICENSE](LICENSE). The word lists are not: UKACD is
+3-clause BSD, a list derived from Wiktionary is CC BY-SA, and the Guardian
+corpus is neither ours nor redistributable. None of them are committed here,
+which is why every dictionary has a builder rather than a download.
