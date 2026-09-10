@@ -31,6 +31,8 @@ out/
 # repository rather than for a puzzle.
 *.txt
 !lists/*.txt
+# Search results are the point of the searches, and are small.
+!results/*.txt
 !crossword/grids.txt
 !crossword/grids-21.txt
 !crossword/grids-23.txt

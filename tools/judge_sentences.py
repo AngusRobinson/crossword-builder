@@ -180,6 +180,8 @@ def main() -> int:
                              "as NO TABLE and never NOT ABLE")
     parser.add_argument("--top", type=int, default=25)
     parser.add_argument("--out", default=None)
+    parser.add_argument("--text", default=None,
+                        help="write the ranked list here as plain text")
     args = parser.parse_args()
 
     sys.path.insert(0, os.path.dirname(os.path.dirname(
@@ -303,6 +305,18 @@ def main() -> int:
                     "text": e, "rows": f} for a, b, c, d, e, f in best],
                   open(args.out, "w"), indent=1)
         print(f"wrote {args.out}", file=sys.stderr)
+    if args.text:
+        with open(args.text, "w") as handle:
+            handle.write(f"# {args.grids}, floor {args.floor}, content "
+                         f"{args.content}, {len(kept):,} squares judged\n")
+            handle.write(f"# score = acceptability x variety^2; "
+                         f"a ranking, not a verdict\n#\n")
+            handle.write(f"# {'score':>6} {'ok':>6} {'var':>5} {'lift':>6}  "
+                         f"text / rows\n")
+            for a, b, c, d, e, f in best:
+                handle.write(f"{a:>8.3f} {b:>6.3f} {c:>5.2f} {d:>6.2f}  "
+                             f"{e:<46} {'/'.join(x.upper() for x in f)}\n")
+        print(f"wrote {args.text}", file=sys.stderr)
     print(f"{'score':>6} {'ok':>6} {'var':>5} {'lift':>6}  text")
     for score, probability, v, lift, text, rows in best[:args.top]:
         print(f"{score:>6.2f} {probability:>6.3f} {v:>5.2f} {lift:>6.2f}  "

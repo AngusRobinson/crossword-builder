@@ -1,0 +1,305 @@
+# judged4.json: 300 candidates, ranked
+# score  accept  text  rows
+# The score ranks; it does not decide. The model returns 1.000
+# for HALL A, HALL A, HALL AH.
+#
+   1.000  0.000 A rey, rome, emory era.                        AREY/ROME/EMOR/YERA
+   1.000  0.000 Erie, rai i i i a, re i re.                    ERIE/RAII/IIAR/EIRE
+   1.000  0.000 I hmm hi, hmm hi, hmm hi.                      IHMM/HIHM/MHIH/MMHI
+   1.000  0.000 To lao gill i go a lot.                        TOLA/OGIL/LIGO/ALOT
+   1.000  0.000 Lal a a lal, lal a a lal.                      LALA/ALAL/LALA/ALAL
+   1.000  0.000 A a a, i aria a i rai, a a a.                  AAAI/ARIA/AIRA/IAAA
+   1.000  0.000 In ahn a i a, a i an, han i.                   INAH/NAIA/AIAN/HANI
+   1.000  0.000 Am i i mum, i i mum, i i ma.                   AMII/MUMI/IMUM/IIMA
+   1.000  0.000 I a a a a, i ma am, i a a a a i.               IAAA/AIMA/AMIA/AAAI
+   1.000  0.000 Lee kee, lee lee, keel.                        LEEK/EELE/ELEE/KEEL
+   1.000  0.000 A ma a ma, ma a ma, ma a ma.                   AMAA/MAMA/AMAM/AAMA
+   1.000  0.000 I a a a a i, i a a i, i a a a a i.             IAAA/AIIA/AIIA/AAAI
+   1.000  0.000 A i a a i, hi a a i, hi a a i a.               AIAA/IHIA/AIHI/AAIA
+   1.000  0.000 Ma saad, as sad a a sam.                       MASA/ADAS/SADA/ASAM
+   1.000  0.000 I a i i a lai, i a lai, i a i.                 IAII/ALAI/IALA/IIAI
+   1.000  0.000 Huh huh, uh huh, uh huh.                       HUHH/UHUH/HUHU/HHUH
+   1.000  0.000 A a i ma rai, i a ram, i a a.                  AAIM/ARAI/IARA/MIAA
+   1.000  0.000 A i i a, i rai i aria, i i a.                  AIIA/IRAI/IARI/AIIA
+   1.000  0.000 A a a a a, i ma am, i a a a a a.               AAAA/AIMA/AMIA/AAAA
+   1.000  0.000 A lal lal a, a lal lal a.                      ALAL/LALA/ALAL/LALA
+   1.000  0.000 I a a ma, hi a a i, ham a a i.                 IAAM/AHIA/AIHA/MAAI
+   1.000  0.000 I i a a i, hi a a i, hi a a i i.               IIAA/IHIA/AIHI/AAII
+   1.000  0.000 Harr, ah orr, oh arrah.                        HARR/AHOR/ROHA/RRAH
+   1.000  0.000 I a a a a a i a a i a a a a a i.               IAAA/AAIA/AIAA/AAAI
+   1.000  0.000 See dee dee, dee dees.                         SEED/EEDE/EDEE/DEES
+   1.000  0.000 In ahn, i i a a i, in han i.                   INAH/NIIA/AIIN/HANI
+   1.000  0.000 A a a a a i, i a a i, i a a a a a.             AAAA/AIIA/AIIA/AAAA
+   1.000  0.000 In ahn i a a a a, in han i.                    INAH/NIAA/AAIN/HANI
+   1.000  0.000 Lee kee kee, kee keel.                         LEEK/EEKE/EKEE/KEEL
+   1.000  0.000 I lal lal a, a lal lal i.                      ILAL/LALA/ALAL/LALI
+   1.000  0.000 Kuo hua, woo wau, houk.                        KUOH/UAWO/OWAU/HOUK
+   1.000  0.000 I a a a a i a a a a i a a a a i.               IAAA/AIAA/AAIA/AAAI
+   1.000  0.000 A a i a a ma, i i a ma, a i a a.               AAIA/AMAI/IAMA/AIAA
+   1.000  0.000 I a a i, a ma a a a ma, i a a i.               IAAI/AMAA/AAMA/IAAI
+   1.000  0.000 A a a bam, i a a i, maba a a.                  AAAB/AMIA/AIMA/BAAA
+   1.000  0.000 I a a i a i, i a a i, i a i a a i.             IAAI/AIIA/AIIA/IAAI
+   1.000  0.000 Kara a furr, ufa arak.                         KARA/AFUR/RUFA/ARAK
+   1.000  0.000 I a i a a i, hi i, hi a a i a i.               IAIA/AIHI/IHIA/AIAI
+   1.000  0.000 Nor lo marr, amol, ron.                        NORL/OMAR/RAMO/LRON
+   1.000  0.000 A a am, abha ah bam, a a a.                    AAAM/ABHA/AHBA/MAAA
+   1.000  0.000 A a i a a i, hi i, hi a a i a a.               AAIA/AIHI/IHIA/AIAA
+   1.000  0.000 A babb aba, a babb aba.                        ABAB/BABA/ABAB/BABA
+   1.000  0.000 I a a i aria, a i rai, a a i.                  IAAI/ARIA/AIRA/IAAI
+   1.000  0.000 I a a i am, ma am ma, i a a i.                 IAAI/AMMA/AMMA/IAAI
+   1.000  0.000 Lal a a dill, id a a lal.                      LALA/ADIL/LIDA/ALAL
+   1.000  0.000 A a i a an, a i i an, a a i a a.               AAIA/ANAI/IANA/AIAA
+   1.000  0.000 Xaixai, hi i hi, ax i ax.                      XAIX/AIHI/IHIA/XIAX
+   1.000  0.000 I a ma a i, hmm hi, a a ma i.                  IAMA/AIHM/MHIA/AMAI
+   1.000  0.000 A a an, a ufa a fuan, a a a.                   AAAN/AUFA/AFUA/NAAA
+   1.000  0.000 Mar, bah arrah abram.                          MARB/AHAR/RAHA/BRAM
+   1.000  0.000 A i a a i a, ma a ma, i a a i a.               AIAA/IAMA/AMAI/AAIA
+   1.000  0.000 I ma am, i a a a a i, ma am i.                 IMAA/MIAA/AAIM/AAMI
+   1.000  0.000 Das, ma jos, so jam sad.                       DASM/AJOS/SOJA/MSAD
+   1.000  0.000 Borrow or row, or rob.                         BORR/OWOR/ROWO/RROB
+   1.000  0.000 Ah, abha a a a a ah bah a.                     AHAB/HAAA/AAAH/BAHA
+   1.000  0.000 Hui hui, hi i hi, uh i uh.                     HUIH/UIHI/IHIU/HIUH
+   1.000  0.000 A i a a i i, a a a a i i, a a i a.             AIAA/IIAA/AAII/AAIA
+   1.000  0.000 A a ebay be eby a, be a a.                     AAEB/AYBE/EBYA/BEAA
+   1.000  0.000 I a a a a a, ma a ma, a a a a i.               IAAA/AAMA/AMAA/AAAI
+   1.000  0.000 A a a i, ah a a a, ah a i a a a.               AAAI/AHAA/AAHA/IAAA
+   1.000  0.000 I hi, ah a, a i i a ah a i hi.                 IHIA/HAAI/IAAH/AIHI
+   1.000  0.000 A a a i a i, i a a i, i a i a a a.             AAAI/AIIA/AIIA/IAAA
+   1.000  0.000 A a a a a a, i a a i, a a a a a a.             AAAA/AAIA/AIAA/AAAA
+   1.000  0.000 I a ah a i, i a a i, i ah a a i.               IAAH/AIIA/AIIA/HAAI
+   1.000  0.000 A a a bain, a an i, aba a a.                   AAAB/AINA/ANIA/BAAA
+   1.000  0.000 A a a a a i, a a a a i, a a a a a.             AAAA/AIAA/AAIA/AAAA
+   1.000  0.000 I a an a i i, a a i i, an a a i.               IAAN/AIIA/AIIA/NAAI
+   1.000  0.000 A a ah abha, ah bah, a a a.                    AAAH/ABHA/AHBA/HAAA
+   1.000  0.000 A a a lal, i a a i, lal a a a.                 AAAL/ALIA/AILA/LAAA
+   1.000  0.000 I a i a a an i, in a a a i a i.                IAIA/AANI/INAA/AIAI
+   1.000  0.000 A a a a, a ica a cia, a a a a.                 AAAA/AICA/ACIA/AAAA
+   1.000  0.000 Ma a ma a a a a a a a, ma am.                  MAAM/AAAA/AAAA/MAAM
+   1.000  0.000 Haag a ah, a a, haag a ah.                     HAAG/AAHA/AHAA/GAAH
+   1.000  0.000 I a a i a a a a a, a a a i a a i.              IAAI/AAAA/AAAA/IAAI
+   1.000  0.000 I a a i, ah a a a, ah a i a a i.               IAAI/AHAA/AAHA/IAAI
+   1.000  0.000 Ma roa, karr a, kao ram.                       MARO/AKAR/RAKA/ORAM
+   1.000  0.000 A a a mata, a a a tam, a a a.                  AAAM/ATAA/AATA/MAAA
+   1.000  0.000 I a an a a i a a i a an a a i.                 IAAN/AAIA/AIAA/NAAI
+   1.000  0.000 A i aria a, a a a a, i rai a.                  AIAR/IAAA/AAAI/RAIA
+   1.000  0.000 Lee kee, yee yee keel.                         LEEK/EEYE/EYEE/KEEL
+   1.000  0.000 Code, or add a roe doc.                        CODE/ORAD/DARO/EDOC
+   1.000  0.000 A a a a a, a ma a ma, a a a a a.               AAAA/AAMA/AMAA/AAAA
+   1.000  0.000 I a i a a a a i, i a a a a i a i.              IAIA/AAAI/IAAA/AIAI
+   1.000  0.000 I a a i a i, a a a a, i a i a a i.             IAAI/AIAA/AAIA/IAAI
+   1.000  0.000 A a a maba, a a a bam, a a a.                  AAAM/ABAA/AABA/MAAA
+   1.000  0.000 A a a i aba, a a aba, i a a a.                 AAAI/ABAA/AABA/IAAA
+   1.000  0.000 I a a i a a, i a a i, a a i a a i.             IAAI/AAIA/AIAA/IAAI
+   1.000  0.000 I a a i a a ma, a ma a i a a i.                IAAI/AAMA/AMAA/IAAI
+   1.000  0.000 I a a ma i, a a a a i, a ma a i.               IAAM/AIAA/AAIA/MAAI
+   1.000  0.000 A a a i a, i a a a a i a, i a a a.             AAAI/AIAA/AAIA/IAAA
+   1.000  0.000 A a a a a a, a a a a a a, a a a a.             AAAA/AAAA/AAAA/AAAA
+   1.000  0.000 A a, a, a a staats a a a a a.                  AAAA/ASTA/ATSA/AAAA
+   1.000  0.000 A a i i a, a a i i, a a a i i a a.             AAII/AAAI/IAAA/IIAA
+   1.000  0.000 A a i a a i, a i i a i, a a i a a.             AAIA/AIAI/IAIA/AIAA
+   1.000  0.000 A a a i at i, a a i, tai a a a.                AAAI/ATIA/AITA/IAAA
+   1.000  0.000 I a i a ah a i, i ah a a i a i.                IAIA/AHAI/IAHA/AIAI
+   1.000  0.000 I a an a i a a a a i an a a i.                 IAAN/AIAA/AAIA/NAAI
+   1.000  0.000 A a an a i, i a a i, i an a a a.               AAAN/AIIA/AIIA/NAAA
+   1.000  0.000 A a a dara, a a arad, a a a.                   AAAD/ARAA/AARA/DAAA
+   1.000  0.000 A a a, a a cia a ica, a a a a.                 AAAA/ACIA/AICA/AAAA
+   1.000  0.000 A a a i, a a a a a, a a a i a a a.             AAAI/AAAA/AAAA/IAAA
+   1.000  0.000 Harr a, tarr a, tarr ah.                       HARR/ATAR/RATA/RRAH
+   1.000  0.000 Ma a a ann a ann a a a am.                     MAAA/ANNA/ANNA/AAAM
+   1.000  0.000 A a, roa furr ufa or a a.                      AARO/AFUR/RUFA/ORAA
+   1.000  0.000 A a a i, a ah a ah, a a i a a a.               AAAI/AAHA/AHAA/IAAA
+   1.000  0.000 Mata a i otto, i a a tam.                      MATA/AIOT/TOIA/ATAM
+   1.000  0.000 A a a i, a a ma, a ma a i a a a.               AAAI/AAMA/AMAA/IAAA
+   1.000  0.000 I i a a i a, i a a i a, i a a i i.             IIAA/IAIA/AIAI/AAII
+   1.000  0.000 A a ah a i, i a a i, i ah a a a.               AAAH/AIIA/AIIA/HAAA
+   1.000  0.000 A a a i a a, i a a i, a a i a a a.             AAAI/AAIA/AIAA/IAAA
+   1.000  0.000 I a a a an i a a in a a a a i.                 IAAA/ANIA/AINA/AAAI
+   1.000  0.000 A a a i, ann a ann, a i a a a.                 AAAI/ANNA/ANNA/IAAA
+   1.000  0.000 Patna cotto can tap.                           PATN/ACOT/TOCA/NTAP
+   1.000  0.000 I a a a an a a a an, a a a a i.                IAAA/ANAA/AANA/AAAI
+   1.000  0.000 A a a i, a ma a a, a ma i a a a.               AAAI/AMAA/AAMA/IAAA
+   1.000  0.000 A a a a aba, a a aba, a a a a.                 AAAA/ABAA/AABA/AAAA
+   1.000  0.000 A a i a, ah a i i, ah a a i a a.               AAIA/AHAI/IAHA/AIAA
+   1.000  0.000 A i a a i a, a a a a a, i a a i a.             AIAA/IAAA/AAAI/AAIA
+   1.000  0.000 A a a a a, aba aba, a a a a a.                 AAAA/AABA/ABAA/AAAA
+   1.000  0.000 A i a a i, aka, a kai a a i a.                 AIAA/IAKA/AKAI/AAIA
+   1.000  0.000 I a a a a an a an, a a a a a i.                IAAA/AANA/ANAA/AAAI
+   1.000  0.000 A a a lal, a a a a lal, a a a.                 AAAL/ALAA/AALA/LAAA
+   1.000  0.000 A a a i a at a at a a i a a a.                 AAAI/AATA/ATAA/IAAA
+   1.000  0.000 A papp a pa, a papp a pa.                      APAP/PAPA/APAP/PAPA
+   1.000  0.000 A i a a i, ax a ax, a i a a i a.               AIAA/IAXA/AXAI/AAIA
+   1.000  0.000 A a i a a, a a i i, a a a a i a a.             AAIA/AAAI/IAAA/AIAA
+   1.000  0.000 A a a cam, i a a i, mac a a a.                 AAAC/AMIA/AIMA/CAAA
+   1.000  0.000 Net tenet tenet ten.                           NETT/ENET/TENE/TTEN
+   1.000  0.000 A i a a, i ah a ah, a i a a i a.               AIAA/IAHA/AHAI/AAIA
+   1.000  0.000 Ah, or haro, or ah roha.                       AHOR/HARO/ORAH/ROHA
+   1.000  0.000 A i a a i an, a an a i a a i a.                AIAA/IANA/ANAI/AAIA
+   1.000  0.000 A a a ma i, a a a a i, a ma a a.               AAAM/AIAA/AAIA/MAAA
+   1.000  0.000 A a i a a or i i roa, a i a a.                 AAIA/AORI/IROA/AIAA
+   1.000  0.000 I a a i a an a an a a i a a i.                 IAAI/AANA/ANAA/IAAI
+   1.000  0.000 An a an a, i a a i, an a an a.                 ANAA/NAIA/AIAN/AANA
+   1.000  0.000 A a a ma a i, a a i, a a ma a a.               AAAM/AAIA/AIAA/MAAA
+   1.000  0.000 I i a a i, ah a ah a i a a i i.                IIAA/IAHA/AHAI/AAII
+   1.000  0.000 I a a i a ah a ah a a i a a i.                 IAAI/AAHA/AHAA/IAAI
+   1.000  0.000 I a a a a a a, a a a, a a a a a i.             IAAA/AAAA/AAAA/AAAI
+   1.000  0.000 Lal laval, laval lal.                          LALL/AVAL/LAVA/LLAL
+   1.000  0.000 Ah, abha, i a a i ah bah a.                    AHAB/HAIA/AIAH/BAHA
+   1.000  0.000 A i a a i ota, a to i, a a i a.                AIAA/IOTA/ATOI/AAIA
+   1.000  0.000 I a a a a, hua a uh, a a a a i.                IAAA/AHUA/AUHA/AAAI
+   1.000  0.000 A a a raha, a a ahar, a a a.                   AAAR/AHAA/AAHA/RAAA
+   1.000  0.000 I i i i i, a i i i i, a i i i i i.             IIII/IAII/IIAI/IIII
+   1.000  0.000 I a a ma a i, a a i, a a ma a i.               IAAM/AAIA/AIAA/MAAI
+   1.000  0.000 A a i a a, a i i i i, a a a i a a.             AAIA/AAII/IIAA/AIAA
+   1.000  0.000 A a a a, ah a a a ah, a a a a a.               AAAA/AHAA/AAHA/AAAA
+   1.000  0.000 A a ah, ah a a a ah, ah a a a.                 AAAH/AHAA/AAHA/HAAA
+   1.000  0.000 Hail a a a i i, a a ali ah.                    HAIL/AAAI/IAAA/LIAH
+   1.000  0.000 Ma a a a a, ma a ma, a a a am.                 MAAA/AAMA/AMAA/AAAM
+   1.000  0.000 A a ah, a a i a a i, a ah a a a.               AAAH/AAIA/AIAA/HAAA
+   1.000  0.000 I a roa, tarr a tao, rai.                      IARO/ATAR/RATA/ORAI
+   1.000  0.000 A a a a an, a a a an, a a a a a.               AAAA/ANAA/AANA/AAAA
+   1.000  0.000 A ann a a ann, a a ann a a.                    AANN/AAAN/NAAA/NNAA
+   1.000  0.000 I a a i an a a a an, a i a a i.                IAAI/ANAA/AANA/IAAI
+   1.000  0.000 A a a a, ann a ann, a a a a a.                 AAAA/ANNA/ANNA/AAAA
+   1.000  0.000 A a a i a ota, a to a i a a a.                 AAAI/AOTA/ATOA/IAAA
+   1.000  0.000 I a a a a, ma a a a, ma a a a i.               IAAA/AMAA/AAMA/AAAI
+   1.000  0.000 A a ah a i, a a a a i, ah a a a.               AAAH/AIAA/AAIA/HAAA
+   1.000  0.000 A a a a, a ah a ah, a a a a a a.               AAAA/AAHA/AHAA/AAAA
+   1.000  0.000 A a a i a an, a an a a i a a a.                AAAI/AANA/ANAA/IAAA
+   1.000  0.000 Mum mum, um mum, um mum.                       MUMM/UMUM/MUMU/MMUM
+   1.000  0.000 I a i a a i a i, i a i a a i a i.              IAIA/AIAI/IAIA/AIAI
+   1.000  0.000 A orr oh arrah, or roa.                        AORR/OHAR/RAHO/RROA
+   1.000  0.000 I i a i i, a a a a a a, i i a i i.             IIAI/IAAA/AAAI/IAII
+   1.000  0.000 I a a a ann a ann a a a a i.                   IAAA/ANNA/ANNA/AAAI
+   1.000  0.000 A a an a a, i a a i, a an a a a.               AAAN/AAIA/AIAA/NAAA
+   1.000  0.000 A a a kara, a a arak, a a a.                   AAAK/ARAA/AARA/KAAA
+   1.000  0.000 A a a a a, hua a uh, a a a a a.                AAAA/AHUA/AUHA/AAAA
+   1.000  0.000 A a a i, aka a a a kai, a a a.                 AAAI/AKAA/AAKA/IAAA
+   1.000  0.000 I a an a a a a, a a a an a a i.                IAAN/AAAA/AAAA/NAAI
+   1.000  0.000 A a a a a ma, a a a ma, a a a a.               AAAA/AMAA/AAMA/AAAA
+   1.000  0.000 Yan lal inn, i lal nay.                        YANL/ALIN/NILA/LNAY
+   1.000  0.000 Haro, ah or roha or ah.                        HARO/AHOR/ROHA/ORAH
+   1.000  0.000 A a ah a ah, a ah a ah, a a a.                 AAAH/AAHA/AHAA/HAAA
+   1.000  0.000 I i i i i i, i i i i, i i i i i i.             IIII/IIII/IIII/IIII
+   1.000  0.000 I a ah a a i a a i a ah a a i.                 IAAH/AAIA/AIAA/HAAI
+   1.000  0.000 Ye lae, call ace a ley.                        YELA/ECAL/LACE/ALEY
+   1.000  0.000 A a a a a an, a an, a a a a a a.               AAAA/AANA/ANAA/AAAA
+   1.000  0.000 A ma a ma a, a a a, a ma a ma.                 AMAA/MAAA/AAAM/AAMA
+   1.000  0.000 A a an a a a a, a a a an a a a.                AAAN/AAAA/AAAA/NAAA
+   1.000  0.000 A a arar a a a, arar a a a.                    AAAR/ARAA/AARA/RAAA
+   1.000  0.000 A a a i an, a a a an, a i a a a.               AAAI/ANAA/AANA/IAAA
+   1.000  0.000 I a i a a a, i i i, i a a a i a i.             IAIA/AAII/IIAA/AIAI
+   1.000  0.000 A a i a, a tai i at a, a i a a.                AAIA/ATAI/IATA/AIAA
+   1.000  0.000 A a an a i a, a a a i an, a a a.               AAAN/AIAA/AAIA/NAAA
+   1.000  0.000 A a ota, a to ota, a to a a.                   AAOT/AATO/OTAA/TOAA
+   1.000  0.000 An ann an a, an ann an a.                      ANAN/NANA/ANAN/NANA
+   1.000  0.000 I a a a a, ica a cia, a a a i.                 IAAA/AICA/ACIA/AAAI
+   1.000  0.000 A i a a i, roa a or i, a a i a.                AIAA/IROA/AORI/AAIA
+   1.000  0.000 A a a i, ax a a a, ax a i a a a.               AAAI/AXAA/AAXA/IAAA
+   1.000  0.000 I i i a i, i a i i a i, i a i i i.             IIIA/IIAI/IAII/AIII
+   1.000  0.000 Nor ron, or ron, or ron.                       NORR/ONOR/RONO/RRON
+   1.000  0.000 I a ah a i a a a a, i ah a a i.                IAAH/AIAA/AAIA/HAAI
+   1.000  0.000 An a ann a, a a ann a, an a.                   ANAA/NNAA/AANN/AANA
+   1.000  0.000 I, i, a a i a a a a a a i a a i i.             IIAA/IAAA/AAAI/AAII
+   1.000  0.000 A a a a a, to a a ota, a a a a.                AAAA/ATOA/AOTA/AAAA
+   1.000  0.000 A a a i am, ma am ma i, a a a.                 AAAI/AMMA/AMMA/IAAA
+   1.000  0.000 Ah a, ah a, a a a a ah a ah a.                 AHAA/HAAA/AAAH/AAHA
+   1.000  0.000 Ma roa, tarr a, tao ram.                       MARO/ATAR/RATA/ORAM
+   1.000  0.000 A i a a, i at a a, tai a a i a.                AIAA/IATA/ATAI/AAIA
+   1.000  0.000 A a a tai, i a a i, i at a a a.                AAAT/AIIA/AIIA/TAAA
+   1.000  0.000 A a an a ah, a ah, a an a a a.                 AAAN/AAHA/AHAA/NAAA
+   1.000  0.000 A a a i, a ax a ax a a i a a a.                AAAI/AAXA/AXAA/IAAA
+   1.000  0.000 A aria barr a bair, a a.                       AARI/ABAR/RABA/IRAA
+   1.000  0.000 A a a a a, ax a ax a a a a a a.                AAAA/AAXA/AXAA/AAAA
+   1.000  0.000 A a a a a ota, a to a a a a a.                 AAAA/AOTA/ATOA/AAAA
+   1.000  0.000 A a ah a a a, a a a a ah, a a a.               AAAH/AAAA/AAAA/HAAA
+   1.000  0.000 I an a a, ginn iga, an a i.                    IANA/AGIN/NIGA/ANAI
+   1.000  0.000 I a a a a, aba aba, a a a a i.                 IAAA/AABA/ABAA/AAAI
+   1.000  0.000 I i a a i, aka, a kai a a i i.                 IIAA/IAKA/AKAI/AAII
+   1.000  0.000 A a a ma a a, a a a a, a ma a a.               AAAM/AAAA/AAAA/MAAA
+   1.000  0.000 Hair asti i, tsar i ah.                        HAIR/ASTI/ITSA/RIAH
+   1.000  0.000 A a a i a aka, aka a i a a a.                  AAAI/AAKA/AKAA/IAAA
+   1.000  0.000 I, i, a a i an a an a i a a i i.               IIAA/IANA/ANAI/AAII
+   1.000  0.000 I a a i a ota, a to a i a a i.                 IAAI/AOTA/ATOA/IAAI
+   1.000  0.000 Mar bae, or roe abram.                         MARB/AEOR/ROEA/BRAM
+   1.000  0.000 A i a did, a a a a did, a i a.                 AIAD/IDAA/AADI/DAIA
+   1.000  0.000 Nis i i ross, or, i i sin.                     NISI/IROS/SORI/ISIN
+   1.000  0.000 Han a a yan, nay a a nah.                      HANA/AYAN/NAYA/ANAH
+   1.000  0.000 A a at a a, i a a i a at a a a.                AAAT/AAIA/AIAA/TAAA
+   1.000  0.000 See lee, dee, dee lees.                        SEEL/EEDE/EDEE/LEES
+   1.000  0.000 Nor roa, or roa, or ron.                       NORR/OAOR/ROAO/RRON
+   1.000  0.000 Han lal inn i lal nah.                         HANL/ALIN/NILA/LNAH
+   1.000  0.000 I a a a a, cia a ica, a a a i.                 IAAA/ACIA/AICA/AAAI
+   1.000  0.000 I an a a yan, nay, a an a i.                   IANA/AYAN/NAYA/ANAI
+   1.000  0.000 A i a a, in i a a, in i a a i a.               AIAA/INIA/AINI/AAIA
+   1.000  0.000 Nor royer rey, or ron.                         NORR/OYER/REYO/RRON
+   1.000  0.000 A a a a, at a a a, at a a a a a.               AAAA/ATAA/AATA/AAAA
+   1.000  0.000 A a, a a air, a aria a a a a.                  AAAA/AIRA/ARIA/AAAA
+   1.000  0.000 A a an a so, a a osan, a a a.                  AAAN/ASOA/AOSA/NAAA
+   1.000  0.000 I a a a a ota, a to a a a a i.                 IAAA/AOTA/ATOA/AAAI
+   1.000  0.000 See dee, see see dees.                         SEED/EESE/ESEE/DEES
+   1.000  0.000 Ma a a an, a a a an, a a a am.                 MAAA/ANAA/AANA/AAAM
+   1.000  0.000 A otto a, otto a, otto a.                      AOTT/OAOT/TOAO/TTOA
+   1.000  0.000 I a a a a, ah a ah a, a a a a i.               IAAA/AAHA/AHAA/AAAI
+   1.000  0.000 Ma an a ah, a ah a, an a am.                   MAAN/AAHA/AHAA/NAAM
+   1.000  0.000 I a i a a or i i roa, a i a i.                 IAIA/AORI/IROA/AIAI
+   1.000  0.000 An ahn, an a an, an han a.                     ANAH/NANA/ANAN/HANA
+   1.000  0.000 A an a a ginn iga an a a.                      AANA/AGIN/NIGA/ANAA
+   1.000  0.000 A a a, cam a a a, a mac a a a.                 AAAC/AMAA/AAMA/CAAA
+   1.000  0.000 I a a, i a, ax a ax a a i a a i.               IAAI/AAXA/AXAA/IAAI
+   1.000  0.000 I a an a an a an a an a a i.                   IAAN/AANA/ANAA/NAAI
+   1.000  0.000 I am ma mum, mum am, ma i.                     IAMM/AMUM/MUMA/MMAI
+   1.000  0.000 A a an an a a a an an a a a.                   AAAN/ANAA/AANA/NAAA
+   1.000  0.000 A a an a an a an a an a a a.                   AAAN/AANA/ANAA/NAAA
+   1.000  0.000 A a ahar, a a a a raha a a.                    AAAH/ARAA/AARA/HAAA
+   1.000  0.000 Ma a a a an, a an a, a a a am.                 MAAA/AANA/ANAA/AAAM
+   1.000  0.000 I a a i an i a a, in a i a a i.                IAAI/ANIA/AINA/IAAI
+   1.000  0.000 Dara ah or roha arad.                          DARA/AHOR/ROHA/ARAD
+   1.000  0.000 A a at a a a, a a a a at a a a.                AAAT/AAAA/AAAA/TAAA
+   1.000  0.000 A a in a a, a i i a, a an i a a.               AAIN/AAAI/IAAA/NIAA
+   1.000  0.000 A a ax a a i, a a i, a ax a a a.               AAAX/AAIA/AIAA/XAAA
+   1.000  0.000 I a a i aka a a a kai, a a i.                  IAAI/AKAA/AAKA/IAAI
+   1.000  0.000 An a an a a a a a an a an a.                   ANAA/NAAA/AAAN/AANA
+   1.000  0.000 A an a a yan, nay, a an a a.                   AANA/AYAN/NAYA/ANAA
+   1.000  0.000 A a an a a ma, a ma an a a a.                  AAAN/AAMA/AMAA/NAAA
+   1.000  0.000 I a an a ah a ah, a an a a i.                  IAAN/AAHA/AHAA/NAAI
+   1.000  0.000 I an a a a, ann a a a an a i.                  IANA/AAAN/NAAA/ANAI
+   1.000  0.000 A a a i, a roa a, or a i a a a.                AAAI/AROA/AORA/IAAA
+   1.000  0.000 Ah a ah eh a, ah eh a, ah a.                   AHAA/HEHA/AHEH/AAHA
+   1.000  0.000 I ann a a, ann a a, ann a i.                   IANN/AAAN/NAAA/NNAI
+   1.000  0.000 A a a max, a a a, ax a ma a a.                 AAAM/AXAA/AAXA/MAAA
+   1.000  0.000 Harr a a, or roa arrah.                        HARR/AAOR/ROAA/RRAH
+   1.000  0.000 An a a nay, a a yan a an a.                    ANAA/NAYA/AYAN/AANA
+   1.000  0.000 A a a i an i, a a in a i a a a.                AAAI/ANIA/AINA/IAAA
+   1.000  0.000 A a an a ota, a to an a a a.                   AAAN/AOTA/ATOA/NAAA
+   1.000  0.000 A re era sees a re era.                        AREE/RASE/ESAR/EERA
+   1.000  0.000 Nor roe or roe or ron.                         NORR/OEOR/ROEO/RRON
+   1.000  0.000 A a a a a aka, aka a a a a a.                  AAAA/AAKA/AKAA/AAAA
+   1.000  0.000 A a a a an i a a in a a a a a.                 AAAA/ANIA/AINA/AAAA
+   1.000  0.000 Haro a a, or roa a, or ah.                     HARO/AAOR/ROAA/ORAH
+   1.000  0.000 A aba a robb or a aba a.                       AABA/AROB/BORA/ABAA
+   1.000  0.000 A orr, oh orr, oh or roa.                      AORR/OHOR/ROHO/RROA
+   1.000  0.000 Ham, a a i hmm, hi a am ah.                    HAMA/AIHM/MHIA/AMAH
+   1.000  0.000 A a arad a a, a a dara a a.                    AAAR/ADAA/AADA/RAAA
+   1.000  0.000 A an i a a ann a a a in a a.                   AANI/AAAN/NAAA/INAA
+   1.000  0.000 A a an, a aba aba an, a a a.                   AAAN/AABA/ABAA/NAAA
+   1.000  0.000 I a a rae, a a a a ear, a a i.                 IAAR/AEAA/AAEA/RAAI
+   1.000  0.000 A a an ann a ann an a a a.                     AAAN/ANNA/ANNA/NAAA
+   1.000  0.000 A a a i a, or a a roa i a a a.                 AAAI/AORA/AROA/IAAA
+   1.000  0.000 Ma a a an, i a a in, a a a am.                 MAAA/ANIA/AINA/AAAM
+   1.000  0.000 I a a i a at a at a a i a a i.                 IAAI/AATA/ATAA/IAAI
+   1.000  0.000 I a at a a i a a i a at a a i.                 IAAT/AAIA/AIAA/TAAI
+   1.000  0.000 Das lap oss opal sad.                          DASL/APOS/SOPA/LSAD
+   1.000  0.000 A an a a sin nis a an a a.                     AANA/ASIN/NISA/ANAA
+   1.000  0.000 I a an an a a a an an a a i.                   IAAN/ANAA/AANA/NAAI
+   1.000  0.000 I a a, tai a a, a a i at a a i.                IAAT/AIAA/AAIA/TAAI
+   1.000  0.000 I a aka a i, a a i, a aka a i.                 IAAK/AAIA/AIAA/KAAI
+   1.000  0.000 Maba a a ibb i a, a a bam.                     MABA/AAIB/BIAA/ABAM
+   1.000  0.000 See dee kee, kee dees.                         SEED/EEKE/EKEE/DEES
+   1.000  0.000 A a a tai, a a a a, i at a a a.                AAAT/AIAA/AAIA/TAAA
+   1.000  0.000 Rap a a kopp ok a a par.                       RAPA/AKOP/POKA/APAR
+   0.999  0.000 In ahn, era a, ren han i.                      INAH/NERA/AREN/HANI
+   0.999  0.000 I a a i a roa a or a i a a i.                  IAAI/AROA/AORA/IAAI
+   0.999  0.000 I a aka ah a ah a aka a i.                     IAAK/AAHA/AHAA/KAAI
+   0.999  0.000 Lal a a a ill i a a a lal.                     LALA/AAIL/LIAA/ALAL
+   0.999  0.000 I am may am may am, ma, i.                     IAMM/AYAM/MAYA/MMAI
+   0.999  0.000 An a an i a a a a in a an a.                   ANAA/NIAA/AAIN/AANA

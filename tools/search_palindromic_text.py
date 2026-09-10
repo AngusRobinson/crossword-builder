@@ -50,11 +50,14 @@ rows_only = "--rows" in sys.argv
 # filter the score cannot subvert.
 CONTENT = 2
 SAVE = None
+TEXT = None
 for a in sys.argv:
     if a.startswith("--content="):
         CONTENT = int(a.split("=", 1)[1])
     if a.startswith("--save="):
         SAVE = a.split("=", 1)[1]
+    if a.startswith("--text="):
+        TEXT = a.split("=", 1)[1]
 ALL = []
 scores = frequency.load_scores("english-names-scores.txt")
 raw = json.load(open("out/posall.json"))
@@ -192,5 +195,17 @@ print(f"{'rows kept whole' if rows_only else 'words may cross rows'}: "
       f"{seen:,} grids segmented, kept best {len(best)} "
       f"[{elapsed:.0f}s{' -- TIMED OUT' if elapsed > budget else ', exhaustive'}]",
       flush=True)
-for v, seq, rows in sorted(best, reverse=True)[:24]:
+ranked = sorted(best, reverse=True)
+if TEXT:
+    with open(TEXT, "w") as handle:
+        handle.write(f"# {size}x{size}, floor {floor}, "
+                     f"{'rows kept whole' if rows_only else 'words may cross rows'}"
+                     f", content {CONTENT}\n")
+        handle.write(f"# {seen:,} grids segmented, "
+                     f"{'exhaustive' if time.time() - began <= budget else 'TIMED OUT'}\n#\n")
+        for v, seq, rows in ranked:
+            handle.write(f"{v:>4}  {' '.join(seq).upper():<46} "
+                         f"{'/'.join(r.upper() for r in rows)}\n")
+    print(f"wrote {TEXT}", flush=True)
+for v, seq, rows in ranked[:24]:
     print(f"  {v:>3}  {' '.join(seq).upper():<44} [{'/'.join(r.upper() for r in rows)}]")
