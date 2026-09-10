@@ -106,12 +106,30 @@ grid = [[None]*n for _ in range(n)]
 best, seen, count = [], 0, 0
 began = time.time()
 
-def readings(text, limit=60):
+TRUNCATED = [0]
+
+def readings(text, limit=20_000):
+    """Every way the text splits, unless there are absurdly many.
+
+    The first version stopped at the first sixty found depth-first, which is
+    not a sample of the readings but the sixty that happen to come first when
+    long words are tried before short ones -- so a text whose grammatical
+    reading used short words early was graded on readings that did not include
+    it. Counting first is cheap and says whether the limit binds at all.
+    """
+    n = len(text)
+    ways = [1] + [0] * n
+    for end in range(1, n + 1):
+        for take in range(1, min(7, end) + 1):
+            if text[end-take:end] in vocab:
+                ways[end] += ways[end-take]
+    if ways[n] > limit:
+        TRUNCATED[0] += 1
     out = []
     def walk(at, parts):
         if len(out) >= limit: return
-        if at == len(text): out.append(list(parts)); return
-        for k in range(1, min(7, len(text)-at)+1):
+        if at == n: out.append(list(parts)); return
+        for k in range(1, min(7, n-at)+1):
             if text[at:at+k] in vocab:
                 parts.append(text[at:at+k]); walk(at+k, parts); parts.pop()
     walk(0, [])
@@ -142,8 +160,15 @@ def step(pos, states):
                 nxt.add(t)
                 if t in vocab: nxt.add("")
         if not nxt: continue
-        if rows_only and c == n - 1 and "" not in nxt:
-            continue                       # a row must end on a word boundary
+        if rows_only and c == n - 1:
+            # A row must END on a word boundary, which means discarding the
+            # states that carry an unfinished prefix -- not merely checking
+            # that a finished one is among them. Testing `"" in nxt` and
+            # keeping the rest let a word straddle the boundary anyway, so
+            # EWERE, which is no word, passed as a row.
+            if "" not in nxt:
+                continue
+            nxt = {""}
         cells = () if fixed is not None else orbits[(r, c)]
         for (i, j) in cells: grid[i][j] = ch
         step(pos + 1, nxt)
@@ -151,6 +176,9 @@ def step(pos, states):
 
 step(0, {""})
 elapsed = time.time() - began
+if TRUNCATED[0]:
+    print(f"WARNING: {TRUNCATED[0]:,} texts had more readings than the limit "
+          f"and were graded on a subset", flush=True)
 print(f"{'rows kept whole' if rows_only else 'words may cross rows'}: "
       f"{seen:,} grids segmented, kept best {len(best)} "
       f"[{elapsed:.0f}s{' -- TIMED OUT' if elapsed > budget else ', exhaustive'}]",

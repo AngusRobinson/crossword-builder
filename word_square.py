@@ -37,13 +37,15 @@ enough to catch by eye, but a word square is nothing but entries.
 """
 
 import argparse
+import os
 import sys
 import time
 
+from crossword import frequency
 from crossword.index import Index
+from crossword.words import load
 from squares.double import double
 from squares.ordinary import find, is_square
-from crossword.words import load
 
 
 def main() -> int:
@@ -64,6 +66,9 @@ def main() -> int:
                         help="node budget per try (default 20,000)")
     parser.add_argument("--tries", type=int, default=60)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--scores", default=None,
+                        help="familiarity table for --words; defaults to the "
+                             "one beside it")
     parser.add_argument("--commonness", type=float, default=0.0,
                         help="0 takes any word; raise it to prefer familiar "
                              "ones, which at these sizes often means no square "
@@ -89,7 +94,20 @@ def main() -> int:
     if not args.quiet:
         print(f"{len(entries):,} words of exactly {args.size} letters",
               file=sys.stderr)
-    index = Index(entries)
+    # Without a familiarity table `Index.quantile` is None, and the Gumbel
+    # ordering both solvers use falls back to a plain shuffle -- so
+    # --commonness and --aim were accepted and then ignored. The table is
+    # taken from beside the dictionary, as make_grid.py and sator.py do.
+    scores_path = args.scores
+    if scores_path is None:
+        beside = os.path.splitext(args.words)[0] + "-scores.txt"
+        scores_path = beside if os.path.exists(beside) else None
+    scores = (frequency.load_scores(scores_path) if scores_path else None)
+    if scores is None and args.commonness > 0:
+        parser.error(
+            f"--commonness needs a familiarity table; none found beside "
+            f"{args.words}. tools/build_frequency.py --dictionary writes one.")
+    index = Index(entries, scores)
 
     began = time.time()
 

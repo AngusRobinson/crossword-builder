@@ -848,11 +848,20 @@ search:
     common words, all entries distinct   nothing in 1,584 attempts
     proper nouns, all entries distinct   found on attempt 2
 
-and the middle row is not a matter of effort. Over the top thirty grids at
-400,000 nodes each, the median attempt died after **110** nodes and only one
-of a hundred and twenty reached its budget: the grids are being proved
-unfillable, not abandoned. Doubling the stock with proper nouns finds one in
-five seconds, and it is markedly worse to read -- NAGRAD, SAREPOL, KAMANIS.
+and the middle row does not look like a matter of effort. Over the top thirty
+grids at 400,000 nodes each the median attempt died after **110** nodes, and
+one of a hundred and twenty reached its budget.
+
+That is evidence and not a proof, which an earlier draft of this section said
+it was. `squares.rotational.solve` takes `branch_cap=200`: at each node it
+enumerates at most two hundred candidate words out of however many match. A
+search that never sees the two hundred and first cannot establish that no fill
+exists, however fast it fails. The pruning is exact -- a branch dies only when
+some entry has no candidate at all -- so the dead ends found are real; what
+does not follow is that they are all of them.
+
+Doubling the stock with proper nouns finds one in five seconds, and it is
+markedly worse to read -- NAGRAD, SAREPOL, KAMANIS.
 
 ### Barred grids take it much further
 
@@ -904,9 +913,9 @@ end where a row does; without it a word may straddle the boundary.
 Exhaustive results, over the 1,628 words scoring 4.0 or better, each square
 required to contain two words of four letters or more:
 
-    4x4  rows kept whole        13,264 grids      no sentence
+    4x4  rows kept whole         1,219 grids      no sentence
     4x4  words may cross rows   31,786 grids      no sentence
-    5x5  rows kept whole       575,845 grids      no sentence
+    5x5  rows kept whole       110,118 grids      no sentence
     5x5  words may cross rows  899,964 grids      no sentence
 
 The best of them, and the best of everything tried:
@@ -918,6 +927,12 @@ The best of them, and the best of everything tried:
 
 which the row-by-row search cannot reach, HETI and ITEH being no words. At
 5x5 the best is RE HERE WERE HE RE HE RE WE RE HER, which is not a sentence.
+
+The row-by-row counts are an order of magnitude smaller than first reported.
+`--rows` had been written as a check that a word *could* end at the boundary
+while the states carrying an unfinished one were kept, so a word straddled the
+row anyway: EWERE, which is no word, was reported as a row. What that run
+measured was the crossing search with an extra filter.
 
 **What these negatives do and do not cover.** They are exhaustive over a
 vocabulary of 1,628 words. At a floor of 3.0 the vocabulary is 15,026 and both
