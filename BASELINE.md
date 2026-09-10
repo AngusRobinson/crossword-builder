@@ -918,15 +918,16 @@ required to contain two words of four letters or more:
     5x5  rows kept whole       110,118 grids      no sentence
     5x5  words may cross rows  899,964 grids      no sentence
 
-The best of them, and the best of everything tried:
+The best of them is a 4x4, and which one it is took a grammar model to
+settle. Two candidates read alike to a person; a RoBERTa trained on
+acceptability scores them 1.000 and 0.000:
 
-    H E T I      "HE TIED IT -- TIDE IT, EH?"
-    E D I T
-    T I D E
-    I T E H
-
-which the row-by-row search cannot reach, HETI and ITEH being no words. At
-5x5 the best is RE HERE WERE HE RE HE RE WE RE HER, which is not a sentence.
+    T I D E      "Tide, I did. Did I edit?"        1.000
+    I D I D
+    D I D I      H E T I  "He tied it, tide it, eh."   0.000
+    E D I T      E D I T
+                 T I D E
+                 I T E H
 
 The row-by-row counts are an order of magnitude smaller than first reported.
 `--rows` had been written as a check that a word *could* end at the boundary
@@ -934,15 +935,45 @@ while the states carrying an unfinished one were kept, so a word straddled the
 row anyway: EWERE, which is no word, was reported as a row. What that run
 measured was the crossing search with an extra filter.
 
-**What these negatives do and do not cover.** They are exhaustive over a
-vocabulary of 1,628 words. At a floor of 3.0 the vocabulary is 15,026 and both
-5x5 searches run for half an hour without finishing, so nothing is claimed
-there. A sentence using a word outside the most familiar 1,628 has not been
-ruled out.
+### A larger vocabulary buys candidates, and better ones, not a sentence
 
-The grading is the limit rather than the search, and is recorded as unreliable
-rather than trusted. It scores part-of-speech bigrams, which a run of
-two-letter words maximises while saying nothing -- an earlier version ranked
-BE WE RE HE RE WE RE WE RE HERE WEB above HE TIED IT. Requiring words of four
-letters or more is a filter that score cannot subvert, which is why it is a
-filter and not a term in the score. Anything better wants a language model.
+At a floor of 3.5 -- 5,387 words against 1,628 -- the field is 3,027,635 grids
+and 399,534 carry two real words, twenty times the pool for three times the
+dictionary. Quality rises with it. The best now read
+
+    Lo lemon, noel non, leon no me lol.
+    Ma re pa, never, ever even a per am.
+    Net, an era mata, batam arena ten.
+    Hit a final at a natal an, i fatih.
+
+where at 4.0 the best was LAL A A LAL. LEMON, NEVER, ARENA, HIT and FINAL are
+real words doing real work; what they will not do is cohere. The difficulty
+has moved rather than gone -- it is no longer that there is nothing to build a
+sentence from, and not yet established what it is instead. The symmetry forces
+repetition, nine free letters filling twenty-five cells, and AMAMA, LARAL and
+HAHAH patterns run through every result: a claim about the grid rather than
+the dictionary, and one that can be measured.
+
+### Ranking, and what it is worth
+
+`tools/judge_sentences.py` scores acceptability with a model trained on the
+question, searches comma placements because they decide the answer -- JAMES
+WATCH GREEN WATER SLYLY scores 0.001 and JAMES, WATCH GREEN WATER SLYLY scores
+1.000 -- and multiplies by a variety term.
+
+The variety term is not a refinement. Both models reward repetition:
+acceptability reads a run of nouns and says yes, and GPT-2's context lift is
+*highest* where a text repeats, context being most helpful exactly there. On
+the 5x5 field the two together put I OH CHOI, OH CHOI OH CHOI OH CHOI first of
+nine hundred thousand. Distinct words over total is what neither supplies.
+
+Even so it ranks and does not decide: acceptability returns 1.000 for HALL A,
+HALL A, HALL AH, CoLA marking well-formedness and a bare noun phrase being
+well-formed. Twelve hand-picked cases had suggested otherwise, which says more
+about the cases than the model.
+
+**What the negatives cover.** Exhaustive over 1,628 words and over 5,387; the
+15,026-word vocabulary has not been searched to the end. Reversibility, which
+constrains the word-square searches above, does not constrain these: the text
+is a palindrome, so it is one string with one set of readings, and a word's
+mirrored letters may fall inside another word or across a boundary.
