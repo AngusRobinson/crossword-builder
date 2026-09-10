@@ -1,0 +1,18 @@
+# 161 SATOR squares of order 6, exhaustive
+# dictionary everything.txt, proper nouns allowed
+
+weakest 2.23, mean 2.98
+   H A E N A M   2.58
+   A L L E V A   2.23
+   E L E V E N   5.04
+   N E V E L E   2.25
+   A V E L L A   2.27
+   M A N E A H   3.49
+
+weakest 2.00, mean 3.37
+   N E I S S E   4.00
+   E G N O P S   2.00
+   I N T R O S   5.02
+   S O R T N I   2.00
+   S P O N G E   5.03
+   E S S I E N   2.20

@@ -1,0 +1,306 @@
+# judged4-v2.json: 301 candidates, ranked
+# score  accept  text  rows
+# The score ranks; it does not decide. The model returns 1.000
+# for HALL A, HALL A, HALL AH.
+#
+   1.000  1.000 Tide, id id. Did I edit?                       TIDE/IDID/DIDI/EDIT
+   1.000  1.000 Am I a miki. I kim, a, I ma.                   AMIA/MIKI/IKIM/AIMA
+   1.000  1.000 Hail, abdi, id bali. Ah?                       HAIL/ABDI/IDBA/LIAH
+   1.000  1.000 Kara a. Furr, ufa arak?                        KARA/AFUR/RUFA/ARAK
+   1.000  1.000 Kara a. Barr, aba arak?                        KARA/ABAR/RABA/ARAK
+   1.000  1.000 Ma, lea. Belle bae lam?                        MALE/ABEL/LEBA/ELAM
+   1.000  1.000 Arad, raha, ahar. Dara?                        ARAD/RAHA/AHAR/DARA
+   1.000  1.000 A rey rome, emory era?                         AREY/ROME/EMOR/YERA
+   1.000  1.000 Ma cia, ricci rai. Cam.                        MACI/ARIC/CIRA/ICAM
+   1.000  1.000 Sue hui, lee, liuhe. Us?                       SUEH/UILE/ELIU/HEUS
+   1.000  1.000 In. Etna, see san teni?                        INET/NASE/ESAN/TENI
+   1.000  1.000 Re. Lee, belle beeler?                         RELE/EBEL/LEBE/ELER
+   1.000  1.000 Lae, mao gee. Go a meal?                       LAEM/AOGE/EGOA/MEAL
+   1.000  1.000 Mati a. Latta, lai tam?                        MATI/ALAT/TALA/ITAM
+   1.000  1.000 A papp a ma, a mapp a pa?                      APAP/PAMA/AMAP/PAPA
+   1.000  1.000 Kuo. Hua woo, wau houk?                        KUOH/UAWO/OWAU/HOUK
+   1.000  1.000 Arak, raha, ahar. Kara?                        ARAK/RAHA/AHAR/KARA
+   1.000  1.000 Ealy a. Bell ebay lae?                         EALY/ABEL/LEBA/YLAE
+   1.000  1.000 Crap, raha. A harp arc?                        CRAP/RAHA/AHAR/PARC
+   1.000  1.000 Xindi won now. Id nix?                         XIND/IWON/NOWI/DNIX
+   1.000  1.000 I am ma. Lim, milam, mai?                      IAMM/ALIM/MILA/MMAI
+   1.000  1.000 Das, las. Is sisal sad?                        DASL/ASIS/SISA/LSAD
+   1.000  1.000 Mar, bah arrah. Abram?                         MARB/AHAR/RAHA/BRAM
+   1.000  1.000 Lae mao, dee. Do a meal.                       LAEM/AODE/EDOA/MEAL
+   1.000  1.000 Rae dao gee. Go, a dear.                       RAED/AOGE/EGOA/DEAR
+   1.000  1.000 Par. Tabor, rob a trap?                        PART/ABOR/ROBA/TRAP
+   1.000  1.000 I aria. Furr ufa, I rai?                       IARI/AFUR/RUFA/IRAI
+   1.000  1.000 Ma, beal, ibb. I lae bam?                      MABE/ALIB/BILA/EBAM
+   1.000  1.000 A a, iga lai, I a lagi. A a?                   AAIG/ALAI/IALA/GIAA
+   1.000  1.000 So. Ceo, ricci roe cos?                        SOCE/ORIC/CIRO/ECOS
+   1.000  1.000 A a a nam. Ma amman, a a a?                    AAAN/AMMA/AMMA/NAAA
+   1.000  1.000 A pan pila. A lip napa?                        APAN/PILA/ALIP/NAPA
+   1.000  1.000 Dee rea. Lee lae reed?                         DEER/EALE/ELAE/REED
+   1.000  1.000 Go, leo nall. A noe log?                       GOLE/ONAL/LANO/ELOG
+   1.000  1.000 A a, a tam, ma am mata. A a?                   AAAT/AMMA/AMMA/TAAA
+   1.000  1.000 A ma, a mata. A tama, a ma?                    AMAA/MATA/ATAM/AAMA
+   1.000  1.000 Dara, ahar, raha. Arad?                        DARA/AHAR/RAHA/ARAD
+   1.000  1.000 A mao mama, a ma moa. Ma?                      AMAO/MAMA/AMAM/OAMA
+   1.000  1.000 Sala. A hall, ah a, a las.                     SALA/AHAL/LAHA/ALAS
+   1.000  1.000 A bam bar. A arab maba?                        ABAM/BARA/ARAB/MABA
+   1.000  1.000 So. Cao, ricci roa cos?                        SOCA/ORIC/CIRO/ACOS
+   1.000  1.000 To lao gill I go a lot.                        TOLA/OGIL/LIGO/ALOT
+   1.000  1.000 I a, roa, darr. A dao rai?                     IARO/ADAR/RADA/ORAI
+   1.000  1.000 Dara a. Barr, aba arad.                        DARA/ABAR/RABA/ARAD
+   1.000  1.000 A mao, mora. A romo, ama?                      AMAO/MORA/AROM/OAMA
+   1.000  1.000 In etna, yee yan teni?                         INET/NAYE/EYAN/TENI
+   1.000  1.000 Sala a full, ufa a las.                        SALA/AFUL/LUFA/ALAS
+   1.000  1.000 Maba a babb, aba a bam?                        MABA/ABAB/BABA/ABAM
+   1.000  1.000 I am gao. Hmm, hoag, mai?                      IAMG/AOHM/MHOA/GMAI
+   1.000  1.000 Marka. Bar rabak, ram?                         MARK/ABAR/RABA/KRAM
+   1.000  1.000 I aria. Marra mai rai?                         IARI/AMAR/RAMA/IRAI
+   1.000  1.000 A a ah abha ah bah. A a a?                     AAAH/ABHA/AHBA/HAAA
+   1.000  1.000 Ton rouen. Neu or not?                         TONR/OUEN/NEUO/RNOT
+   1.000  1.000 An. Arni, ma a, min rana?                      ANAR/NIMA/AMIN/RANA
+   1.000  1.000 A, or. To parra, pot roa.                      AORT/OPAR/RAPO/TROA
+   1.000  1.000 Pa, moa, lamm. A lao map?                      PAMO/ALAM/MALA/OMAP
+   1.000  1.000 Rasta, las. Sala, tsar?                        RAST/ALAS/SALA/TSAR
+   1.000  1.000 I. A lea belle bae lai?                        IALE/ABEL/LEBA/ELAI
+   1.000  1.000 Lae, lao gee. Go a leal?                       LAEL/AOGE/EGOA/LEAL
+   1.000  1.000 Nabha, babb. A bah ban?                        NABH/ABAB/BABA/HBAN
+   1.000  1.000 A ma a maba, a bama a ma?                      AMAA/MABA/ABAM/AAMA
+   1.000  1.000 Dias itsa, asti said.                          DIAS/ITSA/ASTI/SAID
+   1.000  1.000 Habra babb, a bar. Bah.                        HABR/ABAB/BABA/RBAH
+   1.000  1.000 Mar. Haber, re bahr am?                        MARH/ABER/REBA/HRAM
+   1.000  1.000 Ma. Saad, as sad a a sam?                      MASA/ADAS/SADA/ASAM
+   1.000  1.000 Harr. Ah orr, oh arrah.                        HARR/AHOR/ROHA/RRAH
+   1.000  1.000 Nam ma, ham, ma. Hamman?                       NAMM/AHAM/MAHA/MMAN
+   1.000  1.000 A a, a vann a an nava. A a?                    AAAV/ANNA/ANNA/VAAA
+   1.000  1.000 A a a sala, a a a las. A, a a?                 AAAS/ALAA/AALA/SAAA
+   1.000  1.000 Mark a. Parr, a pak ram?                       MARK/APAR/RAPA/KRAM
+   1.000  1.000 Raha a nah. Han a ahar?                        RAHA/ANAH/HANA/AHAR
+   1.000  1.000 Ah. Abha, a a a a ah, bah a.                   AHAB/HAAA/AAAH/BAHA
+   1.000  1.000 A a, a bam, ma am maba. A a?                   AAAB/AMMA/AMMA/BAAA
+   1.000  1.000 Ma ah, abha ah, bah a am?                      MAAH/ABHA/AHBA/HAAM
+   1.000  1.000 We tie. Latta, lei tew?                        WETI/ELAT/TALE/ITEW
+   1.000  1.000 A a a dasha, ah sad. A, a a?                   AAAD/ASHA/AHSA/DAAA
+   1.000  1.000 Hesse, massa, mess. Eh?                        HESS/EMAS/SAME/SSEH
+   1.000  1.000 Me, roe. Dorr ode orem?                        MERO/EDOR/RODE/OREM
+   1.000  1.000 Fee rea. Lee lae reef?                         FEER/EALE/ELAE/REEF
+   1.000  1.000 A. Babb, ina an ibb, aba?                      ABAB/BINA/ANIB/BABA
+   1.000  1.000 Seo gee koo. Kee goes?                         SEOG/EEKO/OKEE/GOES
+   1.000  1.000 I. A roa karr, a kao rai?                      IARO/AKAR/RAKA/ORAI
+   1.000  1.000 Macy. A rocco ray cam?                         MACY/AROC/CORA/YCAM
+   1.000  1.000 Nor lo marr. Amol, ron.                        NORL/OMAR/RAMO/LRON
+   1.000  1.000 Am I a mati. I tam a, I ma?                    AMIA/MATI/ITAM/AIMA
+   1.000  1.000 See dey. Bee bye, dees?                        SEED/EYBE/EBYE/DEES
+   1.000  1.000 Ah, abha, ma am. Ah bah a?                     AHAB/HAMA/AMAH/BAHA
+   1.000  1.000 Code. Or, add a roe doc.                       CODE/ORAD/DARO/EDOC
+   1.000  1.000 I. Arua, marra, mau rai?                       IARU/AMAR/RAMA/URAI
+   1.000  1.000 Mati, akot. To kai, tam?                       MATI/AKOT/TOKA/ITAM
+   1.000  1.000 A pan pala. A lap napa?                        APAN/PALA/ALAP/NAPA
+   1.000  1.000 Ye, rae tarr, ate a rey?                       YERA/ETAR/RATE/AREY
+   1.000  1.000 A, a a ma staats. Ama a, a?                    AAAM/ASTA/ATSA/MAAA
+   1.000  1.000 Mila I. Celle, cia, lim.                       MILA/ICEL/LECI/ALIM
+   1.000  1.000 I ate a latta. Lae, tai.                       IATE/ALAT/TALA/ETAI
+   1.000  1.000 Dasha nis sin. Ah, sad?                        DASH/ANIS/SINA/HSAD
+   1.000  1.000 Nam, ma. Cam, mac amman.                       NAMM/ACAM/MACA/MMAN
+   1.000  1.000 A a, roa karr. Aka or a a.                     AARO/AKAR/RAKA/ORAA
+   1.000  1.000 Lo leo. Celle coe, lol?                        LOLE/OCEL/LECO/ELOL
+   1.000  1.000 Ma am, abha ah, bam a am.                      MAAM/ABHA/AHBA/MAAM
+   1.000  1.000 Or. Ah raha, ahar haro?                        ORAH/RAHA/AHAR/HARO
+   1.000  1.000 Han, yan, anna. Nay nah?                       HANY/ANAN/NANA/YNAH
+   1.000  1.000 Ma roa karr, a. Kao ram?                       MARO/AKAR/RAKA/ORAM
+   1.000  1.000 Rae, yao gee. Go a year?                       RAEY/AOGE/EGOA/YEAR
+   1.000  1.000 Seo, gee, yoo. Yee goes.                       SEOG/EEYO/OYEE/GOES
+   1.000  1.000 Haas, a ida a, dias a. Ah?                     HAAS/AIDA/ADIA/SAAH
+   1.000  1.000 Rae, bae. See sea bear?                        RAEB/AESE/ESEA/BEAR
+   1.000  1.000 Han a a a. Anna a, a an ah?                    HANA/AAAN/NAAA/ANAH
+   1.000  1.000 A ama a bam, maba. A ma a?                     AAMA/ABAM/MABA/AMAA
+   1.000  1.000 Arad. Roha ah or dara?                         ARAD/ROHA/AHOR/DARA
+   1.000  1.000 Part a. Furr, ufa, trap?                       PART/AFUR/RUFA/TRAP
+   1.000  1.000 Re a, be, cia. A ice baer?                     REAB/ECIA/AICE/BAER
+   1.000  1.000 Par, pa, tarr. A tap rap?                      PARP/ATAR/RATA/PRAP
+   1.000  1.000 A aria a. Or roa aira a?                       AARI/AAOR/ROAA/IRAA
+   1.000  1.000 A a a las. A a, a a sala, a a?                 AAAL/ASAA/AASA/LAAA
+   1.000  1.000 Pot won. Otto now top?                         POTW/ONOT/TONO/WTOP
+   1.000  1.000 Haro. Ahar raha, or ah.                        HARO/AHAR/RAHA/ORAH
+   1.000  1.000 A a a rasta. A tsar, a a a?                    AAAR/ASTA/ATSA/RAAA
+   1.000  1.000 Mar, ma harr. A ham ram?                       MARM/AHAR/RAHA/MRAM
+   1.000  1.000 Ma lo, amol, lo mao. Lam?                      MALO/AMOL/LOMA/OLAM
+   1.000  1.000 A. Or, no, darr a don roa.                     AORN/ODAR/RADO/NROA
+   1.000  1.000 A. A ma a, tam mata ama a.                     AAMA/ATAM/MATA/AMAA
+   1.000  1.000 I am hanam. Ma, nah, mai?                      IAMH/ANAM/MANA/HMAI
+   1.000  1.000 A a, a a, aira aria. A a a a?                  AAAA/AIRA/ARIA/AAAA
+   1.000  1.000 Go leo, celle coe, log?                        GOLE/OCEL/LECO/ELOG
+   1.000  1.000 Nah, pan ah. Han a phan?                       NAHP/ANAH/HANA/PHAN
+   1.000  1.000 Lie, biu, bee. Bui beil?                       LIEB/IUBE/EBUI/BEIL
+   1.000  1.000 Pati, akot. To kai, tap.                       PATI/AKOT/TOKA/ITAP
+   1.000  1.000 I. Ama a tam, mata, a mai?                     IAMA/ATAM/MATA/AMAI
+   1.000  1.000 A a, ah a, moa a omaha. A a?                   AAAH/AMOA/AOMA/HAAA
+   1.000  1.000 Han ma, linn I. Lam nah?                       HANM/ALIN/NILA/MNAH
+   1.000  1.000 Lae saw gee, gwa, seal?                        LAES/AWGE/EGWA/SEAL
+   1.000  1.000 Ma, roa, darr. A dao ram?                      MARO/ADAR/RADA/ORAM
+   1.000  1.000 A an, a a a. Anna a a an a a?                  AANA/AAAN/NAAA/ANAA
+   1.000  1.000 Par ma darr. A dam rap?                        PARM/ADAR/RADA/MRAP
+   1.000  1.000 I am, ma. Lamm, alam mai?                      IAMM/ALAM/MALA/MMAI
+   1.000  1.000 Ma an, awka a, kwan a am?                      MAAN/AWKA/AKWA/NAAM
+   1.000  1.000 Mata. A matta, ma a tam?                       MATA/AMAT/TAMA/ATAM
+   1.000  1.000 Macy a. Ricci, ray cam.                        MACY/ARIC/CIRA/YCAM
+   1.000  1.000 Neu yei. Luu, lie, yuen?                       NEUY/EILU/ULIE/YUEN
+   1.000  1.000 Bar a. Ahar raha, arab?                        BARA/AHAR/RAHA/ARAB
+   1.000  1.000 Ma, a ma staats a ma am?                       MAAM/ASTA/ATSA/MAAM
+   1.000  1.000 Xindi. Han nah, id nix?                        XIND/IHAN/NAHI/DNIX
+   1.000  1.000 A a a mata a a a. Tam, a a a?                  AAAM/ATAA/AATA/MAAA
+   1.000  1.000 Marra, harr, ahar. Ram?                        MARR/AHAR/RAHA/RRAM
+   1.000  1.000 Pala. A full, ufa a, lap?                      PALA/AFUL/LUFA/ALAP
+   1.000  1.000 Mar, bae or roe. Abram.                        MARB/AEOR/ROEA/BRAM
+   1.000  1.000 A a a, a aria, aira. A a a a?                  AAAA/ARIA/AIRA/AAAA
+   1.000  1.000 Ah a, ahar a a, raha. Ah a?                    AHAA/HARA/ARAH/AAHA
+   1.000  1.000 Erb or tabb, at rob. Re.                       ERBO/RTAB/BATR/OBRE
+   1.000  1.000 A a, roa furr, ufa. Or a a?                    AARO/AFUR/RUFA/ORAA
+   1.000  1.000 Rasta ross. Or, a tsar.                        RAST/AROS/SORA/TSAR
+   1.000  1.000 Mar a. Ahar raha, a ram.                       MARA/AHAR/RAHA/ARAM
+   1.000  1.000 A a a nash, a ah san. A a a?                   AAAN/ASHA/AHSA/NAAA
+   1.000  1.000 I am, nah am, mahan mai?                       IAMN/AHAM/MAHA/NMAI
+   1.000  1.000 Duo, luo. Zoo zou loud?                        DUOL/UOZO/OZOU/LOUD
+   1.000  1.000 Era graf. A, a, far gare.                      ERAG/RAFA/AFAR/GARE
+   1.000  1.000 Borrow or row, or rob.                         BORR/OWOR/ROWO/RROB
+   1.000  1.000 Era. A raha, ahar, a a re?                     ERAA/RAHA/AHAR/AARE
+   1.000  1.000 A to otero, ore to ota?                        ATOO/TERO/ORET/OOTA
+   1.000  1.000 Nam, jau. Am mau ajman?                        NAMJ/AUAM/MAUA/JMAN
+   1.000  1.000 A, or lo. Marr amol roa?                       AORL/OMAR/RAMO/LROA
+   1.000  1.000 Did. Lim add a mild id?                        DIDL/IMAD/DAMI/LDID
+   1.000  1.000 Haro. Ah orr, oh a, or ah.                     HARO/AHOR/ROHA/ORAH
+   1.000  1.000 A an, a, a mann. A ma an a a?                  AANA/AMAN/NAMA/ANAA
+   1.000  1.000 An a a naha. A han, a an a?                    ANAA/NAHA/AHAN/AANA
+   1.000  1.000 A, a a, tama a a a mata. A a?                  AAAT/AMAA/AAMA/TAAA
+   1.000  1.000 A a to a. A otto a a ota a?                    AATO/AAOT/TOAA/OTAA
+   1.000  1.000 Had I arad. Dara, idah?                        HADI/ARAD/DARA/IDAH
+   1.000  1.000 Mata at ott. Ota at am?                        MATA/ATOT/TOTA/ATAM
+   1.000  1.000 A a a raha. A a ahar a a a?                    AAAR/AHAA/AAHA/RAAA
+   1.000  1.000 Yan han. Anna nah nay?                         YANH/ANAN/NANA/HNAY
+   1.000  1.000 So, I kosti. Its ok ios?                       SOIK/OSTI/ITSO/KIOS
+   1.000  1.000 A a a kara, a a arak a a a?                    AAAK/ARAA/AARA/KAAA
+   1.000  1.000 Ma, lea, dill. Ida elam.                       MALE/ADIL/LIDA/ELAM
+   1.000  1.000 Ah or haro, or ah. Roha.                       AHOR/HARO/ORAH/ROHA
+   1.000  1.000 A lae, lam a, a ma leal a?                     ALAE/LAMA/AMAL/EALA
+   1.000  1.000 A. Gas, gela, a leg saga?                      AGAS/GELA/ALEG/SAGA
+   1.000  1.000 Parra, harr. Ahar rap?                         PARR/AHAR/RAHA/RRAP
+   1.000  1.000 Yan a am, anna, ma a. Nay?                     YANA/AMAN/NAMA/ANAY
+   1.000  1.000 A. Orr, omar, ram or roa?                      AORR/OMAR/RAMO/RROA
+   1.000  1.000 Apac pala a, lap cap a?                        APAC/PALA/ALAP/CAPA
+   1.000  1.000 A a ebay be eby a be a a.                      AAEB/AYBE/EBYA/BEAA
+   1.000  1.000 Haas. A oh, a ah, oas a ah.                    HAAS/AOHA/AHOA/SAAH
+   1.000  1.000 Raha, a yeh. Hey, a ahar?                      RAHA/AYEH/HEYA/AHAR
+   1.000  1.000 Me, roe. Derr ede orem?                        MERO/EDER/REDE/OREM
+   1.000  1.000 Pati a matt a, mai tap?                        PATI/AMAT/TAMA/ITAP
+   1.000  1.000 Mar, pa, tarr. A tap ram?                      MARP/ATAR/RATA/PRAM
+   1.000  1.000 A bae. Buda a, dube aba?                       ABAE/BUDA/ADUB/EABA
+   1.000  1.000 A or to. Karr, akot roa?                       AORT/OKAR/RAKO/TROA
+   1.000  1.000 Del, sena. Llanes led.                         DELS/ENAL/LANE/SLED
+   1.000  1.000 Patna cotto can tap.                           PATN/ACOT/TOCA/NTAP
+   1.000  1.000 Lae tao dee do, a. Teal?                       LAET/AODE/EDOA/TEAL
+   1.000  1.000 Hate a pat. Tap a etah?                        HATE/APAT/TAPA/ETAH
+   1.000  1.000 Assis ios. So is issa?                         ASSI/SIOS/SOIS/ISSA
+   1.000  1.000 A or no, lor. Rolon, roa?                      AORN/OLOR/ROLO/NROA
+   1.000  1.000 Ye, lae. Call ace a ley?                       YELA/ECAL/LACE/ALEY
+   1.000  1.000 Han, nay. Anna, yan nah?                       HANN/AYAN/NAYA/NNAH
+   1.000  1.000 Pot no. Cotto, con, top?                       POTN/OCOT/TOCO/NTOP
+   1.000  1.000 Kao. Nah koo, khan oak?                        KAON/AHKO/OKHA/NOAK
+   1.000  1.000 Pila I. Celle cia lip?                         PILA/ICEL/LECI/ALIP
+   1.000  1.000 Ma an, anna ann, an a am?                      MAAN/ANNA/ANNA/NAAM
+   1.000  1.000 Naha a a uh. Hua a a han?                      NAHA/AAUH/HUAA/AHAN
+   1.000  1.000 A bae bam, a a, mabe aba?                      ABAE/BAMA/AMAB/EABA
+   1.000  1.000 Hanna a, anna a, ann ah?                       HANN/AAAN/NAAA/NNAH
+   1.000  1.000 A a a dara, a a arad a a a?                    AAAD/ARAA/AARA/DAAA
+   1.000  1.000 Tape a rap, pa, rae. Pat.                      TAPE/ARAP/PARA/EPAT
+   1.000  1.000 Han a a munn. Um a an ah?                      HANA/AMUN/NUMA/ANAH
+   1.000  1.000 Par, ma, harr. A ham rap.                      PARM/AHAR/RAHA/MRAP
+   1.000  1.000 Harr a, a or roa. Arrah.                       HARR/AAOR/ROAA/RRAH
+   1.000  1.000 Lae, bae. See sea beal?                        LAEB/AESE/ESEA/BEAL
+   1.000  1.000 A a a, yan, a a a anaya. A a?                  AAAY/ANAA/AANA/YAAA
+   1.000  1.000 Damn a ram, ma. Ran mad?                       DAMN/ARAM/MARA/NMAD
+   1.000  1.000 Hate a pit. Tip a etah?                        HATE/APIT/TIPA/ETAH
+   1.000  1.000 Arak, roha, ah. Or kara.                       ARAK/ROHA/AHOR/KARA
+   1.000  1.000 Tape a lapp. A lae pat?                        TAPE/ALAP/PALA/EPAT
+   1.000  1.000 Ye, lae, moll. Ome a ley?                      YELA/EMOL/LOME/ALEY
+   1.000  1.000 Napa a, papp a, pa. A pan?                     NAPA/APAP/PAPA/APAN
+   1.000  1.000 A a a I. Ahn a anhai a a a?                    AAAI/AHNA/ANHA/IAAA
+   1.000  1.000 Parra farr. A far rap?                         PARR/AFAR/RAFA/RRAP
+   1.000  1.000 Wet her, etter. Eh tew?                        WETH/ERET/TERE/HTEW
+   1.000  1.000 Oak a arak, kara a kao?                        OAKA/ARAK/KARA/AKAO
+   1.000  1.000 Sage a log, go lae gas?                        SAGE/ALOG/GOLA/EGAS
+   1.000  1.000 An a, anaya a yan a. An a?                     ANAA/NAYA/AYAN/AANA
+   1.000  1.000 Seeley sees ye. Lees?                          SEEL/EYSE/ESYE/LEES
+   1.000  1.000 A a a pala a a, a lapa a a?                    AAAP/ALAA/AALA/PAAA
+   1.000  1.000 A a a yala, a a a lay. A, a a?                 AAAY/ALAA/AALA/YAAA
+   1.000  1.000 Ma era ede, edea, ream.                        MAER/AEDE/EDEA/REAM
+   1.000  1.000 Oath a a otto a. Ah, tao?                      OATH/AAOT/TOAA/HTAO
+   1.000  1.000 Mann. A yan, nay, an nam?                      MANN/AYAN/NAYA/NNAM
+   1.000  1.000 Warn a marra man raw.                          WARN/AMAR/RAMA/NRAW
+   1.000  1.000 Napa a lip, pila a pan?                        NAPA/ALIP/PILA/APAN
+   1.000  1.000 In agnew, a a, weng an I?                      INAG/NEWA/AWEN/GANI
+   1.000  1.000 Sale a. Belle bae las?                         SALE/ABEL/LEBA/ELAS
+   1.000  1.000 An. Seng is sign esna.                         ANSE/NGIS/SIGN/ESNA
+   1.000  1.000 We tie, matta. Mei tew.                        WETI/EMAT/TAME/ITEW
+   1.000  1.000 A a a lapa a a, a pala a a?                    AAAL/APAA/AAPA/LAAA
+   1.000  1.000 Ma. A raha a a, ahar, a am?                    MAAR/AHAA/AAHA/RAAM
+   1.000  1.000 Yan a a, hann ah a a. Nay?                     YANA/AHAN/NAHA/ANAY
+   1.000  1.000 Yan nah. Anna han nay?                         YANN/AHAN/NAHA/NNAY
+   1.000  1.000 A lae ley a. A ye leal a?                      ALAE/LEYA/AYEL/EALA
+   1.000  1.000 Ma a. A anna ann, a a a am?                    MAAA/ANNA/ANNA/AAAM
+   1.000  1.000 A a ida kai, I a kadi. A a.                    AAID/AKAI/IAKA/DIAA
+   1.000  1.000 Mar. Lay, or royal ram?                        MARL/AYOR/ROYA/LRAM
+   1.000  1.000 A a a, banha. Ahn, aba a a?                    AAAB/ANHA/AHNA/BAAA
+   1.000  1.000 A a to a. Put tupa ota a?                      AATO/APUT/TUPA/OTAA
+   1.000  1.000 Ding I, son no, sign id?                       DING/ISON/NOSI/GNID
+   1.000  1.000 Came a bam. Ma bae mac?                        CAME/ABAM/MABA/EMAC
+   1.000  1.000 Rape a, lap pa lae. Par?                       RAPE/ALAP/PALA/EPAR
+   1.000  1.000 A a a I, aria, aira I. A a a?                  AAAI/ARIA/AIRA/IAAA
+   1.000  1.000 Sad a arad, dara a das?                        SADA/ARAD/DARA/ADAS
+   1.000  1.000 Am on muro. Or um, no, ma?                     AMON/MURO/ORUM/NOMA
+   1.000  1.000 Marx a der red ax ram?                         MARX/ADER/REDA/XRAM
+   1.000  1.000 Yala. A dill, id a, a lay.                     YALA/ADIL/LIDA/ALAY
+   1.000  1.000 Koss on, essen oss. Ok?                        KOSS/ONES/SENO/SSOK
+   1.000  1.000 Lae tao gee. Go a teal?                        LAET/AOGE/EGOA/TEAL
+   1.000  1.000 A I rai. Harr a hi aria?                       AIRA/IHAR/RAHI/ARIA
+   1.000  1.000 Era aria. A a aira, a re.                      ERAA/RIAA/AAIR/AARE
+   1.000  1.000 Tran rod a. A dorn art?                        TRAN/RODA/ADOR/NART
+   1.000  1.000 I. Am I a, lamm a, lai mai?                    IAMI/ALAM/MALA/IMAI
+   1.000  1.000 An anna. A a, a a ann, an a.                   ANAN/NAAA/AAAN/NANA
+   1.000  1.000 A a a, patra. Art a pa, a a.                   AAAP/ATRA/ARTA/PAAA
+   1.000  1.000 An ahn. An a, anan han, a?                     ANAH/NANA/ANAN/HANA
+   1.000  1.000 Rae kao sees oak ear?                          RAEK/AOSE/ESOA/KEAR
+   1.000  1.000 Rap a a kopp, ok a a par?                      RAPA/AKOP/POKA/APAR
+   1.000  1.000 Nor no, marr. Am on ron.                       NORN/OMAR/RAMO/NRON
+   1.000  1.000 At oita, noon, at iota.                        ATOI/TANO/ONAT/IOTA
+   1.000  1.000 Ma a a. Aira aria, a a am?                     MAAA/AIRA/ARIA/AAAM
+   1.000  1.000 Won koson. No sok now?                         WONK/OSON/NOSO/KNOW
+   1.000  1.000 Oss as, nis. Sins as, so?                      OSSA/SNIS/SINS/ASSO
+   1.000  1.000 Naha an ah, han a. Ah an?                      NAHA/ANAH/HANA/AHAN
+   1.000  1.000 Par, lay. Or royal rap?                        PARL/AYOR/ROYA/LRAP
+   1.000  1.000 Lae, rae, bee. Be a real?                      LAER/AEBE/EBEA/REAL
+   1.000  1.000 Trap raha. A harp art?                         TRAP/RAHA/AHAR/PART
+   1.000  1.000 A. I rai marr, am I aria?                      AIRA/IMAR/RAMI/ARIA
+   1.000  1.000 Yap, a a, kopp ok a a. Pay?                    YAPA/AKOP/POKA/APAY
+   1.000  1.000 Tran roha. A horn art?                         TRAN/ROHA/AHOR/NART
+   1.000  1.000 Ina a naha. Ah, an a, an I.                    INAA/NAHA/AHAN/AANI
+   1.000  1.000 Sanaa a. Ann a, a a an as?                     SANA/AAAN/NAAA/ANAS
+   1.000  1.000 I, a, an ah pa. A phan a a I?                  IAAN/AHPA/APHA/NAAI
+   1.000  1.000 I. A ahar I, a a I raha a I?                   IAAH/ARIA/AIRA/HAAI
+   1.000  1.000 A an I, a a, anna. A a ina a?                  AANI/AAAN/NAAA/INAA
+   1.000  1.000 Ram a am am, mama a. Mar?                      RAMA/AMAM/MAMA/AMAR
+   1.000  1.000 Ram. A a, tom mota, a mar.                     RAMA/ATOM/MOTA/AMAR
+   1.000  1.000 A I aria, a a a a a, I rai. A?                 AIAR/IAAA/AAAI/RAIA
+   1.000  1.000 A mai mama, am am I a. Ma?                     AMAI/MAMA/AMAM/IAMA
+   1.000  1.000 Mann, a hanna han. Nam.                        MANN/AHAN/NAHA/NNAM
+   0.999  0.999 I a ma am. Am mama a, mai.                     IAMA/AMAM/MAMA/AMAI
+   0.999  0.999 Damn a ham. Ma han, mad?                       DAMN/AHAM/MAHA/NMAD
+   0.999  0.999 I am. Tan, amman at mai?                       IAMT/ANAM/MANA/TMAI
+   0.999  0.999 A anna a. Inn I a, ann a a?                    AANN/AAIN/NIAA/NNAA
+   0.999  0.999 I mai, maba. Aba, miami.                       IMAI/MABA/ABAM/IAMI
+   0.999  0.999 A maymana an amy. A, ma.                       AMAY/MANA/ANAM/YAMA
+   0.999  0.999 I a a I anna, ann a. I a a I.                  IAAI/ANNA/ANNA/IAAI
+   0.999  0.999 I a, a iasi, a a. Is a I a a I?                IAAI/ASIA/AISA/IAAI
+   0.999  0.999 Earn a per, re, pan. Rae.                      EARN/APER/REPA/NRAE
+   0.999  0.999 Man a am, anna, ma a nam?                      MANA/AMAN/NAMA/ANAM
+   0.999  0.999 Wold or ill I rod low.                         WOLD/ORIL/LIRO/DLOW
+   0.999  0.999 Ina a nada a. Dan a an I?                      INAA/NADA/ADAN/AANI
+   0.996  0.996 I, ma a, mata a tam. A am I?                   IMAA/MATA/ATAM/AAMI
+   0.988  0.988 Maas a a, ma ama, as a. Am?                    MAAS/AAMA/AMAA/SAAM

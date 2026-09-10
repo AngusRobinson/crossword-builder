@@ -1,0 +1,26 @@
+# 76 SATOR squares of order 6, exhaustive
+# dictionary english-names.txt, proper nouns allowed
+
+weakest 2.23, mean 2.74
+   H A E N A M   2.58
+   A L L E V A   2.23
+   E L E V E N   3.61
+   N E V E L E   2.25
+   A V E L L A   2.27
+   M A N E A H   3.49
+
+weakest 1.55, mean 2.61
+   H A E N A M   2.58
+   A L L E V A   2.23
+   E L D E E N   1.55
+   N E E D L E   3.53
+   A V E L L A   2.27
+   M A N E A H   3.49
+
+weakest 1.53, mean 2.09
+   H I S S A M   1.93
+   I T A I B A   2.73
+   S A L L I S   2.40
+   S I L L A S   2.33
+   A B I A T I   1.59
+   M A S S I H   1.53

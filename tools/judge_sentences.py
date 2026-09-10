@@ -180,6 +180,8 @@ def main() -> int:
                              "as NO TABLE and never NOT ABLE")
     parser.add_argument("--top", type=int, default=25)
     parser.add_argument("--out", default=None)
+    parser.add_argument("--pointings", type=int, default=120,
+                        help="most punctuations to try per candidate")
     parser.add_argument("--text", default=None,
                         help="write the ranked list here as plain text")
     args = parser.parse_args()
@@ -248,8 +250,20 @@ def main() -> int:
         return out
 
     def variety(text):
+        """Distinct content words over content words.
+
+        Counting every word punished the one candidate here believed to be a
+        sentence: "Tide, I did. Did I edit?" repeats I and DID, scores 0.67,
+        and lost to three hundred distinct-word noun phrases scoring 1.00. It
+        would punish A MAN, A PLAN, A CANAL, PANAMA the same way. English
+        repeats its function words; what marks a text as noise is repeating
+        the words that carry meaning.
+        """
         plain = [w.strip(",.?!").lower() for w in text.split()]
-        return len(set(plain)) / len(plain)
+        content = [w for w in plain if len(w) >= 3]
+        if not content:
+            return 0.0
+        return len(set(content)) / len(content)
 
     # Shortlisting on unpunctuated text discarded whatever punctuation
     # rescues, and this project's own example moves 0.001 -> 1.000 on one
@@ -272,10 +286,20 @@ def main() -> int:
     print(f"shortlisted {len(short)}; every pointing of every reading",
           file=sys.stderr, flush=True)
 
+    # Every pointing of every reading is a lot: 400 candidates x 6 readings x
+    # 142 pointings is 340,000 forward passes, against 2,800 before commas and
+    # stops were searched properly. Cap the pool per candidate and say how far
+    # along it is, rather than going quiet for an hour.
     best = []
-    for index in short:
+    for done, index in enumerate(short):
+        if done % 25 == 0:
+            print(f"   pointing {done}/{len(short)}", file=sys.stderr,
+                  flush=True)
         rows, options = kept[index]
         pool = [t for words in options for t in punctuations(words)]
+        if len(pool) > args.pointings:
+            step = len(pool) / args.pointings
+            pool = [pool[int(k * step)] for k in range(args.pointings)]
         got = judge(pool)
         top = max(range(len(pool)), key=lambda k: got[k] * variety(pool[k]) ** 2)
         text, probability = pool[top], got[top]
