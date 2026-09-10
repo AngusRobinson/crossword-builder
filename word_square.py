@@ -47,6 +47,8 @@ from crossword.words import load
 from squares.double import double
 from squares.ordinary import find, is_square
 
+WORDLIST = "crossword/UKACD.txt"
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -58,7 +60,7 @@ def main() -> int:
                         help="ordinary (default): rows and columns read the "
                              "same. double: rows and columns are different "
                              "words")
-    parser.add_argument("--words", default="crossword/UKACD.txt")
+    parser.add_argument("--words", default=WORDLIST)
     # Many short tries, not one long one. The search is heavily tailed: the
     # try that succeeds does so in a few thousand nodes, and the ones that do
     # not are not going to.
@@ -101,7 +103,12 @@ def main() -> int:
     scores_path = args.scores
     if scores_path is None:
         beside = os.path.splitext(args.words)[0] + "-scores.txt"
-        scores_path = beside if os.path.exists(beside) else None
+        if os.path.exists(beside):
+            scores_path = beside
+        elif os.path.abspath(args.words) == os.path.abspath(WORDLIST):
+            # UKACD's table is the committed crossword/scores.txt and does not
+            # follow the <name>-scores.txt convention the built dictionaries do.
+            scores_path = frequency.SCORES_PATH
     scores = (frequency.load_scores(scores_path) if scores_path else None)
     if scores is None and args.commonness > 0:
         parser.error(

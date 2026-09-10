@@ -913,14 +913,20 @@ end where a row does; without it a word may straddle the boundary.
 Exhaustive results, over the 1,628 words scoring 4.0 or better, each square
 required to contain two words of four letters or more:
 
-    4x4  rows kept whole         1,219 grids      no sentence
-    4x4  words may cross rows   31,786 grids      no sentence
-    5x5  rows kept whole       110,118 grids      no sentence
-    5x5  words may cross rows  899,964 grids      no sentence
+    4x4  rows kept whole         1,219 grids
+    4x4  words may cross rows   31,786 grids
+    5x5  rows kept whole       110,118 grids
+    5x5  words may cross rows  899,964 grids
 
-The best of them is a 4x4, and which one it is took a grammar model to
-settle. Two candidates read alike to a person; a RoBERTa trained on
-acceptability scores them 1.000 and 0.000:
+Those counts are exhaustive enumerations and nothing more. No convincing
+sentence was found among the candidates reviewed, which is a weaker statement
+and the one the evidence supports: what reaches a reader is decided by a
+content filter, a family cap and a score, and each of those can discard
+something good before anyone sees it.
+
+The highest-scoring is a 4x4. Two candidates read alike to a person and the
+grammar model separates them, 1.000 against 0.000 -- which is a score, not a
+verdict: the same model returns 1.000 for HALL A, HALL A, HALL AH.
 
     T I D E      "Tide, I did. Did I edit?"        1.000
     I D I D

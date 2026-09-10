@@ -63,16 +63,88 @@ def load_model(name):
     return torch, tokeniser, model
 
 
-def dress(words, commas=()):
-    out = [w + ("," if i + 1 in commas else "") for i, w in enumerate(words)]
+def dress(words, commas=(), stops=(), final="."):
+    """The reading as a sentence, with breaks where asked for.
+
+    Commas alone cannot express the best thing these searches have found --
+    "Tide, I did. Did I edit?" needs a full stop and a question mark -- so a
+    break may be either, and the closing mark varies too.
+    """
+    out = []
+    for i, word in enumerate(words):
+        if word == "i":
+            word = "I"
+        mark = ""
+        if i + 1 in stops:
+            mark = "."
+        elif i + 1 in commas:
+            mark = ","
+        out.append(word + mark)
     text = " ".join(out)
-    return text[0].upper() + text[1:] + "."
+    # capitalise the start, and whatever follows a full stop
+    letters, upper = list(text), True
+    for i, ch in enumerate(letters):
+        if upper and ch.isalpha():
+            letters[i] = ch.upper()
+            upper = False
+        elif ch == ".":
+            upper = True
+    return "".join(letters) + final
 
 
-def placements(words, most=2):
+def punctuations(words, most=2, full=True):
+    """Ways of pointing the reading: commas, one full stop, . or ?"""
+    slots = range(1, len(words))
+    seen = set()
     for count in range(most + 1):
-        for where in itertools.combinations(range(1, len(words)), count):
-            yield where
+        for commas in itertools.combinations(slots, count):
+            for stop in ((None,) if not full else (None,) + tuple(slots)):
+                if stop in commas:
+                    continue
+                stops = () if stop is None else (stop,)
+                for final in (".", "?"):
+                    text = dress(words, commas, stops, final)
+                    if text not in seen:
+                        seen.add(text)
+                        yield text
+
+
+def cheap(words, most=1):
+    """A handful of pointings, for the pass that shortlists."""
+    out = [dress(words), dress(words, final="?")]
+    middle = len(words) // 2
+    if len(words) > 2:
+        out.append(dress(words, commas=(middle,)))
+        out.append(dress(words, stops=(middle,), final="?"))
+    return out
+
+
+def readings(text, by_length, vocab, want, limit=40):
+    """Every way the text splits, best first by how much substance it carries.
+
+    Taking one reading was taking the shortest-first one: NOTABLE splits as
+    NO TABLE and never as NOT ABLE, and 69% of candidates have more than one
+    reading, so the square was being judged on an arbitrary choice among them.
+    """
+    found = []
+
+    def walk(at, parts):
+        if len(found) >= limit:
+            return
+        if at == len(text):
+            found.append(list(parts))
+            return
+        for take in range(1, min(7, len(text) - at) + 1):
+            piece = text[at:at + take]
+            if piece in by_length.get(take, ()):
+                parts.append(piece)
+                walk(at + take, parts)
+                parts.pop()
+
+    walk(0, [])
+    keep = [p for p in found if sum(1 for w in p if len(w) >= 4) >= want]
+    keep.sort(key=lambda p: (-sum(1 for w in p if len(w) >= 4), len(p)))
+    return keep
 
 
 def main() -> int:
@@ -102,6 +174,10 @@ def main() -> int:
                              "more. The model accepts a run of single letters "
                              "and unfamiliar short words as a noun phrase, so "
                              "without this it returns 1.000 for LAL A A LAL")
+    parser.add_argument("--readings", type=int, default=4,
+                        help="how many readings of each square to judge. One "
+                             "was the shortest-first reading: NOTABLE splits "
+                             "as NO TABLE and never NOT ABLE")
     parser.add_argument("--top", type=int, default=25)
     parser.add_argument("--out", default=None)
     args = parser.parse_args()
@@ -120,34 +196,14 @@ def main() -> int:
     by_length[1] = {"a", "i"}
 
     grids = json.load(open(args.grids))
-    texts, keep = [], []
+    vocab = {w for ws in by_length.values() for w in ws}
+    kept = []
     for rows in grids:
-        reading = split("".join(rows), by_length, 1)
-        if not reading:
-            continue
-        if sum(1 for w in reading[0] if len(w) >= 4) < args.content:
-            continue
-        keep.append(rows)
-        texts.append(reading[0])
-    print(f"{len(keep):,} of {len(grids):,} squares split into words",
-          file=sys.stderr, flush=True)
-
-    # Squares sharing their first and last row are near-duplicates. Keeping a
-    # couple of each stops one prolific family filling the shortlist.
-    if args.per_family:
-        import collections
-        seen = collections.Counter()
-        kept_rows, kept_texts = [], []
-        for rows, text in zip(keep, texts):
-            family = (rows[0], rows[-1])
-            if seen[family] >= args.per_family:
-                continue
-            seen[family] += 1
-            kept_rows.append(rows)
-            kept_texts.append(text)
-        print(f"{len(kept_rows):,} after keeping {args.per_family} per family "
-              f"({len(seen):,} families)", file=sys.stderr, flush=True)
-        keep, texts = kept_rows, kept_texts
+        options = readings("".join(rows), by_length, vocab, args.content)
+        if options:
+            kept.append((rows, options[:args.readings]))
+    print(f"{len(kept):,} of {len(grids):,} squares have a reading carrying "
+          f"{args.content} real words", file=sys.stderr, flush=True)
 
     torch, tokeniser, model = load_model(args.model)
     gpt = None
@@ -158,10 +214,10 @@ def main() -> int:
         gpt_model.eval()
 
         def gpt(text):
-            """How much the context helps over word frequency alone.
+            """How much context helps over word frequency alone.
 
-            Low for a repetitive run of short words, which is exactly what
-            acceptability alone cannot see.
+            Highest where a text repeats, context being most helpful exactly
+            there, which is why it cannot be the whole score.
             """
             ids = gpt_tok(text, return_tensors="pt").input_ids
             if ids.shape[1] < 2:
@@ -184,47 +240,73 @@ def main() -> int:
             with torch.no_grad():
                 probs = torch.softmax(model(**ids).logits, -1)[:, 1]
             out += probs.tolist()
-            if start % (args.batch * 40) == 0:
+            if start and start % (args.batch * 200) == 0:
                 print(f"   {start:,}/{len(strings):,}", file=sys.stderr,
                       flush=True)
         return out
 
-    # One pass unpunctuated to shortlist, then every comma placement on those.
-    first = judge([dress(w) for w in texts])
-    order = sorted(range(len(texts)), key=lambda i: -first[i])
-    short = order[:args.shortlist]
-    print(f"shortlisted {len(short)}; trying comma placements",
+    def variety(text):
+        plain = [w.strip(",.?!").lower() for w in text.split()]
+        return len(set(plain)) / len(plain)
+
+    # Shortlisting on unpunctuated text discarded whatever punctuation
+    # rescues, and this project's own example moves 0.001 -> 1.000 on one
+    # comma. So a few pointings are tried before the shortlist, not after.
+    trial, owner = [], []
+    for index, (rows, options) in enumerate(kept):
+        for words in options:
+            for text in cheap(words):
+                trial.append(text)
+                owner.append(index)
+    print(f"scoring {len(trial):,} pointings to shortlist",
+          file=sys.stderr, flush=True)
+    first = judge(trial)
+    rough = {}
+    for score, index, text in zip(first, owner, trial):
+        value = score * variety(text) ** 2
+        if index not in rough or value > rough[index]:
+            rough[index] = value
+    short = sorted(rough, key=lambda i: -rough[i])[:args.shortlist]
+    print(f"shortlisted {len(short)}; every pointing of every reading",
           file=sys.stderr, flush=True)
 
     best = []
-    for i in short:
-        variants = [dress(texts[i], w) for w in placements(texts[i])]
-        accept = judge(variants)
-        pick = max(range(len(variants)), key=lambda k: accept[k])
-        text, probability = variants[pick], accept[pick]
+    for index in short:
+        rows, options = kept[index]
+        pool = [t for words in options for t in punctuations(words)]
+        got = judge(pool)
+        top = max(range(len(pool)), key=lambda k: got[k] * variety(pool[k]) ** 2)
+        text, probability = pool[top], got[top]
         lift = gpt(text) if gpt else 1.0
-        # Both models reward repetition, and a palindromic square is
-        # repetitive by construction. Acceptability sees a noun phrase and
-        # says yes; the lift is *highest* for a repeated run, context being
-        # most helpful exactly where the text repeats -- I OH CHOI OH CHOI OH
-        # CHOI scored 5.61, the best in a field of nine hundred thousand.
-        # Distinct words over total is the term neither model supplies.
-        plain = [w.strip(",.?!").lower() for w in text.split()]
-        variety = len(set(plain)) / len(plain)
-        best.append((probability * variety * variety, probability, variety,
-                     lift, text, keep[i]))
+        v = variety(text)
+        best.append((probability * v * v, probability, v, lift, text, rows))
     best.sort(reverse=True)
 
+    # The family cap belongs here, not before scoring: applied first it kept
+    # whichever members the search happened to reach, and a different middle
+    # row is a different sentence.
+    if args.per_family:
+        import collections
+        seen, trimmed = collections.Counter(), []
+        for row in best:
+            family = (row[5][0], row[5][-1])
+            if seen[family] >= args.per_family:
+                continue
+            seen[family] += 1
+            trimmed.append(row)
+        print(f"{len(trimmed)} shown, {args.per_family} per family",
+              file=sys.stderr)
+        best = trimmed
+
     if args.out:
-        json.dump([{"score": s, "acceptability": p, "variety": v, "lift": l,
-                    "text": t, "rows": r} for s, p, v, l, t, r in best],
+        json.dump([{"score": a, "acceptability": b, "variety": c, "lift": d,
+                    "text": e, "rows": f} for a, b, c, d, e, f in best],
                   open(args.out, "w"), indent=1)
         print(f"wrote {args.out}", file=sys.stderr)
     print(f"{'score':>6} {'ok':>6} {'var':>5} {'lift':>6}  text")
-    for score, probability, variety, lift, text, rows in best[:args.top]:
-        print(f"{score:>6.2f} {probability:>6.3f} {variety:>5.2f} "
-              f"{lift:>6.2f}  {text:<40} "
-              f"[{'/'.join(x.upper() for x in rows)}]")
+    for score, probability, v, lift, text, rows in best[:args.top]:
+        print(f"{score:>6.2f} {probability:>6.3f} {v:>5.2f} {lift:>6.2f}  "
+              f"{text:<44} [{'/'.join(x.upper() for x in rows)}]")
     return 0
 
 
