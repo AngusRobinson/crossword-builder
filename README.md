@@ -55,6 +55,7 @@ rather than letting it pass.
 - [Other grid sizes](#other-grid-sizes)
 - [A bigger dictionary](#a-bigger-dictionary)
 - [Word squares](#word-squares)
+- [The shortest word containing given letters](#the-shortest-word-containing-given-letters)
 - [Squares that read four ways](#squares-that-read-four-ways)
 - [Crosswords that read upside down](#crosswords-that-read-upside-down)
 - [Ninas](#ninas)
@@ -122,7 +123,8 @@ The layout, since there are two projects here rather than one:
     tests/       the test suite; `python3 -m pytest` from the root
     experiment/  the parameter study, its design and its results
 
-with `make_grid.py`, `word_square.py`, `sator.py` and `palindrome.py` at
+with `make_grid.py`, `word_square.py`, `sator.py`, `palindrome.py` and
+`shortest.py` at
 the root as the things you actually run.
 
 ```bash
@@ -461,6 +463,23 @@ S E A S I D E S
 
 Different `--seed` values explore disjoint searches, so running several at once
 genuinely parallelises the hunt.
+
+## The shortest word containing given letters
+
+```bash
+python3 shortest.py aeiou                  # SEQUOIA, EULOGIA
+python3 shortest.py aeiou --in-order       # CAESIOUS
+python3 shortest.py aeiouy --in-order      # FACETIOUSLY
+python3 shortest.py aeiou --without s --min-score 2 --lengths 2
+```
+
+Letters are a multiset, so `ss` asks for two S's. `--in-order` asks for a
+subsequence — in that order, not necessarily adjacent. `--without` bans letters
+outright, and ties at a length are broken by familiarity.
+
+Spread the Wordlist, and so the merged dictionary, contains alphabet strings
+such as ABCDEFGHIJKLM and JKQXZ, which answer most questions of this kind
+unhelpfully; UKACD and Wiktionary do not.
 
 ## Squares that read four ways
 
