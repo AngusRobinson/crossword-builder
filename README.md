@@ -41,9 +41,7 @@ rules: clean
 wrote out/birds.ipuz and out/birds.html
 ```
 
-That last line is the honest kind of output this aims for: it placed every
-target, but `umbratic` is a word neither source has a record of, and it says so
-rather than letting it pass.
+
 
 ## Contents
 
